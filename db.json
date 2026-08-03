@@ -1,0 +1,34 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Wireless Headphones",
+      "price": 1200,
+      "category": "Electronics"
+    },
+    {
+      "id": 2,
+      "name": "Running Shoes",
+      "price": 2500,
+      "category": "Footwear"
+    },
+    {
+      "id": 3,
+      "name": "Smart Watch",
+      "price": 3500,
+      "category": "Electronics"
+    },
+    {
+      "id": 4,
+      "name": "Pen",
+      "price": 20,
+      "category": "Stationery"
+    },
+    {
+      "id": 5,
+      "name": "Notebook",
+      "price": 100,
+      "category": "Stationery"
+    }
+  ]
+}
