@@ -1,107 +1,214 @@
-# MERN Authentication & Product Management System
+# MERN Enterprise Task & Project Management System
 
-A modern full-stack MERN application that provides secure user authentication and complete product management functionality. The project is built using React, Redux Toolkit, Redux Saga, Node.js, Express.js, and MongoDB with a clean and responsive user interface.
+A full-stack Enterprise Task & Project Management System built using the MERN Stack. The application provides secure authentication, role-based access control (RBAC), user management, project management, task management, and an automated notification system with a scalable architecture.
 
 ---
 
-## Features
+# Features
 
-### Authentication
-- User Registration (Sign Up)
+## Authentication
+
+- User Registration
 - Email OTP Verification
-- Secure User Login
+- Secure Login
 - JWT Authentication
 - Protected Routes
 - Forgot Password
-- Email OTP Verification for Password Reset
-- Create New Password
-- Change Password (Old Password + OTP Verification)
-- Secure Password Hashing using bcrypt
-
-### Product Management
-- Add Product
-- Update Product
-- Delete Product
-- Product Listing
-- Product Search
-- Pagination
-- Responsive Product Table
-
-### Frontend
-- React.js
-- Redux Toolkit
-- Redux Saga
-- React Router DOM
-- Axios API Integration
-- Responsive UI
-- Toast Notifications
-
-### Backend
-- Node.js
-- Express.js
-- MongoDB
-- Mongoose
-- JWT Authentication
-- Bcrypt Password Encryption
-- Nodemailer Email Service
-- REST APIs
+- Reset Password using OTP
+- Change Password
+- Password Encryption using bcrypt
+- Session Management
 
 ---
 
-## Tech Stack
+## User Management
 
-### Frontend
+- Create User
+- Update User
+- Delete User
+- User Listing
+- Search Users
+- Pagination
+
+---
+
+## Role & Permission Management (RBAC)
+
+- Create Roles
+- Update Roles
+- Delete Roles
+- Assign Permissions
+- Menu-based Permission System
+- Role-based Sidebar
+- Protected Modules
+- Super Admin Support
+
+---
+
+## Project Management
+
+- Create Project
+- Update Project
+- Delete Project
+- Project Listing
+- Search Projects
+- Pagination
+- Assign Project Manager
+- Assign Team Members
+
+---
+
+## Task Management
+
+- Create Task
+- Update Task
+- Delete Task
+- Task Listing
+- Search Tasks
+- Pagination
+- Assign Tasks to Users
+- Task Priority
+- Task Status
+- Due Date Management
+
+---
+
+## Notification System
+
+- Automatic Notification on Task Assignment
+- Automatic Notification on Project Assignment
+- Mark Notification as Read
+- Mark All Notifications as Read
+- Delete Notification
+- Notification History
+
+---
+
+## Dashboard
+
+- Dashboard Statistics
+- Total Users
+- Active Users
+- Blocked Users
+- Total Projects
+- Total Tasks
+- Pending Tasks
+- Completed Tasks
+
+---
+
+# Tech Stack
+
+## Frontend
+
 - React.js
 - Redux Toolkit
 - Redux Saga
 - React Router DOM
 - Axios
-- CSS
+- Tailwind CSS
+- Lucide React
 
-### Backend
+---
+
+## Backend
+
 - Node.js
 - Express.js
 - MongoDB
 - Mongoose
 - JWT
-- Bcrypt.js
+- bcrypt.js
 - Nodemailer
+- REST APIs
 
 ---
 
-## Authentication Flow
+# Modules
+
+- Authentication
+- Users
+- Roles
+- Permissions
+- Projects
+- Tasks
+- Notifications
+- Dashboard
+
+---
+
+# Authentication Flow
 
 1. User Registration
 2. Email OTP Verification
 3. Login
 4. Forgot Password
-5. Verify Forgot Password OTP
-6. Create New Password
-7. Login with New Password
-8. Change Password (After Login)
+5. Verify OTP
+6. Reset Password
+7. Change Password
 
 ---
 
-## Product Module
+# RBAC Flow
 
-- Create Product
-- Read Products
-- Update Product
-- Delete Product
-- Search Products
-- Pagination
+- Super Admin
+- Admin
+- Project Manager
+- Employee
+
+Permissions are dynamically controlled based on assigned roles.
 
 ---
 
-## Installation
+# Project Workflow
 
-### Clone Repository
-
-```bash
-git clone https://github.com/your-username/your-repository-name.git
+```
+Super Admin
+      │
+      ▼
+Create Project
+      │
+      ▼
+Assign Project Manager
+      │
+      ▼
+Assign Team Members
+      │
+      ▼
+Project Notifications
 ```
 
-### Install Frontend
+---
+
+# Task Workflow
+
+```
+Project Manager
+      │
+      ▼
+Create Task
+      │
+      ▼
+Assign Employee
+      │
+      ▼
+Automatic Notification
+      │
+      ▼
+Employee Updates Status
+```
+
+---
+
+# Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/your-username/your-repository.git
+```
+
+## Frontend
 
 ```bash
 cd client
@@ -109,7 +216,7 @@ npm install
 npm run dev
 ```
 
-### Install Backend
+## Backend
 
 ```bash
 cd server
@@ -119,72 +226,111 @@ npm run dev
 
 ---
 
-## Environment Variables
+# Environment Variables
 
-Create a `.env` file inside the server folder.
+Create a `.env` file.
 
 ```env
 PORT=4000
 
-MONGODB_URI=your_mongodb_connection_string
+MONGODB_URI=
 
-JWT_SECRET=your_jwt_secret
+JWT_SECRET=
 
-EMAIL_USER=your_email@gmail.com
-EMAIL_PASS=your_email_password
+EMAIL_USER=
+
+EMAIL_PASS=
 ```
 
 ---
 
-## API Modules
+# API Modules
 
-### Authentication APIs
+## Authentication APIs
 
-- Register User
+- Register
 - Verify OTP
 - Login
 - Forgot Password
-- Verify Forgot Password OTP
-- Create New Password
-- Send Change Password OTP
-- Verify & Change Password
+- Verify Forgot OTP
+- Reset Password
+- Change Password
 
-### Product APIs
+## User APIs
 
-- Get Products
-- Add Product
-- Update Product
-- Delete Product
+- Create User
+- Get Users
+- Update User
+- Delete User
+
+## Role APIs
+
+- Create Role
+- Update Role
+- Delete Role
+- Assign Permissions
+
+## Project APIs
+
+- Create Project
+- Get Projects
+- Update Project
+- Delete Project
+
+## Task APIs
+
+- Create Task
+- Get Tasks
+- Update Task
+- Delete Task
+- Change Task Status
+
+## Notification APIs
+
+- Get Notifications
+- Mark as Read
+- Mark All as Read
+- Delete Notification
 
 ---
 
-## Project Highlights
+# Project Highlights
 
-- Secure Authentication
-- Email OTP Verification
-- JWT Authorization
-- Password Encryption
-- Product CRUD Operations
-- Search & Pagination
+- Enterprise Architecture
+- JWT Authentication
+- OTP Verification
+- RBAC (Role-Based Access Control)
+- Dynamic Sidebar
+- Task Management
+- Project Management
+- Automatic Notifications
+- RESTful APIs
 - Redux Toolkit
 - Redux Saga
-- REST APIs
-- Responsive Design
-- Clean Code Structure
+- Tailwind CSS
+- Responsive UI
+- Clean Folder Structure
+- Scalable Codebase
 
 ---
 
-## Future Improvements
+# Future Enhancements
 
-- User Profile
-- Image Upload
-- Role-Based Authentication
+- Real-time Notifications (Socket.IO)
+- File Uploads
+- Project Reports
+- Activity Logs
+- Calendar Integration
+- Email Notifications
+- Team Chat
 - Dashboard Analytics
-- Order Management
 - Dark Mode
+- Audit Logs
 
 ---
 
-## Author
+# Author
 
-Developed by **Kapil Bawari**
+**Kapil Bawari**
+
+React Developer | MERN Stack Developer
