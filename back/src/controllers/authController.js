@@ -3,6 +3,10 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import sendEmailOtp from "../utils/emailService.js";
 
+import Role from "../models/Role.js";
+
+
+
 export const registerUser = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -31,13 +35,28 @@ export const registerUser = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
+    const defaultRole = await Role.findOne({
+      isDefault: true
+    });
+
+
+
+
+if (!defaultRole) {
+  return res.status(400).json({
+    success: false,
+    message: "Default User Role not found"
+  });
+}
+
     await User.create({
-      name,
-      email,
-      password: hashedPassword,
-      isVerified: false,
-      otp,
-      otpExpires
+     name,
+  email,
+  password: hashedPassword,
+  role: defaultRole._id,
+  isVerified: false,
+  otp,
+  otpExpires
     });
 
     await sendEmailOtp(email, otp);
@@ -138,14 +157,35 @@ export const verifyOtp = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
 export const loginUser = async (req, res) => {
   try {
+
     const { email, password } = req.body;
 
-    const user = await User.findOne({ email });
+
+     const user = await User.findOne({ email })
+.populate({
+  path: "role",
+  populate: {
+    path: "permissions",
+  },
+});
+  console.log("USER FOUND:", user); // yaha
+
+
     if (!user) {
-      return res.status(401).json({ success: false, message: "Invalid email or password!" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password!"
+      });
     }
+
 
     if (!user.isVerified) {
       return res.status(403).json({
@@ -154,48 +194,73 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const isMatch = await bcrypt.compare(password, user.password);
+
+    const isMatch = await bcrypt.compare(
+      password,
+      user.password
+    );
+
+    console.log("PASSWORD MATCH:", isMatch); // yaha
+
     if (!isMatch) {
-      return res.status(401).json({ success: false, message: "Invalid email or password!" });
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password!"
+      });
     }
 
-    res.json({
+
+
+    const token = generateToken(user._id);
+    console.log("USER ROLE DATA:", user.role); // yaha
+
+
+
+    res.status(200).json({
+
       success: true,
+
       message: "Login successful!",
+
       data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        token: generateToken(user._id)
+
+        token,
+
+        user: {
+
+          _id: user._id,
+
+          name: user.name,
+
+          email: user.email,
+
+          role: user.role,
+
+          isSuperAdmin: user.isSuperAdmin || false
+
+        }
+
       }
+
     });
 
+
+
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+        console.log("LOGIN ERROR:",error);
+
+
+    res.status(500).json({
+
+      success: false,
+
+      message: error.message
+
+    });
+
   }
 };
 
-export const forgotPassword = async (req, res) => {
-  try {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user || !user.isVerified) {
-      return res.status(404).json({ success: false, message: "No verified user found with this email." });
-    }
-
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    user.otp = otp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
-    await user.save();
-
-    await sendEmailOtp(user.email, otp);
-
-    res.status(200).json({ success: true, message: "Password reset OTP has been sent to your email." });
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
-  }
-};
 
 
 export const sendChangePasswordOtp = async (req, res) => {
@@ -352,3 +417,36 @@ export const createNewPassword = async (req, res) => {
     });
   }
 };
+
+
+
+export const forgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+
+    if (!user || !user.isVerified) {
+      return res.status(404).json({ success: false, message: "No verified user found with this email." });
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    user.otp = otp;
+    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    await user.save();
+
+    await sendEmailOtp(user.email, otp);
+
+    res.status(200).json({ success: true, message: "Password reset OTP has been sent to your email." });
+  } catch (error) {
+    res.status(500).json({ success: false, error: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+

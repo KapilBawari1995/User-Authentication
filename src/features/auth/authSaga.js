@@ -36,19 +36,27 @@ import {
     createNewPasswordSuccess,
     createNewPasswordFailure,
 
-
 } from "./authSlice";
+
 
 const onSuccess = (message, navigate, path) => {
     successToast(message);
+
     if (navigate && path) {
         navigate(path);
     }
 };
 
+
+
+// ================= SIGNUP =================
+
 function* handleSignup(action) {
+
     try {
+
         const { data, onSuccessCallback } = action.payload;
+
 
         const response = yield call(
             axiosInstance.post,
@@ -56,23 +64,54 @@ function* handleSignup(action) {
             data
         );
 
-        localStorage.setItem("verifyEmail", data.email);
+
+        localStorage.setItem(
+            "verifyEmail",
+            data.email
+        );
+
+
         yield put(signupSuccess());
+
+
         successToast(response.data.message);
+
 
         if (onSuccessCallback) {
             onSuccessCallback();
         }
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(signupFailure(message));
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+        yield put(
+            signupFailure(message)
+        );
+
+
         errorToast(message);
+
     }
 }
 
+
+
+
+
+// ================= VERIFY OTP =================
+
 function* handleVerifyOtp(action) {
+
     try {
+
+
         const { data, navigate } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -80,17 +119,35 @@ function* handleVerifyOtp(action) {
             data
         );
 
+
+
+        const userData = response.data.user;
+
+
         const token = response.data.token;
+
+
+
         if (token) {
-            localStorage.setItem("token", token);
+            localStorage.setItem(
+                "token",
+                token
+            );
         }
+
+
 
         yield put(
             verifyOtpSuccess({
-                token: token,
-                user: response.data.user,
+
+                token,
+
+                user: userData
+
             })
         );
+
+
 
         onSuccess(
             response.data.message,
@@ -98,16 +155,44 @@ function* handleVerifyOtp(action) {
             "/welcome"
         );
 
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(verifyOtpFailure(message));
+
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+
+        yield put(
+            verifyOtpFailure(message)
+        );
+
+
         errorToast(message);
+
     }
+
 }
 
+
+
+
+
+
+// ================= LOGIN =================
+
+
 function* handleLogin(action) {
+
+
     try {
+
+
         const { data, navigate } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -115,17 +200,34 @@ function* handleLogin(action) {
             data
         );
 
-        const token = response.data.data.token;
+        console.log(response)
+
+        const userData = response.data.data;
+
+
+
+        const token = userData.token;
+
+
+
         if (token) {
-            localStorage.setItem("token", token);
+
+            localStorage.setItem(
+                "token",
+                token
+            );
+
         }
 
-        yield put(
-            loginSuccess({
-                token: token,
-                user: response.data.data,
-            })
-        );
+
+
+     yield put(
+ loginSuccess({
+   token: response.data.data.token,
+   user: response.data.data.user
+ })
+);
+
 
         onSuccess(
             response.data.message,
@@ -133,16 +235,45 @@ function* handleLogin(action) {
             "/welcome"
         );
 
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(loginFailure(message));
+
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+
+        yield put(
+            loginFailure(message)
+        );
+
+
         errorToast(message);
+
+
     }
+
 }
 
+
+
+
+
+
+
+// ================= FORGOT PASSWORD =================
+
+
 function* handleForgotPassword(action) {
+
     try {
+
+
         const { data, navigate } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -150,18 +281,57 @@ function* handleForgotPassword(action) {
             data
         );
 
-        yield put(forgotPasswordSuccess());
-        onSuccess(response.data.message, navigate, "/login");
+
+
+        yield put(
+            forgotPasswordSuccess()
+        );
+
+
+
+        onSuccess(
+            response.data.message,
+            navigate,
+            "/login"
+        );
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(forgotPasswordFailure(message));
+
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+        yield put(
+            forgotPasswordFailure(message)
+        );
+
+
         errorToast(message);
+
     }
+
 }
 
+
+
+
+
+
+
+// ================= SEND CHANGE PASSWORD OTP =================
+
+
 function* handleSendChangePasswordOtp(action) {
+
+
     try {
+
+
         const { data, onSuccessCallback } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -169,22 +339,63 @@ function* handleSendChangePasswordOtp(action) {
             data
         );
 
-        yield put(sendChangePasswordOtpSuccess());
-        successToast(response.data.message);
+
+
+        yield put(
+            sendChangePasswordOtpSuccess()
+        );
+
+
+
+        successToast(
+            response.data.message
+        );
+
+
 
         if (onSuccessCallback) {
-            onSuccessCallback(); 
+            onSuccessCallback();
         }
+
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(sendChangePasswordOtpFailure(message));
+
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+
+        yield put(
+            sendChangePasswordOtpFailure(message)
+        );
+
+
         errorToast(message);
+
     }
+
 }
 
+
+
+
+
+
+
+// ================= VERIFY CHANGE PASSWORD =================
+
+
 function* handleVerifyAndChangePassword(action) {
+
+
     try {
+
+
         const { data, onSuccessCallback } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -192,62 +403,145 @@ function* handleVerifyAndChangePassword(action) {
             data
         );
 
-        yield put(verifyAndChangePasswordSuccess());
-        successToast(response.data.message);
+
+
+        yield put(
+            verifyAndChangePasswordSuccess()
+        );
+
+
+
+        successToast(
+            response.data.message
+        );
+
+
 
         if (onSuccessCallback) {
-            onSuccessCallback(); 
+            onSuccessCallback();
         }
+
+
     } catch (error) {
-        const message = error.response?.data?.message || error.message;
-        yield put(verifyAndChangePasswordFailure(message));
+
+
+        const message =
+            error.response?.data?.message || error.message;
+
+
+
+        yield put(
+            verifyAndChangePasswordFailure(message)
+        );
+
+
         errorToast(message);
+
+
     }
+
 }
 
+
+
+
+
+
+
+// ================= VERIFY FORGOT OTP =================
+
+
 function* handleVerifyForgotPasswordOtp(action) {
+
+
     try {
-        const { data, navigate, onSuccessCallback } = action.payload;
+
+
+        const {
+            data,
+            navigate,
+            onSuccessCallback
+
+        } = action.payload;
+
+
+
 
         const response = yield call(
             axiosInstance.post,
             API_ENDPOINTS.VERIFY_FORGOT_PASSWORD_OTP,
             data
         );
-        console.log("API Response =>", response.data);
-        yield put(verifyForgotPasswordOtpSuccess());
 
-        successToast(response.data.message);
+
+
+        yield put(
+            verifyForgotPasswordOtpSuccess()
+        );
+
+
+
+        successToast(
+            response.data.message
+        );
+
+
+
+        localStorage.setItem(
+            "forgotEmail",
+            data.email
+        );
+
+
 
         if (onSuccessCallback) {
             onSuccessCallback();
         }
-        console.log("Navigate:", navigate);
 
-        localStorage.setItem("forgotEmail", data.email);
+
+
         navigate("/create-new-password");
 
 
 
-        console.log("OTP Verify Success");
-        console.log(data);
-        console.log(navigate);
     } catch (error) {
+
+
         const message =
             error.response?.data?.message || error.message;
+
+
 
         yield put(
             verifyForgotPasswordOtpFailure(message)
         );
 
+
         errorToast(message);
+
     }
+
 }
 
 
+
+
+
+
+
+
+// ================= CREATE NEW PASSWORD =================
+
+
 function* handleCreateNewPassword(action) {
+
+
     try {
+
+
         const { data, navigate } = action.payload;
+
+
 
         const response = yield call(
             axiosInstance.post,
@@ -255,35 +549,107 @@ function* handleCreateNewPassword(action) {
             data
         );
 
-        yield put(createNewPasswordSuccess());
 
-        successToast(response.data.message);
+
+        yield put(
+            createNewPasswordSuccess()
+        );
+
+
+
+        successToast(
+            response.data.message
+        );
+
+
 
         if (navigate) {
+
             navigate("/login");
+
         }
 
+
+
     } catch (error) {
+
+
         const message =
             error.response?.data?.message || error.message;
 
-        yield put(createNewPasswordFailure(message));
+
+
+        yield put(
+            createNewPasswordFailure(message)
+        );
+
 
         errorToast(message);
+
+
     }
+
 }
 
 
 
-export default function* authSaga() {
-    yield takeLatest(signupRequest.type, handleSignup);
-    yield takeLatest(verifyOtpRequest.type, handleVerifyOtp);
-    yield takeLatest(loginRequest.type, handleLogin);
-    yield takeLatest(forgotPasswordRequest.type, handleForgotPassword);
-    yield takeLatest(sendChangePasswordOtpRequest.type, handleSendChangePasswordOtp);
-    yield takeLatest(verifyAndChangePasswordRequest.type, handleVerifyAndChangePassword);
-    yield takeLatest(verifyForgotPasswordOtpRequest.type, handleVerifyForgotPasswordOtp);
-    yield takeLatest(createNewPasswordRequest.type, handleCreateNewPassword);
 
+
+
+
+
+
+// ================= WATCHER =================
+
+
+export default function* authSaga() {
+
+
+    yield takeLatest(
+        signupRequest.type,
+        handleSignup
+    );
+
+
+    yield takeLatest(
+        verifyOtpRequest.type,
+        handleVerifyOtp
+    );
+
+
+    yield takeLatest(
+        loginRequest.type,
+        handleLogin
+    );
+
+
+    yield takeLatest(
+        forgotPasswordRequest.type,
+        handleForgotPassword
+    );
+
+
+    yield takeLatest(
+        sendChangePasswordOtpRequest.type,
+        handleSendChangePasswordOtp
+    );
+
+
+    yield takeLatest(
+        verifyAndChangePasswordRequest.type,
+        handleVerifyAndChangePassword
+    );
+
+
+    yield takeLatest(
+        verifyForgotPasswordOtpRequest.type,
+        handleVerifyForgotPasswordOtp
+    );
+
+
+    yield takeLatest(
+        createNewPasswordRequest.type,
+        handleCreateNewPassword
+    );
 
 }
