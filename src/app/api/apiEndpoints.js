@@ -68,6 +68,10 @@ UPDATE_PROJECT: "/projects",
 DELETE_PROJECT: "/projects",
 
   // ================= ROLE PERMISSION =================
+GET_PROFILE:"/users/profile/me",
+
+    GET_NOTIFICATIONS: "/notifications",
+
 
   GET_ROLE_PERMISSIONS: "/role-permission",
   ASSIGN_ROLE_PERMISSIONS: "/role-permission",

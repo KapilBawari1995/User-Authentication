@@ -24,6 +24,14 @@ import taskSaga from '../features/task/taskSaga';
 import projectReducer  from '../features/project/projectSlice';
 import projectSaga from '../features/project/projectSaga';
 
+
+import notificationReducer from "../features/notification/notificationSlice";
+import notificationSaga from "../features/notification/notificationSaga";
+
+
+import profileReducer from '../features/profile/profileSlice';
+import profileSaga from '../features/profile/profileSaga';
+
 function* rootSaga() {
   yield all([
     productSaga(),
@@ -33,6 +41,8 @@ function* rootSaga() {
     permissionsSaga(),
     taskSaga(),
     projectSaga(),
+    notificationSaga(),
+    profileSaga(),
   ]);
 }
 
@@ -47,6 +57,8 @@ export const store = configureStore({
     permissions:permissionsReducer,
     task:taskReducer,
     project:projectReducer,
+    notification:notificationReducer,
+    profile:profileReducer,
     
   },
   middleware: (getDefaultMiddleware) =>

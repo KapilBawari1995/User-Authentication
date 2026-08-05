@@ -18,7 +18,7 @@ import Project from './pages/admin/Project/Projects'
 import AddProject from "./pages/admin/Project/AddProject";
 import Calendar from "./pages/admin/Calendar";
 import Reports from "./pages/admin/Reports";
-import Notifications from "./pages/admin/Notifications";
+import Notifications from "./pages/admin/Notifications/Notifications";
 import Profile from "./pages/admin/Profile";
 import SettingsPage from "./pages/admin/Settings";
 import ChangePassword from "./pages/admin/ChangePassword";
