@@ -16,6 +16,12 @@ import {
     loginSuccess,
     loginFailure,
 
+    
+ logoutRequest,
+  logoutSuccess,
+  logoutFailure,
+
+
     forgotPasswordRequest,
     forgotPasswordSuccess,
     forgotPasswordFailure,
@@ -185,14 +191,8 @@ function* handleVerifyOtp(action) {
 
 
 function* handleLogin(action) {
-
-
     try {
-
-
         const { data, navigate } = action.payload;
-
-
 
         const response = yield call(
             axiosInstance.post,
@@ -200,64 +200,47 @@ function* handleLogin(action) {
             data
         );
 
-        console.log(response)
+        console.log("API Response:", response.data);
 
-        const userData = response.data.data;
+        const token = response.data.token;
+        const user = response.data.user;
+        const mustChangePassword = response.data.mustChangePassword;
 
-
-
-        const token = userData.token;
+        console.log("TOKEN:", token);
+        console.log("USER:", user);
 
 
 
         if (token) {
+            localStorage.setItem("token", token);
+            localStorage.setItem("user", JSON.stringify(user));
+        }
 
-            localStorage.setItem(
-                "token",
-                token
-            );
+        yield put(
+            loginSuccess({
+                token,
+                user,
+            })
+        );
 
+        successToast(response.data.message);
+
+        if (mustChangePassword) {
+            navigate("/admin/change-password");
+        } else {
+            navigate("/admin/dashboard");
         }
 
 
-
-     yield put(
- loginSuccess({
-   token: response.data.data.token,
-   user: response.data.data.user
- })
-);
-
-
-        onSuccess(
-            response.data.message,
-            navigate,
-            "/welcome"
-        );
-
-
-
     } catch (error) {
-
-
         const message =
             error.response?.data?.message || error.message;
 
-
-
-        yield put(
-            loginFailure(message)
-        );
-
+        yield put(loginFailure(message));
 
         errorToast(message);
-
-
     }
-
 }
-
-
 
 
 
@@ -593,7 +576,32 @@ function* handleCreateNewPassword(action) {
 
 
 
+// ================= LOGOUT =================
 
+function* handleLogout(action) {
+  try {
+    const response = yield call(
+      axiosInstance.post,
+      API_ENDPOINTS.LOGOUT
+    );
+
+    yield put(logoutSuccess());
+
+    successToast(response.data.message);
+
+    if (action.payload?.navigate) {
+      action.payload.navigate("/login");
+    }
+
+  } catch (error) {
+    const message =
+      error.response?.data?.message || error.message;
+
+    yield put(logoutFailure(message));
+
+    errorToast(message);
+  }
+}
 
 
 
@@ -622,7 +630,10 @@ export default function* authSaga() {
         handleLogin
     );
 
-
+  yield takeLatest(
+    logoutRequest.type,
+    handleLogout
+  );
     yield takeLatest(
         forgotPasswordRequest.type,
         handleForgotPassword

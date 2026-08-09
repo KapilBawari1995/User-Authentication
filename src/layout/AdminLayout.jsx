@@ -1,49 +1,39 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+
 import Header from "../components/admin/Header";
 import Sidebar from "../components/admin/Sidebar";
 
 const AdminLayout = () => {
   return (
-    <div style={styles.container}>
+    <div className="min-h-screen bg-slate-50">
 
-      {/* Header */}
+      {/* ================= HEADER ================= */}
       <Header />
 
-      <div style={styles.body}>
+      {/* ================= SIDEBAR ================= */}
+      <Sidebar />
 
-        {/* Sidebar */}
-        <Sidebar />
-
-        {/* Main Content */}
-        <main style={styles.content}>
+      {/* ================= MAIN CONTENT ================= */}
+      <main
+        className="
+          ml-[250px]
+          mt-[70px]
+          min-h-[calc(100vh-70px)]
+          h-[calc(100vh-70px)]
+          overflow-y-auto
+          overflow-x-hidden
+          p-6
+          bg-slate-50
+        "
+      >
+        <div className="w-full max-w-[1600px] mx-auto">
           <Outlet />
-        </main>
-
-      </div>
+        </div>
+      </main>
 
     </div>
   );
 };
-
-
-const styles = {
-  container: {
-    minHeight: "100vh",
-    backgroundColor: "#f8fafc",
-  },
-
-  body: {
-    display: "flex",
-  },
-
-  content: {
-    flex: 1,
-    padding: "25px",
-    marginLeft: "250px",
-    minHeight: "calc(100vh - 70px)",
-  },
-};
-
 
 export default AdminLayout;

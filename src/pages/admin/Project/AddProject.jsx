@@ -1,381 +1,757 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
 
-import { getUsersRequest } from "../../../features/user/userSlice";
+import React, { useEffect } from "react";
+import {
+  ArrowLeft,
+  FolderKanban,
+  Users,
+  Building2,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import {
+  getDepartmentsRequest,
+  getDepartmentManagersRequest,
+} from "../../../features/department/departmentSlice";
+
 import { createProjectRequest } from "../../../features/project/projectSlice";
 
 const AddProject = () => {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { users, getUsersLoading } = useSelector(
-    (state) => state.user
-  );
+  // =========================================================
+  // DEPARTMENT STATE
+  // =========================================================
 
-  const { createProjectLoading } = useSelector(
-    (state) => state.project
-  );
+  const {
+    departments = [],
+    managers = [],
+    getDepartmentsLoading,
+    managersLoading,
+  } = useSelector((state) => state.department);
 
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    projectManager: "",
-    teamMembers: [],
-    priority: "Medium",
-    status: "Planning",
-    startDate: "",
-    endDate: "",
-    budget: "",
-  });
+  // =========================================================
+  // PROJECT STATE
+  // =========================================================
+
+  const {
+    createLoading = false,
+    createSuccess = false,
+    createError = null,
+  } = useSelector((state) => state.project || {});
+
+  // =========================================================
+  // GET DEPARTMENTS
+  // =========================================================
 
   useEffect(() => {
-    dispatch(getUsersRequest());
+    dispatch(getDepartmentsRequest());
   }, [dispatch]);
 
-  const handleChange = (e) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  // =========================================================
+  // PROJECT CREATE SUCCESS
+  // =========================================================
 
-  const handleTeamMembers = (e) => {
-    const values = Array.from(
-      e.target.selectedOptions,
-      (option) => option.value
-    );
-
-    setFormData((prev) => ({
-      ...prev,
-      teamMembers: values,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-      console.log("SUBMIT CLICKED");
-  console.log(formData);
-
-
-    if (
-      !formData.name ||
-      !formData.projectManager ||
-      !formData.startDate ||
-      !formData.endDate
-    ) {
-      alert("Please fill all required fields.");
-      return;
+  useEffect(() => {
+    if (createSuccess) {
+      navigate("/admin/projects");
     }
+  }, [createSuccess, navigate]);
 
-    dispatch(createProjectRequest(formData));
+  // =========================================================
+  // VALIDATION
+  // =========================================================
 
-    navigate("/projects");
+  const validationSchema = Yup.object({
+    name: Yup.string()
+      .trim()
+      .required("Project name is required"),
+
+    description: Yup.string()
+      .trim()
+      .required("Description is required"),
+
+    department: Yup.string()
+      .required("Please select department"),
+
+    projectManager: Yup.string()
+      .required("Please select manager"),
+
+    startDate: Yup.date()
+      .required("Start date is required"),
+
+    endDate: Yup.date()
+      .required("End date is required")
+      .min(
+        Yup.ref("startDate"),
+        "End date must be after start date"
+      ),
+
+    priority: Yup.string()
+      .required("Please select priority"),
+
+    status: Yup.string()
+      .required("Please select status"),
+
+    budget: Yup.number()
+      .typeError("Budget must be a number")
+      .min(0, "Budget cannot be negative")
+      .required("Budget is required"),
+  });
+
+  // =========================================================
+  // FORMIK
+  // =========================================================
+
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      description: "",
+      department: "",
+      projectManager: "",
+      startDate: "",
+      endDate: "",
+      priority: "Medium",
+      status: "Planning",
+      budget: "",
+    },
+
+    validationSchema,
+
+    onSubmit: (values) => {
+      const payload = {
+        name: values.name.trim(),
+        description: values.description.trim(),
+        department: values.department,
+        projectManager: values.projectManager,
+        startDate: values.startDate,
+        endDate: values.endDate,
+        priority: values.priority,
+        status: values.status,
+        budget: values.budget,
+      };
+
+      console.log("CREATE PROJECT PAYLOAD:", payload);
+
+      dispatch(createProjectRequest(payload));
+    },
+  });
+
+  // =========================================================
+  // DEPARTMENT CHANGE
+  // =========================================================
+
+  const handleDepartmentChange = (e) => {
+    const departmentId = e.target.value;
+
+    // Set selected department
+    formik.setFieldValue("department", departmentId);
+
+    // Reset manager whenever department changes
+    formik.setFieldValue("projectManager", "");
+
+    // Get managers of selected department
+    if (departmentId) {
+      dispatch(getDepartmentManagersRequest(departmentId));
+    }
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
+    <div className="min-h-screen bg-slate-50 p-6">
 
-      <div className="max-w-5xl mx-auto bg-white rounded-xl shadow-lg p-8">
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-        <h2 className="text-3xl font-bold mb-8">
-          Create New Project
-        </h2>
+      <div className="flex items-center justify-between mb-7">
+
+        <div className="flex items-center gap-4">
+
+          <button
+            type="button"
+            onClick={() => navigate("/admin/projects")}
+            className="
+              w-10 h-10 rounded-xl
+              bg-white border border-slate-200
+              flex items-center justify-center
+              text-slate-600
+              hover:bg-slate-100
+              transition
+            "
+          >
+            <ArrowLeft size={19} />
+          </button>
+
+          <div>
+            <h1 className="text-2xl font-bold text-slate-800">
+              Create Project
+            </h1>
+
+            <p className="text-sm text-slate-500 mt-1">
+              Create a new project and assign it to a department manager.
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+      {/* =====================================================
+          MAIN CARD
+      ===================================================== */}
+
+      <div className="max-w-6xl mx-auto">
 
         <form
-          onSubmit={handleSubmit}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6"
+          onSubmit={formik.handleSubmit}
+          className="
+            bg-white
+            border border-slate-200
+            rounded-2xl
+            shadow-sm
+            overflow-hidden
+          "
         >
 
-          {/* Project Name */}
+          {/* =================================================
+              PROJECT INFORMATION
+          ================================================= */}
 
-          <div>
+          <div className="p-7">
 
-            <label className="font-medium block mb-2">
-              Project Name
-            </label>
+            <div className="flex items-center gap-3 mb-6">
 
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="Enter project name"
-              className="w-full border rounded-lg p-3"
-            />
+              <div
+                className="
+                  w-11 h-11 rounded-xl
+                  bg-indigo-50 text-indigo-600
+                  flex items-center justify-center
+                "
+              >
+                <FolderKanban size={22} />
+              </div>
+
+              <div>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Project Information
+                </h2>
+
+                <p className="text-sm text-slate-500">
+                  Enter the basic details of your project.
+                </p>
+              </div>
+
+            </div>
+
+            {/* =================================================
+                PROJECT NAME
+            ================================================= */}
+
+            <div>
+
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Project Name
+              </label>
+
+              <input
+                type="text"
+                name="name"
+                value={formik.values.name}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                placeholder="Enter project name"
+                className="
+                  w-full px-4 py-3
+                  rounded-xl
+                  border border-slate-300
+                  focus:ring-2 focus:ring-indigo-500
+                  focus:border-indigo-500
+                  outline-none
+                  transition
+                "
+              />
+
+              {formik.touched.name && formik.errors.name && (
+                <p className="text-xs text-red-500 mt-1">
+                  {formik.errors.name}
+                </p>
+              )}
+
+            </div>
+
+            {/* =================================================
+                DESCRIPTION
+            ================================================= */}
+
+            <div className="mt-5">
+
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Description
+              </label>
+
+              <textarea
+                name="description"
+                rows={4}
+                value={formik.values.description}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                placeholder="Describe the project..."
+                className="
+                  w-full px-4 py-3
+                  rounded-xl
+                  border border-slate-300
+                  focus:ring-2 focus:ring-indigo-500
+                  focus:border-indigo-500
+                  outline-none
+                  resize-none
+                  transition
+                "
+              />
+
+              {formik.touched.description &&
+                formik.errors.description && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.description}
+                  </p>
+                )}
+
+            </div>
 
           </div>
 
-          {/* Priority */}
+          {/* =================================================
+              PROJECT ASSIGNMENT
+          ================================================= */}
 
-          <div>
+          <div className="border-t border-slate-200 bg-slate-50/70 p-7">
 
-            <label className="font-medium block mb-2">
-              Priority
-            </label>
+            <div className="flex items-center gap-3 mb-6">
 
-            <select
-              name="priority"
-              value={formData.priority}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-            >
+              <div
+                className="
+                  w-11 h-11 rounded-xl
+                  bg-emerald-50 text-emerald-600
+                  flex items-center justify-center
+                "
+              >
+                <Users size={21} />
+              </div>
 
-              <option value="Low">
-                Low
-              </option>
+              <div>
+                <h2 className="text-lg font-semibold text-slate-800">
+                  Project Assignment
+                </h2>
 
-              <option value="Medium">
-                Medium
-              </option>
+                <p className="text-sm text-slate-500">
+                  Select the department and manager responsible for this project.
+                </p>
+              </div>
 
-              <option value="High">
-                High
-              </option>
+            </div>
 
-              <option value="Critical">
-                Critical
-              </option>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-            </select>
+              {/* =================================================
+                  DEPARTMENT
+              ================================================= */}
 
-          </div>
+              <div>
 
-          {/* Description */}
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                  <Building2 size={16} />
+                  Department
+                </label>
 
-          <div className="md:col-span-2">
-
-            <label className="font-medium block mb-2">
-              Description
-            </label>
-
-            <textarea
-              rows="4"
-              name="description"
-              value={formData.description}
-              onChange={handleChange}
-              placeholder="Project description"
-              className="w-full border rounded-lg p-3"
-            />
-
-          </div>
-
-          {/* Project Manager */}
-
-          <div>
-
-            <label className="font-medium block mb-2">
-              Project Manager
-            </label>
-
-            <select
-              name="projectManager"
-              value={formData.projectManager}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-            >
-
-              <option value="">
-                Select Project Manager
-              </option>
-
-              {users.map((user) => (
-
-                <option
-                  key={user._id}
-                  value={user._id}
+                <select
+                  name="department"
+                  value={formik.values.department}
+                  onChange={handleDepartmentChange}
+                  onBlur={formik.handleBlur}
+                  disabled={getDepartmentsLoading}
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    bg-white
+                    focus:ring-2 focus:ring-indigo-500
+                    focus:border-indigo-500
+                    outline-none
+                    transition
+                    disabled:bg-slate-100
+                    disabled:text-slate-400
+                  "
                 >
-                  {user.name}
-                </option>
 
-              ))}
+                  <option value="">
+                    {getDepartmentsLoading
+                      ? "Loading Departments..."
+                      : "Select Department"}
+                  </option>
 
-            </select>
+                  {departments.map((department) => (
+                    <option
+                      key={department._id}
+                      value={department._id}
+                    >
+                      {department.name}
+                    </option>
+                  ))}
 
-            {getUsersLoading && (
-              <p className="text-sm text-gray-500 mt-2">
-                Loading Users...
+                </select>
+
+                {formik.touched.department &&
+                  formik.errors.department && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.department}
+                    </p>
+                  )}
+
+                <p className="text-xs text-slate-500 mt-2">
+                  Select the department responsible for this project.
+                </p>
+
+              </div>
+
+              {/* =================================================
+                  PROJECT MANAGER
+              ================================================= */}
+
+              <div>
+
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                  <Users size={16} />
+                  Project Manager
+                </label>
+
+                <select
+                  name="projectManager"
+                  value={formik.values.projectManager}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={
+                    !formik.values.department ||
+                    managersLoading
+                  }
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    bg-white
+                    focus:ring-2 focus:ring-indigo-500
+                    focus:border-indigo-500
+                    outline-none
+                    transition
+                    disabled:bg-slate-100
+                    disabled:text-slate-400
+                  "
+                >
+
+                  <option value="">
+                    {!formik.values.department
+                      ? "Select Department First"
+                      : managersLoading
+                      ? "Loading Managers..."
+                      : "Select Manager"}
+                  </option>
+
+                  {managers.map((manager) => (
+                    <option
+                      key={manager._id}
+                      value={manager._id}
+                    >
+                      {manager.name}
+                    </option>
+                  ))}
+
+                </select>
+
+                {formik.touched.projectManager &&
+                  formik.errors.projectManager && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.projectManager}
+                    </p>
+                  )}
+
+                <p className="text-xs text-slate-500 mt-2">
+                  Managers are loaded based on the selected department.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          {/* =================================================
+              PROJECT SETTINGS
+          ================================================= */}
+
+          <div className="p-7 border-t border-slate-200">
+
+            <div className="mb-6">
+
+              <h2 className="text-lg font-semibold text-slate-800">
+                Project Settings
+              </h2>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Set project timeline, priority and current status.
               </p>
-            )}
 
-          </div>
+            </div>
 
-          {/* Status */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
 
-          <div>
+              {/* =================================================
+                  START DATE
+              ================================================= */}
 
-            <label className="font-medium block mb-2">
-              Status
-            </label>
+              <div>
 
-            <select
-              name="status"
-              value={formData.status}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-            >
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Start Date
+                </label>
 
-              <option value="Planning">
-                Planning
-              </option>
+                <input
+                  type="date"
+                  name="startDate"
+                  value={formik.values.startDate}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    focus:ring-2 focus:ring-indigo-500
+                    outline-none
+                  "
+                />
 
-              <option value="In Progress">
-                In Progress
-              </option>
+                {formik.touched.startDate &&
+                  formik.errors.startDate && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.startDate}
+                    </p>
+                  )}
 
-              <option value="On Hold">
-                On Hold
-              </option>
+              </div>
 
-              <option value="Completed">
-                Completed
-              </option>
+              {/* =================================================
+                  END DATE
+              ================================================= */}
 
-              <option value="Cancelled">
-                Cancelled
-              </option>
+              <div>
 
-            </select>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  End Date
+                </label>
 
-          </div>
+                <input
+                  type="date"
+                  name="endDate"
+                  value={formik.values.endDate}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    focus:ring-2 focus:ring-indigo-500
+                    outline-none
+                  "
+                />
 
+                {formik.touched.endDate &&
+                  formik.errors.endDate && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.endDate}
+                    </p>
+                  )}
 
-                    {/* Team Members */}
+              </div>
 
-          <div className="md:col-span-2">
+              {/* =================================================
+                  PRIORITY
+              ================================================= */}
 
-            <label className="font-medium block mb-2">
-              Team Members
-            </label>
+              <div>
 
-            <select
-              multiple
-              value={formData.teamMembers}
-              onChange={handleTeamMembers}
-              className="w-full border rounded-lg p-3 h-40"
-            >
-              {users.map((user) => (
-                <option
-                  key={user._id}
-                  value={user._id}
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Priority
+                </label>
+
+                <select
+                  name="priority"
+                  value={formik.values.priority}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    bg-white
+                    focus:ring-2 focus:ring-indigo-500
+                    outline-none
+                  "
                 >
-                  {user.name} ({user.email})
-                </option>
-              ))}
-            </select>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select>
 
-            <p className="text-sm text-gray-500 mt-2">
-              Hold Ctrl (Windows) or Cmd (Mac) to select multiple users.
-            </p>
+                {formik.touched.priority &&
+                  formik.errors.priority && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.priority}
+                    </p>
+                  )}
 
-          </div>
+              </div>
 
-          {/* Start Date */}
+              {/* =================================================
+                  STATUS
+              ================================================= */}
 
-          <div>
+              <div>
 
-            <label className="font-medium block mb-2">
-              Start Date
-            </label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                  Status
+                </label>
 
-            <input
-              type="date"
-              name="startDate"
-              value={formData.startDate}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-            />
+                <select
+                  name="status"
+                  value={formik.values.status}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  className="
+                    w-full px-4 py-3
+                    rounded-xl
+                    border border-slate-300
+                    bg-white
+                    focus:ring-2 focus:ring-indigo-500
+                    outline-none
+                  "
+                >
+                  <option value="Planning">Planning</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="On Hold">On Hold</option>
+                  <option value="Completed">Completed</option>
+                </select>
 
-          </div>
+                {formik.touched.status &&
+                  formik.errors.status && (
+                    <p className="text-xs text-red-500 mt-1">
+                      {formik.errors.status}
+                    </p>
+                  )}
 
-          {/* End Date */}
+              </div>
 
-          <div>
+            </div>
 
-            <label className="font-medium block mb-2">
-              End Date
-            </label>
+            {/* =================================================
+                BUDGET
+            ================================================= */}
 
-            <input
-              type="date"
-              name="endDate"
-              value={formData.endDate}
-              onChange={handleChange}
-              className="w-full border rounded-lg p-3"
-            />
+            <div className="mt-5 max-w-md">
 
-          </div>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">
+                Project Budget
+              </label>
 
-          {/* Budget */}
+              <input
+                type="number"
+                name="budget"
+                value={formik.values.budget}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                placeholder="Enter project budget"
+                className="
+                  w-full px-4 py-3
+                  rounded-xl
+                  border border-slate-300
+                  focus:ring-2 focus:ring-indigo-500
+                  outline-none
+                "
+              />
 
-          <div>
+              {formik.touched.budget &&
+                formik.errors.budget && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.budget}
+                  </p>
+                )}
 
-            <label className="font-medium block mb-2">
-              Budget
-            </label>
-
-            <input
-              type="number"
-              name="budget"
-              value={formData.budget}
-              onChange={handleChange}
-              placeholder="Enter project budget"
-              className="w-full border rounded-lg p-3"
-            />
-
-          </div>
-
-          {/* Summary */}
-
-          <div className="bg-slate-50 border rounded-lg p-4">
-
-            <h4 className="font-semibold mb-3">
-              Project Summary
-            </h4>
-
-            <p>
-              <span className="font-medium">
-                Manager:
-              </span>{" "}
-              {users.find(
-                (u) => u._id === formData.projectManager
-              )?.name || "-"}
-            </p>
-
-            <p className="mt-2">
-              <span className="font-medium">
-                Team Members:
-              </span>{" "}
-              {formData.teamMembers.length}
-            </p>
-
-            <p className="mt-2">
-              <span className="font-medium">
-                Priority:
-              </span>{" "}
-              {formData.priority}
-            </p>
-
-            <p className="mt-2">
-              <span className="font-medium">
-                Status:
-              </span>{" "}
-              {formData.status}
-            </p>
+            </div>
 
           </div>
 
-          {/* Submit */}
+          {/* =================================================
+              API ERROR
+          ================================================= */}
 
-          <div className="md:col-span-2">
+          {createError && (
+            <div className="mx-7 mb-5 p-3 rounded-xl bg-red-50 border border-red-200">
+              <p className="text-sm text-red-600">
+                {createError}
+              </p>
+            </div>
+          )}
+
+          {/* =================================================
+              FOOTER
+          ================================================= */}
+
+          <div
+            className="
+              px-7 py-5
+              border-t border-slate-200
+              bg-slate-50
+              flex items-center justify-end gap-3
+            "
+          >
+
+            <button
+              type="button"
+              onClick={() => navigate("/admin/projects")}
+              disabled={createLoading}
+              className="
+                px-6 py-3
+                rounded-xl
+                border border-slate-300
+                bg-white
+                text-slate-700
+                font-semibold
+                hover:bg-slate-100
+                transition
+                disabled:opacity-50
+              "
+            >
+              Cancel
+            </button>
 
             <button
               type="submit"
-              disabled={createProjectLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold transition"
+              disabled={createLoading}
+              className="
+                px-7 py-3
+                rounded-xl
+                bg-indigo-600
+                text-white
+                font-semibold
+                hover:bg-indigo-700
+                transition
+                shadow-sm
+                disabled:opacity-60
+                disabled:cursor-not-allowed
+              "
             >
-              {createProjectLoading
-                ? "Creating Project..."
+              {createLoading
+                ? "Creating..."
                 : "Create Project"}
             </button>
 

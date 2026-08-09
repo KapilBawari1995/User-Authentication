@@ -1,8 +1,9 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate, NavLink } from "react-router-dom";
+
 import {
   LayoutDashboard,
-  ClipboardList,
   Users,
   FolderKanban,
   ShieldCheck,
@@ -13,268 +14,353 @@ import {
   User,
   Lock,
   LogOut,
+  Building2,
+  UserCog,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+
+import {
+  logoutRequest,
+} from "../../features/auth/authSlice";
 
 const Sidebar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
+  const {
+    permissions,
+    isSuperAdmin,
+  } = useSelector((state) => state.auth);
 
-  const { permissions, isSuperAdmin } = useSelector(
-    (state) => state.auth
-  );
-const auth = useSelector((state) => state.auth);
+  // ================= LOGOUT =================
 
-  console.log("AUTH STATE:", auth);
-console.log("Permissions:", auth.permissions);
-console.log("Role:", auth.role);
-console.log("Super Admin:", auth.isSuperAdmin);
-  console.log(permissions)
-  console.log("SUPER ADMIN:", isSuperAdmin);
+  const handleLogout = () => {
+    dispatch(
+      logoutRequest({
+        navigate,
+      })
+    );
+  };
+
+  // ================= MENU =================
 
   const menu = [
     {
       name: "Dashboard",
       module: "Dashboard",
-      icon: <LayoutDashboard size={20} />,
+      icon: LayoutDashboard,
       path: "/admin/dashboard",
-    },
-
-    {
-      name: "Tasks",
-      module: "Tasks",
-      icon: <ClipboardList size={20} />,
-      path: "/admin/tasks",
-    },
-
-    {
-      name: "Users",
-      module: "Users",
-      icon: <Users size={20} />,
-      path: "/admin/users",
-    },
-
-    {
-      name: "Role",
-      module: "Roles",
-      icon: <Users size={20} />,
-      path: "/admin/roles",
-    },
-
-    {
-      name: "Permission",
-      module: "Permission",
-      icon: <ShieldCheck size={20} />,
-      path: "/admin/permission-management",
     },
 
     {
       name: "Projects",
       module: "Projects",
-      icon: <FolderKanban size={20} />,
+      icon: FolderKanban,
       path: "/admin/projects",
     },
 
     {
       name: "Calendar",
       module: "Calendar",
-      icon: <CalendarDays size={20} />,
+      icon: CalendarDays,
       path: "/admin/calendar",
+    },
+
+    {
+      name: "Users",
+      module: "Users",
+      icon: Users,
+      path: "/admin/users",
+    },
+
+    {
+      name: "Roles",
+      module: "Roles",
+      icon: UserCog,
+      path: "/admin/roles",
+    },
+
+    {
+      name: "Permission",
+      module: "Permission",
+      icon: ShieldCheck,
+      path: "/admin/permission-management",
+    },
+
+    {
+      name: "Assign Manager",
+      module: "AssignManager",
+      icon: UserCog,
+      path: "/admin/assign-manager",
+    },
+
+    {
+      name: "Department",
+      module: "Department",
+      icon: Building2,
+      path: "/admin/department",
     },
 
     {
       name: "Reports",
       module: "Reports",
-      icon: <BarChart3 size={20} />,
+      icon: BarChart3,
       path: "/admin/reports",
     },
 
     {
       name: "Notifications",
       module: "Notifications",
-      icon: <Bell size={20} />,
+      icon: Bell,
       path: "/admin/notifications",
     },
 
     {
       name: "Profile",
       module: "Profile",
-      icon: <User size={20} />,
+      icon: User,
       path: "/admin/profile",
     },
 
     {
       name: "Settings",
       module: "Settings",
-      icon: <Settings size={20} />,
+      icon: Settings,
       path: "/admin/settings",
     },
 
     {
       name: "Change Password",
       module: "Change Password",
-      icon: <Lock size={20} />,
+      icon: Lock,
       path: "/admin/change-password",
     },
   ];
 
+  // ================= PERMISSION FILTER =================
 
-
-  // ================= Permission Filter =================
-
-  const filteredMenu = menu.filter((item)=>{
-
-
-    // Super Admin full access
-    if(isSuperAdmin){
+  const filteredMenu = menu.filter((item) => {
+    // Super Admin ko sab menu
+    if (isSuperAdmin) {
       return true;
     }
 
-
     const permission = permissions?.find(
-      (p)=>p.module === item.module
+      (p) => p.module === item.module
     );
 
-
     return permission?.view === true;
-
   });
 
-
-
   return (
-
     <aside style={styles.sidebar}>
 
+      {/* ================= MENU ================= */}
 
-      <div style={styles.logo}>
-        <h2>Task Portal</h2>
+      <div style={styles.menuWrapper}>
+        <nav style={styles.menu}>
+
+          {filteredMenu.map((item) => {
+            const Icon = item.icon;
+
+            return (
+              <NavLink
+                key={item.path}
+                to={item.path}
+                style={({ isActive }) => ({
+                  ...styles.link,
+
+                  ...(isActive
+                    ? styles.activeLink
+                    : styles.inactiveLink),
+                })}
+              >
+                {({ isActive }) => (
+                  <>
+                    {/* ICON */}
+
+                    <span
+                      style={{
+                        ...styles.iconBox,
+
+                        ...(isActive
+                          ? styles.activeIconBox
+                          : styles.inactiveIconBox),
+                      }}
+                    >
+                      <Icon
+                        size={19}
+                        strokeWidth={2.2}
+                      />
+                    </span>
+
+                    {/* TEXT */}
+
+                    <span
+                      style={{
+                        ...styles.linkText,
+
+                        color: isActive
+                          ? "#ffffff"
+                          : "#475569",
+                      }}
+                    >
+                      {item.name}
+                    </span>
+
+                    {/* ACTIVE INDICATOR */}
+
+                    {isActive && (
+                      <span
+                        style={styles.activeIndicator}
+                      />
+                    )}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
+
+        </nav>
       </div>
 
+      {/* ================= LOGOUT ================= */}
 
+      <div style={styles.bottomSection}>
+        <button
+          type="button"
+          onClick={handleLogout}
+          style={styles.logout}
+        >
+          <span style={styles.logoutIcon}>
+            <LogOut size={18} />
+          </span>
 
-      <div style={styles.menu}>
-
-
-        {
-          filteredMenu.map((item)=>(
-
-            <NavLink
-
-              key={item.path}
-
-              to={item.path}
-
-
-              style={({isActive})=>({
-
-                ...styles.link,
-
-                background:isActive
-                ? "#4f46e5"
-                : "transparent",
-
-                color:isActive
-                ? "#fff"
-                : "#334155",
-
-              })}
-
-            >
-
-              {item.icon}
-
-              <span>
-                {item.name}
-              </span>
-
-
-            </NavLink>
-
-          ))
-        }
-
-
+          <span>Logout</span>
+        </button>
       </div>
-
-
-
-      <button style={styles.logout}>
-
-        <LogOut size={20}/>
-
-        Logout
-
-      </button>
-
 
     </aside>
-
   );
 };
 
-
+// ================= STYLES =================
 
 const styles = {
-
-
-  sidebar:{
-    width:"250px",
-    height:"calc(100vh - 70px)",
-    background:"#fff",
-    position:"fixed",
-    top:"70px",
-    left:0,
-    display:"flex",
-    flexDirection:"column",
-    padding:"20px 15px",
-    boxShadow:"2px 0 10px rgba(0,0,0,.08)",
+  sidebar: {
+    width: "250px",
+    height: "calc(100vh - 70px)",
+    background: "#ffffff",
+    position: "fixed",
+    top: "70px",
+    left: 0,
+    display: "flex",
+    flexDirection: "column",
+    padding: "18px 14px",
+    borderRight: "1px solid #e2e8f0",
+    zIndex: 90,
   },
 
-
-  logo:{
-    textAlign:"center",
-    marginBottom:"25px",
-    color:"#4f46e5",
+  menuWrapper: {
+    flex: 1,
+    overflowY: "auto",
+    overflowX: "hidden",
   },
 
-
-  menu:{
-    display:"flex",
-    flexDirection:"column",
-    gap:"8px",
-    overflowY:"auto",
+  menu: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "5px",
   },
 
-
-  link:{
-    display:"flex",
-    alignItems:"center",
-    gap:"12px",
-    padding:"12px 15px",
-    textDecoration:"none",
-    borderRadius:"10px",
-    fontWeight:"600",
-    transition:".3s",
+  link: {
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    gap: "11px",
+    padding: "8px 9px",
+    minHeight: "46px",
+    textDecoration: "none",
+    borderRadius: "12px",
+    fontWeight: "600",
+    transition: "all 0.2s ease",
   },
 
-
-  logout:{
-    marginTop:"auto",
-    padding:"12px",
-    border:"none",
-    borderRadius:"10px",
-    background:"#ef4444",
-    color:"#fff",
-    display:"flex",
-    justifyContent:"center",
-    alignItems:"center",
-    gap:"10px",
-    cursor:"pointer",
-    fontWeight:"600",
+  activeLink: {
+    background:
+      "linear-gradient(135deg, #4f46e5, #6366f1)",
+    boxShadow:
+      "0 6px 15px rgba(79,70,229,0.18)",
   },
 
+  inactiveLink: {
+    background: "transparent",
+  },
 
+  iconBox: {
+    width: "34px",
+    height: "34px",
+    minWidth: "34px",
+    borderRadius: "9px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.2s ease",
+  },
+
+  activeIconBox: {
+    background: "rgba(255,255,255,0.18)",
+    color: "#ffffff",
+  },
+
+  inactiveIconBox: {
+    background: "#f1f5f9",
+    color: "#64748b",
+  },
+
+  linkText: {
+    fontSize: "13px",
+    fontWeight: "600",
+    flex: 1,
+  },
+
+  activeIndicator: {
+    width: "4px",
+    height: "22px",
+    borderRadius: "999px",
+    background: "#ffffff",
+    opacity: 0.9,
+  },
+
+  bottomSection: {
+    borderTop: "1px solid #f1f5f9",
+    paddingTop: "14px",
+    marginTop: "12px",
+  },
+
+  logout: {
+    width: "100%",
+    border: "1px solid #fee2e2",
+    background: "#fff7f7",
+    color: "#dc2626",
+    padding: "9px 10px",
+    borderRadius: "11px",
+    display: "flex",
+    alignItems: "center",
+    gap: "11px",
+    cursor: "pointer",
+    fontWeight: "600",
+    fontSize: "13px",
+  },
+
+  logoutIcon: {
+    width: "34px",
+    height: "34px",
+    borderRadius: "9px",
+    background: "#fee2e2",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
 };
-
 
 export default Sidebar;

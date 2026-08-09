@@ -83,6 +83,11 @@ const taskSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    project: {
+  type: mongoose.Schema.Types.ObjectId,
+  ref: "Project",
+  required: true,
+},
   },
   {
     timestamps: true,

@@ -5,6 +5,8 @@ export const API_ENDPOINTS = {
   SIGNUP: "/auth/signup",
   VERIFY_OTP: "/auth/verify-otp",
   LOGIN: "/auth/login",
+    LOGOUT: "/auth/logout",
+
 
   FORGOT_PASSWORD: "/auth/forgot-password",
   VERIFY_FORGOT_PASSWORD_OTP: "/auth/verify-forgot-password-otp",
@@ -66,6 +68,21 @@ GET_PROJECTS: "/projects",
 GET_PROJECT_BY_ID: "/projects",
 UPDATE_PROJECT: "/projects",
 DELETE_PROJECT: "/projects",
+ADD_TEAM_MEMBERS: "/projects",
+  ADD_TEAM_MEMBER: "/projects",
+GET_PROJECT_TEAM_MEMBERS: "/projects",
+
+// ================= DEPARTMENT =================
+
+CREATE_DEPARTMENT: "/departments",
+GET_DEPARTMENTS: "/departments",
+GET_DEPARTMENT_BY_ID: "/departments",
+UPDATE_DEPARTMENT: "/departments",
+DELETE_DEPARTMENT: "/departments",
+GET_DEPARTMENT_MANAGERS: "/departments",
+ASSIGN_DEPARTMENT_MANAGER: "/departments",
+
+
 
   // ================= ROLE PERMISSION =================
 GET_PROFILE:"/users/profile/me",

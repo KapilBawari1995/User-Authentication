@@ -3,6 +3,7 @@ import {
     registerUser,
     verifyOtp,
     loginUser,
+    logout,
     forgotPassword,
     verifyForgotPasswordOtp,
     sendChangePasswordOtp,
@@ -18,6 +19,7 @@ const router = express.Router();
 router.post("/signup", registerUser);
 router.post("/verify-otp", verifyOtp);
 router.post("/login", loginUser);
+router.post("/logout", verifyToken, logout);
 router.post("/forgot-password", forgotPassword);
 router.post("/verify-forgot-password-otp", verifyForgotPasswordOtp);
 router.post("/create-new-password", createNewPassword);

@@ -42,21 +42,23 @@ export const registerUser = async (req, res) => {
 
 
 
-if (!defaultRole) {
-  return res.status(400).json({
-    success: false,
-    message: "Default User Role not found"
-  });
-}
+    if (!defaultRole) {
+      return res.status(400).json({
+        success: false,
+        message: "Default User Role not found"
+      });
+    }
 
     await User.create({
-     name,
-  email,
-  password: hashedPassword,
-  role: defaultRole._id,
-  isVerified: false,
-  otp,
-  otpExpires
+      name,
+      email,
+      password: hashedPassword,
+      role: defaultRole._id,
+      isVerified: false,
+      otp,
+      otpExpires,
+        mustChangePassword: false,
+
     });
 
     await sendEmailOtp(email, otp);
@@ -160,102 +162,79 @@ export const verifyOtp = async (req, res) => {
 
 
 
-
-
-
 export const loginUser = async (req, res) => {
   try {
-
     const { email, password } = req.body;
 
-
-     const user = await User.findOne({ email })
-.populate({
-  path: "role",
-  populate: {
-    path: "permissions",
-  },
-});
-  console.log("USER FOUND:", user); // yaha
-
+    const user = await User.findOne({ email }).populate({
+      path: "role",
+      populate: {
+        path: "permissions",
+      },
+    });
 
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password!"
+        message: "Invalid email or password.",
       });
     }
-
 
     if (!user.isVerified) {
       return res.status(403).json({
         success: false,
-        message: "Please verify your email with OTP first before logging in!"
+        message: "Please verify your email first.",
       });
     }
 
+    if (!user.isActive) {
+      return res.status(403).json({
+        success: false,
+        message: "Your account has been deactivated.",
+      });
+    }
 
     const isMatch = await bcrypt.compare(
       password,
       user.password
     );
 
-    console.log("PASSWORD MATCH:", isMatch); // yaha
-
     if (!isMatch) {
       return res.status(401).json({
         success: false,
-        message: "Invalid email or password!"
+        message: "Invalid email or password.",
       });
     }
 
-
-
     const token = generateToken(user._id);
-    console.log("USER ROLE DATA:", user.role); // yaha
 
 
+    // Admin / Super Admin ko force password change nahi karna
+    const requirePasswordChange =
+      user.mustChangePassword && !user.isSuperAdmin;
 
-    res.status(200).json({
 
+    user.password = undefined;
+    user.otp = undefined;
+    user.otpExpiry = undefined;
+
+
+    return res.status(200).json({
       success: true,
-
-      message: "Login successful!",
-
-      data: {
-
-        token,
-
-        user: {
-
-          _id: user._id,
-
-          name: user.name,
-
-          email: user.email,
-
-          role: user.role,
-
-          isSuperAdmin: user.isSuperAdmin || false
-
-        }
-
-      }
-
+      message: "Login successful.",
+      token,
+      user,
+      mustChangePassword: requirePasswordChange,
     });
 
 
-
   } catch (error) {
-        console.log("LOGIN ERROR:",error);
 
+    console.error("LOGIN ERROR:", error);
 
-    res.status(500).json({
-
+    return res.status(500).json({
       success: false,
-
-      message: error.message
-
+      message: error.message,
     });
 
   }
@@ -263,84 +242,130 @@ export const loginUser = async (req, res) => {
 
 
 
-export const sendChangePasswordOtp = async (req, res) => {
 
+export const sendChangePasswordOtp = async (req, res) => {
   try {
     const { oldPassword } = req.body;
-
-    console.log(req.user);
-
-    console.log(req.user);
 
     const user = await User.findById(req.user.id);
 
     if (!user) {
       return res.status(404).json({
         success: false,
-        message: "User not found",
+        message: "User not found.",
       });
     }
 
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    // Sirf normal users ke liye old password verify karo
+    if (!user.mustChangePassword) {
+      if (!oldPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "Old password is required.",
+        });
+      }
 
-    if (!isMatch) {
-      return res.status(400).json({
-        success: false,
-        message: "Old password is incorrect."
-      });
+      const isMatch = await bcrypt.compare(
+        oldPassword,
+        user.password
+      );
+
+      if (!isMatch) {
+        return res.status(400).json({
+          success: false,
+          message: "Old password is incorrect.",
+        });
+      }
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    // OTP Generate
+    const otp = Math.floor(
+      100000 + Math.random() * 900000
+    ).toString();
 
     user.otp = otp;
-    user.otpExpires = new Date(Date.now() + 10 * 60 * 1000);
+    user.otpExpiry = new Date(Date.now() + 10 * 60 * 1000);
 
     await user.save();
 
     await sendEmailOtp(user.email, otp);
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "OTP has been sent to your registered email to change your password."
+      message: user.mustChangePassword
+        ? "Welcome! Please verify OTP and set your new password."
+        : "OTP has been sent to your registered email.",
+      firstLogin: user.mustChangePassword,
     });
+
   } catch (error) {
     console.error("sendChangePasswordOtp Error:", error);
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: error.message,
-      stack: error.stack,
     });
   }
 };
-
-
 export const verifyAndChangePassword = async (req, res) => {
   try {
     const { newPassword, otp } = req.body;
-    const user = await User.findById(req.user.id || req.user._id);
+
+    const user = await User.findById(req.user.id);
 
     if (!user) {
-      return res.status(404).json({ success: false, message: "यूजर नहीं मिला!" });
+      return res.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
     }
 
-    if (user.otp !== otp || user.otpExpires < new Date()) {
-      return res.status(400).json({ success: false, message: "Invalid or expired OTP!" });
+    if (!otp) {
+      return res.status(400).json({
+        success: false,
+        message: "OTP is required.",
+      });
+    }
+
+    if (!newPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "New password is required.",
+      });
+    }
+
+    if (user.otp !== otp || !user.otpExpiry || user.otpExpiry < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid or expired OTP.",
+      });
     }
 
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
-    user.otp = undefined;
-    user.otpExpires = undefined;
+    // Clear OTP
+    user.otp = null;
+    user.otpExpiry = null;
+
+    // First login completed
+    user.mustChangePassword = false;
+
     await user.save();
 
-    res.status(200).json({ success: true, message: "Password changed successfully." });
+    return res.status(200).json({
+      success: true,
+      message: "Password changed successfully.",
+      user
+    });
+
   } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
-
 
 
 export const verifyForgotOtp = async (req, res) => {
@@ -443,7 +468,21 @@ export const forgotPassword = async (req, res) => {
 };
 
 
+// ================= LOGOUT =================
 
+export const logout = async (req, res) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Logout successfully.",
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 
 

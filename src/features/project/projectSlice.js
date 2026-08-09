@@ -35,6 +35,16 @@ const projectSlice = createSlice({
     deleteProjectLoading: false,
     deleteProjectSuccess: false,
     deleteProjectError: null,
+
+    addTeamMembersLoading: false,
+    addTeamMembersSuccess: false,
+    addTeamMembersError: null,
+
+getProjectTeamMembersLoading: false,
+getProjectTeamMembersSuccess: false,
+getProjectTeamMembersError: null,
+teamMembers: [],
+
   },
 
   reducers: {
@@ -57,11 +67,6 @@ const projectSlice = createSlice({
       state.createProjectError = action.payload;
     },
 
-    clearCreateProjectState: (state) => {
-      state.createProjectLoading = false;
-      state.createProjectSuccess = false;
-      state.createProjectError = null;
-    },
 
     // ================= GET PROJECTS =================
 
@@ -116,11 +121,7 @@ const projectSlice = createSlice({
       state.updateProjectError = action.payload;
     },
 
-    clearUpdateProjectState: (state) => {
-      state.updateProjectLoading = false;
-      state.updateProjectSuccess = false;
-      state.updateProjectError = null;
-    },
+ 
 
     // ================= DELETE PROJECT =================
 
@@ -140,11 +141,57 @@ const projectSlice = createSlice({
       state.deleteProjectError = action.payload;
     },
 
-    clearDeleteProjectState: (state) => {
-      state.deleteProjectLoading = false;
-      state.deleteProjectSuccess = false;
-      state.deleteProjectError = null;
+  addTeamMembersRequest: (state) => {
+      state.addTeamMembersLoading = true;
+      state.addTeamMembersSuccess = false;
+      state.addTeamMembersError = null;
     },
+
+    addTeamMembersSuccess: (state, action) => {
+      state.addTeamMembersLoading = false;
+      state.addTeamMembersSuccess = true;
+      state.addTeamMembersError = null;
+
+      // API updated project return kar rahi hai
+      state.project = action.payload;
+    },
+
+    addTeamMembersFailure: (state, action) => {
+      state.addTeamMembersLoading = false;
+      state.addTeamMembersSuccess = false;
+      state.addTeamMembersError = action.payload;
+    },
+
+    // ================= GET PROJECT TEAM MEMBERS =================
+
+getProjectTeamMembersRequest: (state) => {
+  state.getProjectTeamMembersLoading = true;
+  state.getProjectTeamMembersSuccess = false;
+  state.getProjectTeamMembersError = null;
+},
+
+getProjectTeamMembersSuccess: (state, action) => {
+  state.getProjectTeamMembersLoading = false;
+  state.getProjectTeamMembersSuccess = true;
+  state.getProjectTeamMembersError = null;
+  state.teamMembers = action.payload;
+},
+
+getProjectTeamMembersFailure: (state, action) => {
+  state.getProjectTeamMembersLoading = false;
+  state.getProjectTeamMembersSuccess = false;
+  state.getProjectTeamMembersError = action.payload;
+},
+
+
+    // clearDeleteProjectState: (state) => {
+    //   state.deleteProjectLoading = false;
+    //   state.deleteProjectSuccess = false;
+    //   state.deleteProjectError = null;
+    //      state.addTeamMembersLoading = false;
+    //   state.addTeamMembersSuccess = false;
+    //   state.addTeamMembersError = null;
+    // },
   },
 });
 
@@ -153,7 +200,7 @@ export const {
   createProjectRequest,
   createProjectSuccess,
   createProjectFailure,
-  clearCreateProjectState,
+  
 
   getProjectsRequest,
   getProjectsSuccess,
@@ -166,12 +213,23 @@ export const {
   updateProjectRequest,
   updateProjectSuccess,
   updateProjectFailure,
-  clearUpdateProjectState,
+
 
   deleteProjectRequest,
   deleteProjectSuccess,
   deleteProjectFailure,
-  clearDeleteProjectState,
+
+
+
+  addTeamMembersRequest,
+  addTeamMembersSuccess,
+  addTeamMembersFailure,
+
+getProjectTeamMembersRequest,
+getProjectTeamMembersSuccess,
+getProjectTeamMembersFailure,
+
+  
 
 } = projectSlice.actions;
 

@@ -56,6 +56,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    mustChangePassword: {
+      type: Boolean,
+      default: true,
+    }, 
+    department: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Department",
+      default: null,
+    },
+
   },
   {
     timestamps: true,

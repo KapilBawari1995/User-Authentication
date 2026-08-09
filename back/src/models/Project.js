@@ -76,6 +76,12 @@ const projectSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    teamMembers: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
+],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,

@@ -45,6 +45,7 @@ function* handleGetRoles() {
         response.data.data
       )
     );
+    console.log(response)
 
   } catch (error) {
 

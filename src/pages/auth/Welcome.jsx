@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../../features/auth/authSlice";
 import ChangePasswordModal from "../../components/ChangePasswordModal";
 
 const Welcome = () => {
@@ -13,211 +12,130 @@ const Welcome = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isChangePasswordOpen, setIsChangePasswordOpen] = useState(false);
 
-  const handleLogout = () => {
-    dispatch(logout());
-    navigate("/login");
-  };
+
 
   return (
-    <div style={styles.container}>
-      <nav style={styles.navbar}>
-        <h2 style={styles.navLogo}>My App</h2>
+    <div className="min-h-screen bg-slate-100">
 
-        <div style={styles.profileContainer}>
+      {/* Navbar */}
+      <nav className="flex items-center justify-between bg-white px-8 py-4 shadow-sm">
+
+        <h1 className="text-2xl font-bold text-indigo-600">
+          My App
+        </h1>
+
+
+        <div className="relative">
+
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            style={styles.profileBtn}
+            className="flex items-center gap-2 rounded-lg border bg-white px-4 py-2 font-semibold text-slate-700 hover:bg-slate-50"
           >
-            {user?.name || "User"} ▾
+            {user?.name || "User"}
+
+            <ChevronDown size={18}/>
           </button>
 
+
           {dropdownOpen && (
-            <div style={styles.dropdownMenu}>
+            <div className="absolute right-0 mt-3 w-52 overflow-hidden rounded-xl bg-white shadow-lg border">
+
+
               <button
                 onClick={() => {
                   setIsChangePasswordOpen(true);
                   setDropdownOpen(false);
                 }}
-                style={styles.dropdownItem}
+                className="flex w-full items-center gap-3 px-4 py-3 text-sm text-slate-700 hover:bg-slate-100"
               >
-                🔐 Change Password
+                <Lock size={17}/>
+                Change Password
               </button>
 
-              <button
-                onClick={handleLogout}
-                style={{ ...styles.dropdownItem, color: "#ef4444" }}
-              >
-                🚪 Logout
-              </button>
+
+             
+
             </div>
           )}
+
         </div>
+
       </nav>
 
-      <div style={styles.card}>
-        <div style={styles.avatar}>🎉</div>
 
-        <h1 style={styles.title}>
-          Welcome,{" "}
-          <span style={styles.nameHighlight}>
-            {user?.name || "User"}
-          </span>
-          !
-        </h1>
 
-        <p style={styles.subtitle}>
-          You have successfully logged into your account.
-        </p>
+      {/* Welcome Card */}
+      <div className="flex justify-center px-5">
 
-        <p style={styles.emailText}>
-          {user?.email || "user@example.com"}
-        </p>
+        <div className="mt-16 w-full max-w-lg rounded-3xl bg-white p-10 text-center shadow-xl">
 
-        <div style={styles.badge}>Login Successful ✅</div>
 
-        <button onClick={handleLogout} style={styles.logoutButton}>
-          Logout
-        </button>
+          <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-indigo-100 text-5xl">
+            🎉
+          </div>
+
+
+
+          <h2 className="mt-6 text-3xl font-bold text-slate-800">
+
+            Welcome,
+
+            <span className="ml-2 text-indigo-600">
+              {user?.name || "User"}
+            </span>
+
+            👋
+
+          </h2>
+
+
+
+          <p className="mt-4 text-slate-500">
+            Your account has been created successfully.
+          </p>
+
+
+          <p className="mt-2 text-sm text-slate-500">
+            Admin will assign role and permissions soon.
+          </p>
+
+
+
+          <div className="mt-6 rounded-lg bg-slate-100 px-4 py-3 text-sm font-medium text-slate-700">
+            {user?.email || "user@example.com"}
+          </div>
+
+
+
+          <div className="mt-6 inline-flex rounded-full bg-green-100 px-5 py-2 text-sm font-semibold text-green-700">
+            Account Active ✅
+          </div>
+
+
+
+          <button
+            onClick={handleLogout}
+            className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 py-3 font-semibold text-white transition hover:bg-red-600"
+          >
+            <LogOut size={18}/>
+            Logout
+          </button>
+
+
+        </div>
+
       </div>
 
-      {/* Change Password Modal */}
+
+
       {isChangePasswordOpen && (
         <ChangePasswordModal
           onClose={() => setIsChangePasswordOpen(false)}
         />
       )}
+
     </div>
   );
-};
-
-const styles = {
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    minHeight: "100vh",
-    background: "#f4f7fb",
-    fontFamily: "Segoe UI, sans-serif",
-  },
-
-  navbar: {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    padding: "16px 40px",
-    background: "#fff",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-  },
-
-  navLogo: {
-    margin: 0,
-    color: "#4f46e5",
-    fontSize: "24px",
-    fontWeight: "700",
-  },
-
-  profileContainer: {
-    position: "relative",
-  },
-
-  profileBtn: {
-    padding: "10px 18px",
-    borderRadius: "8px",
-    border: "1px solid #d1d5db",
-    background: "#fff",
-    cursor: "pointer",
-    fontWeight: "600",
-    color: "#334155",
-    fontSize: "14px",
-  },
-
-  dropdownMenu: {
-    position: "absolute",
-    right: 0,
-    top: "50px",
-    width: "200px",
-    background: "#fff",
-    borderRadius: "10px",
-    overflow: "hidden",
-    boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
-    zIndex: 100,
-  },
-
-  dropdownItem: {
-    width: "100%",
-    padding: "14px 16px",
-    border: "none",
-    background: "#fff",
-    cursor: "pointer",
-    textAlign: "left",
-    fontSize: "14px",
-    color: "#374151",
-    borderBottom: "1px solid #f1f5f9",
-  },
-
-  card: {
-    width: "100%",
-    maxWidth: "500px",
-    margin: "60px auto",
-    background: "#fff",
-    borderRadius: "20px",
-    padding: "45px 35px",
-    textAlign: "center",
-    boxShadow: "0 15px 35px rgba(0,0,0,0.08)",
-  },
-
-  avatar: {
-    fontSize: "60px",
-    marginBottom: "20px",
-  },
-
-  title: {
-    margin: 0,
-    fontSize: "30px",
-    color: "#1f2937",
-    fontWeight: "700",
-  },
-
-  nameHighlight: {
-    color: "#4f46e5",
-  },
-
-  subtitle: {
-    marginTop: "12px",
-    color: "#6b7280",
-    fontSize: "15px",
-    lineHeight: "24px",
-  },
-
-  emailText: {
-    marginTop: "18px",
-    color: "#4b5563",
-    fontSize: "15px",
-    fontWeight: "500",
-  },
-
-  badge: {
-    display: "inline-block",
-    marginTop: "25px",
-    padding: "8px 18px",
-    background: "#dcfce7",
-    color: "#166534",
-    borderRadius: "999px",
-    fontWeight: "600",
-    fontSize: "14px",
-  },
-
-  logoutButton: {
-    marginTop: "35px",
-    width: "100%",
-    padding: "14px",
-    border: "none",
-    borderRadius: "10px",
-    background: "#ef4444",
-    color: "#fff",
-    fontSize: "16px",
-    fontWeight: "600",
-    cursor: "pointer",
-  },
 };
 
 export default Welcome;

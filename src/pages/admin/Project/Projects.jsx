@@ -1,15 +1,19 @@
-import React, { useEffect, useMemo, useState } from "react";
-import {
-  FolderKanban,
-  Plus,
-  Search,
-  Clock,
-  CheckCircle,
-  Users,
-} from "lucide-react";
 
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import {
+  Search,
+  Plus,
+  MoreVertical,
+  Edit,
+  Trash2,
+  Eye,
+  CalendarDays,
+  Users,
+  Building2,
+  FolderKanban,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 
 import {
   getProjectsRequest,
@@ -17,421 +21,907 @@ import {
 } from "../../../features/project/projectSlice";
 
 const Projects = () => {
-
-  const dispatch = useDispatch();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const {
-    projects,
-    totalCount,
-    getProjectsLoading,
-  } = useSelector(
-    (state) => state.project
-  );
+  // ================= STATE =================
 
   const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("All");
+  const [priorityFilter, setPriorityFilter] = useState("All");
+
+  // ================= REDUX =================
+
+  const {
+    projects = [],
+    totalCount = 0,
+    getProjectsLoading,
+    getProjectsError,
+    deleteProjectLoading,
+  } = useSelector((state) => state.project);
+
+  // ================= GET PROJECTS =================
+
+
+
+  // ================= SEARCH / FILTER =================
 
   useEffect(() => {
-
-    dispatch(
-      getProjectsRequest({
-        page: 1,
-        pageSize: 20,
-        search,
-      })
-    );
-
-  }, [dispatch, search]);
-
-
-
-  // ================= Stats =================
-
-  const activeProjects = useMemo(() => {
-
-    return projects.filter(
-      (item) =>
-        item.status === "Planning" ||
-        item.status === "In Progress"
-    ).length;
-
-  }, [projects]);
-
-
-
-  const completedProjects = useMemo(() => {
-
-    return projects.filter(
-      (item) =>
-        item.status === "Completed"
-    ).length;
-
-  }, [projects]);
-
-
-
-  const totalMembers = useMemo(() => {
-
-    let members = 0;
-
-    projects.forEach((item) => {
-      members += item.teamMembers?.length || 0;
-    });
-
-    return members;
-
-  }, [projects]);
-
-
-
-  const handleDelete = (id) => {
-
-    if (
-      window.confirm(
-        "Delete this project?"
-      )
-    ) {
-
+    const timer = setTimeout(() => {
       dispatch(
-        deleteProjectRequest(id)
+        getProjectsRequest({
+          page: 1,
+          pageSize: 100,
+          search: search.trim(),
+        })
       );
+    }, 400);
 
+    return () => clearTimeout(timer);
+  }, [search, dispatch]);
+
+  // ================= FILTER =================
+
+  const filteredProjects = projects.filter((project) => {
+    const managerName =
+      project?.projectManager?.name || "";
+
+    const managerEmail =
+      project?.projectManager?.email || "";
+
+    const departmentName =
+      project?.department?.name ||
+      project?.department ||
+      "";
+
+    const matchesSearch =
+      project?.name
+        ?.toLowerCase()
+        .includes(search.toLowerCase()) ||
+      managerName
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      managerEmail
+        .toLowerCase()
+        .includes(search.toLowerCase()) ||
+      departmentName
+        .toLowerCase()
+        .includes(search.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "All" ||
+      project.status === statusFilter;
+
+    const matchesPriority =
+      priorityFilter === "All" ||
+      project.priority === priorityFilter;
+
+    return (
+      matchesSearch &&
+      matchesStatus &&
+      matchesPriority
+    );
+  });
+
+  // ================= STATUS STYLE =================
+
+  const getStatusStyle = (status) => {
+    switch (status) {
+      case "Completed":
+        return "bg-emerald-50 text-emerald-700 border-emerald-200";
+
+      case "In Progress":
+        return "bg-blue-50 text-blue-700 border-blue-200";
+
+      case "Planning":
+        return "bg-amber-50 text-amber-700 border-amber-200";
+
+      case "On Hold":
+        return "bg-slate-100 text-slate-600 border-slate-200";
+
+      case "Cancelled":
+        return "bg-red-50 text-red-700 border-red-200";
+
+      default:
+        return "bg-gray-100 text-gray-600 border-gray-200";
     }
-
   };
 
+  // ================= PRIORITY STYLE =================
 
+  const getPriorityStyle = (priority) => {
+    switch (priority) {
+      case "Critical":
+        return "text-red-600";
+
+      case "High":
+        return "text-orange-600";
+
+      case "Medium":
+        return "text-yellow-600";
+
+      case "Low":
+        return "text-emerald-600";
+
+      default:
+        return "text-gray-600";
+    }
+  };
+
+  // ================= DATE FORMAT =================
+
+  const formatDate = (date) => {
+    if (!date) return "-";
+
+    return new Date(date).toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    });
+  };
+
+  // ================= DELETE =================
+
+  const handleDelete = (id) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this project?"
+    );
+
+    if (!confirmDelete) return;
+
+    dispatch(deleteProjectRequest(id));
+  };
+
+  // ================= VIEW =================
+
+  const handleView = (id) => {
+    navigate(`/admin/projects/${id}`);
+  };
+
+  // ================= EDIT =================
+
+  const handleEdit = (id) => {
+    navigate(`/admin/projects/edit/${id}`);
+  };
 
   return (
+    <div>
 
-    <div className="min-h-screen bg-slate-100 p-6">
+      {/* ================= HEADER ================= */}
 
-      <div className="max-w-7xl mx-auto">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-7">
 
-        {/* Header */}
-
-        <div className="flex items-center justify-between mb-8">
-
-          <div>
-
-            <h1 className="text-3xl font-bold">
-              Projects
-            </h1>
-
-            <p className="text-gray-500 mt-1">
-              Manage all company projects.
-            </p>
-
-          </div>
-
-          <button
-            onClick={() =>
-              navigate("/projects/add")
-            }
-            className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-lg flex items-center gap-2"
-          >
-
-            <Plus size={18} />
-
-            New Project
-
-          </button>
-
-        </div>
-
-
-
-        {/* Stats */}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-
-          <div className="bg-white rounded-xl shadow p-6">
-
-            <FolderKanban
-              className="text-blue-600 mb-4"
-            />
-
-            <h2 className="text-3xl font-bold">
-              {totalCount}
-            </h2>
-
-            <p className="text-gray-500">
-              Total Projects
-            </p>
-
-          </div>
-
-
-
-          <div className="bg-white rounded-xl shadow p-6">
-
-            <Clock
-              className="text-orange-500 mb-4"
-            />
-
-            <h2 className="text-3xl font-bold">
-              {activeProjects}
-            </h2>
-
-            <p className="text-gray-500">
-              Active Projects
-            </p>
-
-          </div>
-
-
-
-          <div className="bg-white rounded-xl shadow p-6">
-
-            <CheckCircle
-              className="text-green-600 mb-4"
-            />
-
-            <h2 className="text-3xl font-bold">
-              {completedProjects}
-            </h2>
-
-            <p className="text-gray-500">
-              Completed
-            </p>
-
-          </div>
-
-
-
-          <div className="bg-white rounded-xl shadow p-6">
-
-            <Users
-              className="text-purple-600 mb-4"
-            />
-
-            <h2 className="text-3xl font-bold">
-              {totalMembers}
-            </h2>
-
-            <p className="text-gray-500">
-              Team Members
-            </p>
-
-          </div>
-
-        </div>
-
-
-
-        {/* Search */}
-
-        <div className="bg-white rounded-xl shadow p-4 mb-8">
-
+        <div>
           <div className="flex items-center gap-3">
 
+            <div className="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center">
+              <FolderKanban size={22} />
+            </div>
+
+            <div>
+              <h1 className="text-2xl font-bold text-slate-800">
+                Projects
+              </h1>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Manage and track all your projects.
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+        <button
+           onClick={() => navigate("/admin/projects/add")}
+
+          className="
+            flex items-center justify-center gap-2
+            bg-indigo-600 hover:bg-indigo-700
+            text-white px-5 py-3 rounded-xl
+            font-semibold shadow-sm transition
+          "
+        >
+          <Plus size={19} />
+          Add Project
+        </button>
+
+      </div>
+
+
+      {/* ================= SUMMARY CARDS ================= */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-6">
+
+        {/* TOTAL */}
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm text-slate-500">
+            Total Projects
+          </p>
+
+          <h3 className="text-2xl font-bold text-slate-800 mt-2">
+            {totalCount || projects.length}
+          </h3>
+
+        </div>
+
+
+        {/* IN PROGRESS */}
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm text-slate-500">
+            In Progress
+          </p>
+
+          <h3 className="text-2xl font-bold text-blue-600 mt-2">
+            {
+              projects.filter(
+                (project) =>
+                  project.status === "In Progress"
+              ).length
+            }
+          </h3>
+
+        </div>
+
+
+        {/* COMPLETED */}
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm text-slate-500">
+            Completed
+          </p>
+
+          <h3 className="text-2xl font-bold text-emerald-600 mt-2">
+            {
+              projects.filter(
+                (project) =>
+                  project.status === "Completed"
+              ).length
+            }
+          </h3>
+
+        </div>
+
+
+        {/* ON HOLD */}
+
+        <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm">
+
+          <p className="text-sm text-slate-500">
+            On Hold
+          </p>
+
+          <h3 className="text-2xl font-bold text-slate-600 mt-2">
+            {
+              projects.filter(
+                (project) =>
+                  project.status === "On Hold"
+              ).length
+            }
+          </h3>
+
+        </div>
+
+      </div>
+
+
+      {/* ================= FILTER BAR ================= */}
+
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 mb-6 shadow-sm">
+
+        <div className="flex flex-col lg:flex-row gap-4">
+
+          {/* SEARCH */}
+
+          <div className="relative flex-1">
+
             <Search
-              className="text-gray-500"
-              size={18}
+              size={19}
+              className="
+                absolute left-4 top-1/2
+                -translate-y-1/2
+                text-slate-400
+              "
             />
 
             <input
               type="text"
-              placeholder="Search Project..."
+              placeholder="Search project, manager or department..."
               value={search}
               onChange={(e) =>
                 setSearch(e.target.value)
               }
-              className="w-full outline-none"
+              className="
+                w-full pl-11 pr-4 py-3
+                border border-slate-300
+                rounded-xl
+                outline-none
+                focus:ring-2
+                focus:ring-indigo-500
+                focus:border-indigo-500
+              "
             />
 
           </div>
+
+
+          {/* STATUS */}
+
+          <select
+            value={statusFilter}
+            onChange={(e) =>
+              setStatusFilter(e.target.value)
+            }
+            className="
+              px-4 py-3
+              border border-slate-300
+              rounded-xl
+              bg-white
+              outline-none
+              focus:ring-2
+              focus:ring-indigo-500
+            "
+          >
+
+            <option value="All">
+              All Status
+            </option>
+
+            <option value="Planning">
+              Planning
+            </option>
+
+            <option value="In Progress">
+              In Progress
+            </option>
+
+            <option value="On Hold">
+              On Hold
+            </option>
+
+            <option value="Completed">
+              Completed
+            </option>
+
+            <option value="Cancelled">
+              Cancelled
+            </option>
+
+          </select>
+
+
+          {/* PRIORITY */}
+
+          <select
+            value={priorityFilter}
+            onChange={(e) =>
+              setPriorityFilter(e.target.value)
+            }
+            className="
+              px-4 py-3
+              border border-slate-300
+              rounded-xl
+              bg-white
+              outline-none
+              focus:ring-2
+              focus:ring-indigo-500
+            "
+          >
+
+            <option value="All">
+              All Priority
+            </option>
+
+            <option value="Critical">
+              Critical
+            </option>
+
+            <option value="High">
+              High
+            </option>
+
+            <option value="Medium">
+              Medium
+            </option>
+
+            <option value="Low">
+              Low
+            </option>
+
+          </select>
 
         </div>
 
-                {/* Projects List */}
+      </div>
 
-        {getProjectsLoading ? (
 
-          <div className="bg-white rounded-xl shadow p-10 text-center">
+      {/* ================= LOADING ================= */}
 
-            <h2 className="text-lg font-semibold">
-              Loading Projects...
-            </h2>
+      {getProjectsLoading && (
 
-          </div>
+        <div className="
+          bg-white
+          border border-slate-200
+          rounded-2xl
+          p-12
+          text-center
+        ">
 
-        ) : projects.length === 0 ? (
+          <p className="text-slate-500">
+            Loading projects...
+          </p>
 
-          <div className="bg-white rounded-xl shadow p-10 text-center">
+        </div>
 
-            <FolderKanban
-              size={60}
-              className="mx-auto text-gray-400 mb-4"
-            />
+      )}
 
-            <h2 className="text-xl font-semibold">
-              No Projects Found
-            </h2>
 
-            <p className="text-gray-500 mt-2">
-              Click on "New Project" to create your first project.
+      {/* ================= ERROR ================= */}
+
+      {!getProjectsLoading &&
+        getProjectsError && (
+
+          <div className="
+            bg-red-50
+            border border-red-200
+            rounded-2xl
+            p-5
+            mb-5
+          ">
+
+            <p className="text-red-600 font-medium">
+              {getProjectsError}
             </p>
 
           </div>
 
-        ) : (
+        )}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-            {projects.map((project) => {
+      {/* ================= PROJECT LIST ================= */}
 
-              const totalTeam =
-                project.teamMembers?.length || 0;
+      {!getProjectsLoading && !getProjectsError && (
 
-              const progress =
-                project.status === "Completed"
-                  ? 100
-                  : project.status === "In Progress"
-                  ? 60
-                  : project.status === "Planning"
-                  ? 20
-                  : 0;
+        <div className="space-y-4">
+
+          {filteredProjects.length === 0 ? (
+
+            <div className="
+              bg-white
+              border border-slate-200
+              rounded-2xl
+              p-12
+              text-center
+            ">
+
+              <FolderKanban
+                size={45}
+                className="
+                  mx-auto
+                  text-slate-300
+                  mb-3
+                "
+              />
+
+              <h3 className="font-semibold text-slate-700">
+                No projects found
+              </h3>
+
+              <p className="text-sm text-slate-500 mt-1">
+                Try changing your search or filters.
+              </p>
+
+            </div>
+
+          ) : (
+
+            filteredProjects.map((project) => {
+
+              const managerName =
+                project?.projectManager?.name ||
+                "Not Assigned";
+
+              const managerEmail =
+                project?.projectManager?.email ||
+                "";
+
+              const departmentName =
+                project?.department?.name ||
+                project?.department ||
+                "Not Available";
 
               return (
 
                 <div
                   key={project._id}
-                  className="bg-white rounded-xl shadow p-6"
+                  className="
+                    bg-white
+                    border border-slate-200
+                    rounded-2xl
+                    p-5
+                    shadow-sm
+                    hover:shadow-md
+                    transition
+                  "
                 >
 
-                  <div className="flex justify-between">
+                  {/* ================= TOP ================= */}
 
-                    <div>
+                  <div className="
+                    flex flex-col
+                    lg:flex-row
+                    lg:items-start
+                    lg:justify-between
+                    gap-4
+                  ">
 
-                      <h2 className="text-xl font-bold">
+                    <div className="flex gap-4">
 
-                        {project.name}
+                      <div className="
+                        w-12 h-12
+                        rounded-xl
+                        bg-indigo-50
+                        text-indigo-600
+                        flex items-center
+                        justify-center
+                        shrink-0
+                      ">
+                        <FolderKanban size={22} />
+                      </div>
 
-                      </h2>
+                      <div>
 
-                      <p className="text-gray-500 mt-2">
+                        <h2 className="
+                          text-lg
+                          font-bold
+                          text-slate-800
+                        ">
+                          {project.name}
+                        </h2>
 
-                        {project.description}
+                        <p className="
+                          text-sm
+                          text-slate-500
+                          mt-1
+                          max-w-2xl
+                        ">
+                          {project.description ||
+                            "No description available."}
+                        </p>
 
-                      </p>
+                      </div>
+
+                    </div>
+
+
+                    {/* ================= ACTIONS ================= */}
+
+                    <div className="
+                      flex items-center gap-2
+                    ">
+
+                      {/* VIEW */}
+
+                      <button
+                        onClick={() =>
+                          handleView(project._id)
+                        }
+                        className="
+                          w-9 h-9
+                          rounded-lg
+                          border border-slate-200
+                          flex items-center
+                          justify-center
+                          text-slate-500
+                          hover:bg-slate-50
+                        "
+                        title="View"
+                      >
+                        <Eye size={17} />
+                      </button>
+
+
+                      {/* EDIT */}
+
+                      <button
+                        onClick={() =>
+                          handleEdit(project._id)
+                        }
+                        className="
+                          w-9 h-9
+                          rounded-lg
+                          border border-slate-200
+                          flex items-center
+                          justify-center
+                          text-slate-500
+                          hover:bg-slate-50
+                        "
+                        title="Edit"
+                      >
+                        <Edit size={17} />
+                      </button>
+
+
+                      {/* DELETE */}
+
+                      <button
+                        onClick={() =>
+                          handleDelete(project._id)
+                        }
+                        disabled={deleteProjectLoading}
+                        className="
+                          w-9 h-9
+                          rounded-lg
+                          border border-red-100
+                          flex items-center
+                          justify-center
+                          text-red-500
+                          hover:bg-red-50
+                          disabled:opacity-50
+                        "
+                        title="Delete"
+                      >
+                        <Trash2 size={17} />
+                      </button>
+
+
+                      {/* MORE */}
+
+                      <button
+                        className="
+                          w-9 h-9
+                          rounded-lg
+                          border border-slate-200
+                          flex items-center
+                          justify-center
+                          text-slate-500
+                          hover:bg-slate-50
+                        "
+                        title="More"
+                      >
+                        <MoreVertical size={17} />
+                      </button>
 
                     </div>
 
                   </div>
 
-                  {/* Project Info */}
 
-                  <div className="grid grid-cols-2 gap-4 mt-6">
+                  {/* ================= DETAILS ================= */}
 
-                    <div>
+                  <div className="
+                    grid
+                    grid-cols-1
+                    sm:grid-cols-2
+                    lg:grid-cols-4
+                    gap-4
+                    mt-6
+                    pt-5
+                    border-t
+                    border-slate-100
+                  ">
 
-                      <p className="text-gray-500 text-sm">
-                        Manager
-                      </p>
+                    {/* DEPARTMENT */}
 
-                      <h4 className="font-semibold">
+                    <div className="
+                      flex items-center gap-3
+                    ">
 
-                        {project.projectManager?.name}
+                      <Building2
+                        size={18}
+                        className="text-slate-400"
+                      />
 
-                      </h4>
+                      <div>
+
+                        <p className="
+                          text-xs
+                          text-slate-400
+                        ">
+                          Department
+                        </p>
+
+                        <p className="
+                          text-sm
+                          font-semibold
+                          text-slate-700
+                        ">
+                          {departmentName}
+                        </p>
+
+                      </div>
 
                     </div>
 
-                    <div>
 
-                      <p className="text-gray-500 text-sm">
-                        Members
-                      </p>
+                    {/* MANAGER */}
 
-                      <h4 className="font-semibold">
+                    <div className="
+                      flex items-center gap-3
+                    ">
 
-                        {totalTeam}
+                      <Users
+                        size={18}
+                        className="text-slate-400"
+                      />
 
-                      </h4>
+                      <div>
+
+                        <p className="
+                          text-xs
+                          text-slate-400
+                        ">
+                          Manager
+                        </p>
+
+                        <p className="
+                          text-sm
+                          font-semibold
+                          text-slate-700
+                        ">
+                          {managerName}
+                        </p>
+
+                        {managerEmail && (
+                          <p className="
+                            text-xs
+                            text-slate-400
+                            mt-0.5
+                          ">
+                            {managerEmail}
+                          </p>
+                        )}
+
+                      </div>
 
                     </div>
 
+
+                    {/* TIMELINE */}
+
+                    <div className="
+                      flex items-center gap-3
+                    ">
+
+                      <CalendarDays
+                        size={18}
+                        className="text-slate-400"
+                      />
+
+                      <div>
+
+                        <p className="
+                          text-xs
+                          text-slate-400
+                        ">
+                          Timeline
+                        </p>
+
+                        <p className="
+                          text-sm
+                          font-semibold
+                          text-slate-700
+                        ">
+                          {formatDate(project.startDate)}
+                          {" → "}
+                          {formatDate(project.endDate)}
+                        </p>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* PRIORITY */}
+
                     <div>
 
-                      <p className="text-gray-500 text-sm">
+                      <p className="
+                        text-xs
+                        text-slate-400
+                        mb-1
+                      ">
                         Priority
                       </p>
 
-                      <span className="px-3 py-1 rounded-full bg-red-100 text-red-600 text-sm">
-
-                        {project.priority}
-
-                      </span>
-
-                    </div>
-
-                    <div>
-
-                      <p className="text-gray-500 text-sm">
-                        Status
+                      <p
+                        className={`
+                          text-sm
+                          font-bold
+                          ${getPriorityStyle(
+                            project.priority
+                          )}
+                        `}
+                      >
+                        {project.priority || "Medium"}
                       </p>
 
-                      <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-sm">
-
-                        {project.status}
-
-                      </span>
-
                     </div>
 
                   </div>
 
-                  {/* Dates */}
 
-                  <div className="mt-5 flex justify-between text-sm text-gray-500">
+                  {/* ================= BOTTOM ================= */}
 
-                    <span>
+                  <div className="
+                    mt-5
+                    pt-5
+                    border-t
+                    border-slate-100
+                  ">
 
-                      Start :
-                      {" "}
-                      {new Date(
-                        project.startDate
-                      ).toLocaleDateString()}
+                    <div className="
+                      flex
+                      items-center
+                      justify-between
+                      mb-2
+                    ">
 
-                    </span>
+                      <div className="
+                        flex
+                        items-center
+                        gap-3
+                      ">
 
-                    <span>
+                        <span
+                          className={`
+                            px-3
+                            py-1
+                            rounded-full
+                            text-xs
+                            font-semibold
+                            border
+                            ${getStatusStyle(
+                              project.status
+                            )}
+                          `}
+                        >
+                          {project.status || "Planning"}
+                        </span>
 
-                      End :
-                      {" "}
-                      {new Date(
-                        project.endDate
-                      ).toLocaleDateString()}
+                        <span className="
+                          text-sm
+                          text-slate-500
+                        ">
+                          Project Progress
+                        </span>
 
-                    </span>
+                      </div>
 
-                  </div>
-
-                  {/* Progress */}
-
-                  <div className="mt-5">
-
-                    <div className="flex justify-between text-sm mb-2">
-
-                      <span>
-                        Progress
-                      </span>
-
-                      <span>
-
-                        {progress}%
-
+                      <span className="
+                        text-sm
+                        font-bold
+                        text-slate-700
+                      ">
+                        {project.progress || 0}%
                       </span>
 
                     </div>
 
-                    <div className="w-full bg-gray-200 rounded-full h-3">
+
+                    {/* PROGRESS BAR */}
+
+                    <div className="
+                      w-full
+                      h-2
+                      bg-slate-100
+                      rounded-full
+                      overflow-hidden
+                    ">
 
                       <div
-                        className="bg-blue-600 h-3 rounded-full"
+                        className="
+                          h-full
+                          bg-indigo-600
+                          rounded-full
+                          transition-all
+                        "
                         style={{
-                          width: `${progress}%`,
+                          width: `${project.progress || 0}%`,
                         }}
                       />
 
@@ -439,73 +929,19 @@ const Projects = () => {
 
                   </div>
 
-                  {/* Budget */}
-
-                  <div className="mt-5">
-
-                    <span className="font-semibold">
-
-                      Budget :
-
-                    </span>
-
-                    ₹ {project.budget}
-
-                  </div>
-
-                  {/* Actions */}
-
-                  <div className="flex gap-3 mt-6">
-
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/projects/view/${project._id}`
-                        )
-                      }
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white rounded-lg py-2"
-                    >
-                      View
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        navigate(
-                          `/projects/edit/${project._id}`
-                        )
-                      }
-                      className="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg py-2"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() =>
-                        handleDelete(project._id)
-                      }
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white rounded-lg py-2"
-                    >
-                      Delete
-                    </button>
-
-                  </div>
-
                 </div>
 
               );
+            })
 
-            })}
+          )}
 
-          </div>
+        </div>
 
-        )}
-
-      </div>
+      )}
 
     </div>
-
   );
-
 };
 
 export default Projects;

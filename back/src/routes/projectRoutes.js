@@ -7,10 +7,11 @@ import {
   getProjectById,
   updateProject,
   deleteProject,
+  addTeamMembers,
+  getProjectTeamMembers,
 } from "../controllers/projectController.js";
 
 const router = express.Router();
-
 
 // ================= CREATE PROJECT =================
 
@@ -20,13 +21,28 @@ router.post(
   createProject
 );
 
-
 // ================= GET ALL PROJECTS =================
 
 router.get(
   "/",
   verifyToken,
   getProjects
+);
+
+// ================= ADD TEAM MEMBERS =================
+// IMPORTANT: this must come BEFORE /:id
+
+router.put(
+  "/:projectId/team-members",
+  verifyToken,
+  addTeamMembers
+);
+// ================= GET PROJECT TEAM MEMBERS =================
+
+router.get(
+  "/:projectId/team-members",
+  verifyToken,
+  getProjectTeamMembers
 );
 
 
@@ -38,7 +54,6 @@ router.get(
   getProjectById
 );
 
-
 // ================= UPDATE PROJECT =================
 
 router.put(
@@ -46,7 +61,6 @@ router.put(
   verifyToken,
   updateProject
 );
-
 
 // ================= DELETE PROJECT =================
 

@@ -10,6 +10,7 @@ import rolePermissionRoutes from "./routes/rolePermission.routes.js";
 import taskRoutes from "./routes/taskRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import departmentRouter from "./routes/department.routes.js";
 
 const app = express();
 
@@ -34,6 +35,10 @@ app.use("/api/v1", taskRoutes);
 app.use("/api/v1/projects", projectRoutes);
 app.use(
   "/api/v1/notifications", notificationRoutes
+);
+app.use(
+  "/api/v1/departments",
+  departmentRouter
 );
 // Role Permission Routes
 app.use("/api/v1/role-permission", rolePermissionRoutes);

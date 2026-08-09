@@ -6,15 +6,18 @@ import bcrypt from "bcryptjs";
 
 export const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, role } = req.body;
 
-    if (!name || !email || !password || !role) {
+    const defaultPassword = "";
+
+    if (!name || !email || !role) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required.",
+        message: "Name, Email and Role are required.",
       });
     }
 
+    // Check existing user
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -24,6 +27,7 @@ export const createUser = async (req, res) => {
       });
     }
 
+    // Check role
     const roleData = await Role.findById(role);
 
     if (!roleData) {
@@ -33,16 +37,20 @@ export const createUser = async (req, res) => {
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // Hash Default Password
+    const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
+    // Create User
     const user = await User.create({
       name,
       email,
       password: hashedPassword,
       role,
-      isVerified: true, // Admin created user
+      isVerified: true,
+      mustChangePassword: true,
     });
 
+    // Get Created User
     const createdUser = await User.findById(user._id)
       .select("-password -otp -otpExpiry")
       .populate("role", "name");
@@ -60,17 +68,30 @@ export const createUser = async (req, res) => {
     });
   }
 };
-
 // ================= GET ALL USERS =================
 
 export const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find(
-        {
-  isSuperAdmin: false,
-}
-    )
+    const { search = "", status = "" } = req.query;
 
+    const filter = {
+      isSuperAdmin: false,
+    };
+
+    // Search by Name
+    if (search) {
+      filter.name = {
+        $regex: search,
+        $options: "i",
+      };
+    }
+
+    // Filter by Active / Inactive
+    if (status) {
+      filter.isActive = status === "active";
+    }
+
+    const users = await User.find(filter)
       .select("-password -otp -otpExpiry")
       .populate("role", "name")
       .sort({ createdAt: -1 });
@@ -80,7 +101,6 @@ export const getAllUsers = async (req, res) => {
       totalUsers: users.length,
       data: users,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -88,7 +108,6 @@ export const getAllUsers = async (req, res) => {
     });
   }
 };
-
 
 // ================= GET SINGLE USER =================
 

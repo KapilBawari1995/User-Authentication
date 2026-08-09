@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import {
   Lock,
@@ -6,14 +7,26 @@ import {
   ShieldCheck,
   Save,
   X,
+  CheckCircle2,
+  KeyRound,
 } from "lucide-react";
 
+import { useDispatch, useSelector } from "react-redux";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+
+import {
+  sendChangePasswordOtpRequest,
+  verifyAndChangePasswordRequest,
+  clearChangePasswordState,
+} from "../../features/auth/authSlice";
+
 const ChangePassword = () => {
-  const [formData, setFormData] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: "",
-  });
+  const dispatch = useDispatch();
+
+  const { changePassLoading, changePassOtpSent } = useSelector(
+    (state) => state.auth
+  );
 
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -21,169 +34,483 @@ const ChangePassword = () => {
     confirm: false,
   });
 
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
   const togglePassword = (field) => {
-    setShowPassword({
-      ...showPassword,
-      [field]: !showPassword[field],
-    });
+    setShowPassword((prev) => ({
+      ...prev,
+      [field]: !prev[field],
+    }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // ================= VALIDATION =================
 
-    console.log(formData);
+  const validationSchema = Yup.object({
+    currentPassword: Yup.string().required(
+      "Current Password is required"
+    ),
 
-    // Redux Saga Dispatch yaha karna
-    // dispatch(changePasswordRequest(formData));
+    newPassword: Yup.string()
+      .required("New Password is required")
+      .min(8, "Minimum 8 characters")
+      .matches(/[A-Z]/, "One uppercase letter required")
+      .matches(/[a-z]/, "One lowercase letter required")
+      .matches(/[0-9]/, "One number required")
+      .matches(
+        /[!@#$%^&*(),.?":{}|<>]/,
+        "One special character required"
+      ),
+
+    confirmPassword: Yup.string()
+      .oneOf(
+        [Yup.ref("newPassword")],
+        "Passwords do not match"
+      )
+      .required("Confirm Password is required"),
+
+    otp: Yup.string(),
+  });
+
+  // ================= FORMIK =================
+
+  const formik = useFormik({
+    initialValues: {
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+      otp: "",
+    },
+
+    validationSchema,
+
+    onSubmit: (values) => {
+      if (!changePassOtpSent) {
+        dispatch(
+          sendChangePasswordOtpRequest({
+            data: {
+              oldPassword: values.currentPassword,
+            },
+          })
+        );
+      } else {
+        dispatch(
+          verifyAndChangePasswordRequest({
+            data: {
+              otp: values.otp,
+              newPassword: values.newPassword,
+            },
+          })
+        );
+      }
+    },
+  });
+
+  // ================= PASSWORD INPUT =================
+
+  const PasswordInput = ({
+    name,
+    label,
+    placeholder,
+    field,
+  }) => {
+    const hasError =
+      formik.touched[name] && formik.errors[name];
+
+    return (
+      <div>
+        <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+          <Lock size={16} className="text-indigo-500" />
+          {label}
+        </label>
+
+        <div
+          className={`relative ${
+            hasError ? "mb-1" : ""
+          }`}
+        >
+          <input
+            type={showPassword[field] ? "text" : "password"}
+            name={name}
+            placeholder={placeholder}
+            value={formik.values[name]}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className={`w-full h-12 px-4 pr-12 rounded-xl border
+              bg-slate-50 text-sm text-slate-700
+              outline-none transition
+              focus:bg-white
+              focus:ring-4
+              ${
+                hasError
+                  ? "border-red-300 focus:border-red-400 focus:ring-red-50"
+                  : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-50"
+              }`}
+          />
+
+          <button
+            type="button"
+            onClick={() => togglePassword(field)}
+            className="absolute right-3 top-1/2 -translate-y-1/2
+              w-8 h-8 rounded-lg
+              text-slate-400 hover:text-indigo-600
+              hover:bg-indigo-50
+              flex items-center justify-center
+              transition"
+          >
+            {showPassword[field] ? (
+              <EyeOff size={19} />
+            ) : (
+              <Eye size={19} />
+            )}
+          </button>
+        </div>
+
+        {hasError && (
+          <p className="text-xs text-red-500 mt-1">
+            {formik.errors[name]}
+          </p>
+        )}
+      </div>
+    );
   };
 
   return (
-    <div className="change-password-page">
+    <div className="min-h-full">
 
-      <div className="password-card">
+      {/* ================================================= */}
+      {/* HEADER */}
+      {/* ================================================= */}
 
-        <div className="password-header">
-          <ShieldCheck size={55} />
-          <h2>Change Password</h2>
-          <p>Update your account password securely.</p>
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+
+        <div className="flex items-center gap-4">
+
+          <div
+            className="w-14 h-14 rounded-2xl
+            bg-gradient-to-br from-indigo-500 to-violet-600
+            text-white shadow-lg shadow-indigo-200
+            flex items-center justify-center"
+          >
+            <ShieldCheck size={27} />
+          </div>
+
+          <div>
+
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+              Change Password
+            </h1>
+
+            <p className="text-sm text-slate-500 mt-1">
+              Update your account password securely.
+            </p>
+
+          </div>
+
         </div>
 
-        <form onSubmit={handleSubmit}>
+      </div>
 
-          {/* Current Password */}
+      {/* ================================================= */}
+      {/* MAIN CONTENT */}
+      {/* ================================================= */}
 
-          <div className="form-group">
-            <label>
-              <Lock size={18} />
-              Current Password
-            </label>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-            <div className="password-input">
+        {/* ================================================= */}
+        {/* PASSWORD FORM */}
+        {/* ================================================= */}
 
-              <input
-                type={showPassword.current ? "text" : "password"}
-                name="currentPassword"
-                placeholder="Enter current password"
-                value={formData.currentPassword}
-                onChange={handleChange}
-              />
+        <div
+          className="xl:col-span-2
+          bg-white rounded-2xl
+          border border-slate-200
+          shadow-sm overflow-hidden"
+        >
+
+          {/* CARD HEADER */}
+
+          <div
+            className="px-6 py-5
+            border-b border-slate-200
+            flex items-center gap-3"
+          >
+
+            <div
+              className="w-10 h-10 rounded-xl
+              bg-indigo-50 text-indigo-600
+              flex items-center justify-center"
+            >
+              <KeyRound size={20} />
+            </div>
+
+            <div>
+
+              <h2 className="font-bold text-slate-800">
+                Password Security
+              </h2>
+
+              <p className="text-xs text-slate-400 mt-1">
+                Enter your current and new password.
+              </p>
+
+            </div>
+
+          </div>
+
+          {/* FORM */}
+
+          <form
+            onSubmit={formik.handleSubmit}
+            className="p-6 space-y-5"
+          >
+
+            <PasswordInput
+              name="currentPassword"
+              label="Current Password"
+              placeholder="Enter current password"
+              field="current"
+            />
+
+            <PasswordInput
+              name="newPassword"
+              label="New Password"
+              placeholder="Enter new password"
+              field="new"
+            />
+
+            <PasswordInput
+              name="confirmPassword"
+              label="Confirm Password"
+              placeholder="Confirm new password"
+              field="confirm"
+            />
+
+            {/* ================================================= */}
+            {/* OTP */}
+            {/* ================================================= */}
+
+            {changePassOtpSent && (
+              <div>
+
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                  <ShieldCheck
+                    size={16}
+                    className="text-indigo-500"
+                  />
+                  Verification OTP
+                </label>
+
+                <input
+                  type="text"
+                  name="otp"
+                  placeholder="Enter 6-digit OTP"
+                  value={formik.values.otp}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  maxLength={6}
+                  className="w-full h-12 px-4
+                    rounded-xl
+                    border border-slate-200
+                    bg-slate-50
+                    text-sm
+                    outline-none
+                    focus:bg-white
+                    focus:border-indigo-400
+                    focus:ring-4
+                    focus:ring-indigo-50
+                    transition"
+                />
+
+              </div>
+            )}
+
+            {/* ================================================= */}
+            {/* BUTTONS */}
+            {/* ================================================= */}
+
+            <div
+              className="pt-4
+              border-t border-slate-100
+              flex flex-col sm:flex-row
+              justify-end gap-3"
+            >
 
               <button
                 type="button"
-                onClick={() => togglePassword("current")}
+                onClick={() => {
+                  formik.resetForm();
+                  dispatch(clearChangePasswordState());
+                }}
+                className="inline-flex items-center
+                  justify-center gap-2
+                  h-11 px-5
+                  rounded-xl
+                  border border-slate-200
+                  bg-white
+                  text-slate-600
+                  text-sm font-semibold
+                  hover:bg-slate-50
+                  transition"
               >
-                {showPassword.current ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+                <X size={17} />
+                Cancel
               </button>
-
-            </div>
-          </div>
-
-          {/* New Password */}
-
-          <div className="form-group">
-            <label>
-              <Lock size={18} />
-              New Password
-            </label>
-
-            <div className="password-input">
-
-              <input
-                type={showPassword.new ? "text" : "password"}
-                name="newPassword"
-                placeholder="Enter new password"
-                value={formData.newPassword}
-                onChange={handleChange}
-              />
 
               <button
-                type="button"
-                onClick={() => togglePassword("new")}
+                type="submit"
+                disabled={changePassLoading}
+                className="inline-flex items-center
+                  justify-center gap-2
+                  h-11 px-6
+                  rounded-xl
+                  bg-indigo-600
+                  hover:bg-indigo-700
+                  disabled:bg-slate-400
+                  text-white
+                  text-sm font-semibold
+                  shadow-md shadow-indigo-100
+                  transition"
               >
-                {showPassword.new ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
+
+                <Save size={17} />
+
+                {changePassLoading
+                  ? "Please Wait..."
+                  : changePassOtpSent
+                  ? "Verify OTP & Update"
+                  : "Send OTP"}
+
               </button>
 
             </div>
-          </div>
 
-          {/* Confirm Password */}
+          </form>
 
-          <div className="form-group">
-            <label>
-              <Lock size={18} />
-              Confirm Password
-            </label>
+        </div>
 
-            <div className="password-input">
+        {/* ================================================= */}
+        {/* PASSWORD REQUIREMENTS */}
+        {/* ================================================= */}
 
-              <input
-                type={showPassword.confirm ? "text" : "password"}
-                name="confirmPassword"
-                placeholder="Confirm new password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-              />
+        <div
+          className="bg-white rounded-2xl
+          border border-slate-200
+          shadow-sm overflow-hidden
+          h-fit"
+        >
 
-              <button
-                type="button"
-                onClick={() => togglePassword("confirm")}
+          <div
+            className="px-6 py-5
+            border-b border-slate-200"
+          >
+
+            <div className="flex items-center gap-3">
+
+              <div
+                className="w-10 h-10 rounded-xl
+                bg-emerald-50
+                text-emerald-600
+                flex items-center justify-center"
               >
-                {showPassword.confirm ? (
-                  <EyeOff size={20} />
-                ) : (
-                  <Eye size={20} />
-                )}
-              </button>
+                <CheckCircle2 size={20} />
+              </div>
+
+              <div>
+
+                <h2 className="font-bold text-slate-800">
+                  Password Requirements
+                </h2>
+
+                <p className="text-xs text-slate-400 mt-1">
+                  Keep your account secure.
+                </p>
+
+              </div>
 
             </div>
-          </div>
-
-          {/* Password Rules */}
-
-          <div className="password-rules">
-            <h4>Password Requirements</h4>
-
-            <ul>
-              <li>✔ Minimum 8 characters</li>
-              <li>✔ One uppercase letter</li>
-              <li>✔ One lowercase letter</li>
-              <li>✔ One number</li>
-              <li>✔ One special character</li>
-            </ul>
-          </div>
-
-          {/* Buttons */}
-
-          <div className="button-group">
-
-            <button type="button" className="cancel-btn">
-              <X size={18} />
-              Cancel
-            </button>
-
-            <button type="submit" className="update-btn">
-              <Save size={18} />
-              Update Password
-            </button>
 
           </div>
 
-        </form>
+          <div className="p-6">
+
+            <div className="space-y-4">
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={17}
+                  className="text-emerald-500"
+                />
+                <span className="text-sm text-slate-600">
+                  Minimum 8 characters
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={17}
+                  className="text-emerald-500"
+                />
+                <span className="text-sm text-slate-600">
+                  One uppercase letter
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={17}
+                  className="text-emerald-500"
+                />
+                <span className="text-sm text-slate-600">
+                  One lowercase letter
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={17}
+                  className="text-emerald-500"
+                />
+                <span className="text-sm text-slate-600">
+                  One number
+                </span>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <CheckCircle2
+                  size={17}
+                  className="text-emerald-500"
+                />
+                <span className="text-sm text-slate-600">
+                  One special character
+                </span>
+              </div>
+
+            </div>
+
+            <div
+              className="mt-6 p-4 rounded-xl
+              bg-indigo-50
+              border border-indigo-100"
+            >
+
+              <div className="flex gap-3">
+
+                <ShieldCheck
+                  size={20}
+                  className="text-indigo-600 shrink-0"
+                />
+
+                <p className="text-xs leading-5 text-indigo-700">
+                  Never share your password or OTP with
+                  anyone. Use a strong password that you
+                  don't use on other websites.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 

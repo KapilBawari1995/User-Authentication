@@ -1,247 +1,741 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import {
+  ShieldCheck,
+  Plus,
+  Search,
+  Users,
+  Settings,
+  Edit,
+  Trash2,
+  Eye,
+  MoreHorizontal,
+  Lock,
+  CheckCircle2,
+} from "lucide-react";
 
 import {
   getRolesRequest,
 } from "../../../features/role/roleSlice";
 
-
 const Roles = () => {
-
-
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
 
-
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("All");
 
   const {
     roles,
     loading,
-    error
+    error,
+  } = useSelector((state) => state.role);
 
-  } = useSelector(
-    (state)=>state.role
-  );
+  useEffect(() => {
+    dispatch(getRolesRequest());
+  }, [dispatch]);
 
+  // ================= FILTER =================
 
+  const filteredRoles = roles?.filter((role) => {
+    const searchText = search.toLowerCase();
 
-  useEffect(()=>{
+    const matchesSearch =
+      role.name?.toLowerCase().includes(searchText) ||
+      role.description?.toLowerCase().includes(searchText);
 
-    dispatch(
-      getRolesRequest()
+    const matchesType =
+      typeFilter === "All" ||
+      (typeFilter === "System"
+        ? role.isSystem
+        : !role.isSystem);
+
+    return matchesSearch && matchesType;
+  });
+
+  // ================= COUNTS =================
+
+  const totalRoles = roles?.length || 0;
+
+  const systemRoles =
+    roles?.filter((role) => role.isSystem).length || 0;
+
+  const customRoles =
+    roles?.filter((role) => !role.isSystem).length || 0;
+
+  // ================= PERMISSION COUNT =================
+
+  const getPermissionCount = (role) => {
+    return (
+      role.permissions?.filter(
+        (permission) =>
+          permission.view ||
+          permission.create ||
+          permission.edit ||
+          permission.delete
+      ).length || 0
     );
-
-  },[dispatch]);
-
-
-console.log(roles)
-
-
+  };
 
   return (
+    <div className="min-h-screen bg-[#f8fafc] p-6">
 
-    <div className="p-6">
+      {/* ================================================= */}
+      {/* HEADER */}
+      {/* ================================================= */}
 
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
 
-      {/* Header */}
+        <div className="flex items-center gap-4">
 
-      <div className="flex justify-between items-center mb-6">
+          <div
+            className="w-14 h-14 rounded-2xl
+            bg-gradient-to-br from-indigo-500 to-violet-600
+            text-white shadow-lg shadow-indigo-200
+            flex items-center justify-center"
+          >
+            <ShieldCheck size={27} />
+          </div>
 
+          <div>
 
-        <h1 className="text-2xl font-bold">
-          Roles
-        </h1>
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+              Roles & Permissions
+            </h1>
 
+            <p className="text-sm text-slate-500 mt-1">
+              Manage user roles and control access permissions.
+            </p>
 
+          </div>
+
+        </div>
 
         <button
-
-          onClick={()=>navigate("/admin/roles/addrole")}
-
-          className="bg-blue-600 text-white px-5 py-2 rounded"
-
+          onClick={() =>
+            navigate("/admin/roles/addrole")
+          }
+          className="inline-flex items-center justify-center
+          gap-2 bg-indigo-600 hover:bg-indigo-700
+          text-white px-5 py-3 rounded-xl
+          font-semibold shadow-md shadow-indigo-100
+          transition-all duration-200"
         >
-
-          + Add Role
-
+          <Plus size={19} />
+          Add Role
         </button>
 
+      </div>
+
+
+      {/* ================================================= */}
+      {/* SUMMARY */}
+      {/* ================================================= */}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-7">
+
+        {/* TOTAL */}
+
+        <div
+          className="bg-white rounded-2xl border border-slate-200
+          p-5 shadow-sm hover:shadow-md transition"
+        >
+
+          <div className="flex justify-between items-center">
+
+            <div>
+
+              <p className="text-sm font-medium text-slate-500">
+                Total Roles
+              </p>
+
+              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+                {totalRoles}
+              </h2>
+
+              <p className="text-xs text-slate-400 mt-1">
+                All available roles
+              </p>
+
+            </div>
+
+            <div
+              className="w-12 h-12 rounded-xl
+              bg-indigo-50 text-indigo-600
+              flex items-center justify-center"
+            >
+              <ShieldCheck size={23} />
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* SYSTEM */}
+
+        <div
+          className="bg-white rounded-2xl border border-slate-200
+          p-5 shadow-sm hover:shadow-md transition"
+        >
+
+          <div className="flex justify-between items-center">
+
+            <div>
+
+              <p className="text-sm font-medium text-slate-500">
+                System Roles
+              </p>
+
+              <h2 className="text-3xl font-bold text-blue-600 mt-2">
+                {systemRoles}
+              </h2>
+
+              <p className="text-xs text-slate-400 mt-1">
+                Protected system roles
+              </p>
+
+            </div>
+
+            <div
+              className="w-12 h-12 rounded-xl
+              bg-blue-50 text-blue-600
+              flex items-center justify-center"
+            >
+              <Lock size={21} />
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* CUSTOM */}
+
+        <div
+          className="bg-white rounded-2xl border border-slate-200
+          p-5 shadow-sm hover:shadow-md transition"
+        >
+
+          <div className="flex justify-between items-center">
+
+            <div>
+
+              <p className="text-sm font-medium text-slate-500">
+                Custom Roles
+              </p>
+
+              <h2 className="text-3xl font-bold text-emerald-600 mt-2">
+                {customRoles}
+              </h2>
+
+              <p className="text-xs text-slate-400 mt-1">
+                Roles created by admin
+              </p>
+
+            </div>
+
+            <div
+              className="w-12 h-12 rounded-xl
+              bg-emerald-50 text-emerald-600
+              flex items-center justify-center"
+            >
+              <Users size={22} />
+            </div>
+
+          </div>
+
+        </div>
 
       </div>
 
 
+      {/* ================================================= */}
+      {/* SEARCH / FILTER */}
+      {/* ================================================= */}
+
+      <div
+        className="bg-white border border-slate-200
+        rounded-2xl p-4 mb-6 shadow-sm"
+      >
+
+        <div className="flex flex-col md:flex-row gap-4">
+
+          {/* SEARCH */}
+
+          <div className="relative flex-1">
+
+            <Search
+              size={19}
+              className="absolute left-4 top-1/2
+              -translate-y-1/2 text-slate-400"
+            />
+
+            <input
+              type="text"
+              placeholder="Search roles..."
+              value={search}
+              onChange={(e) =>
+                setSearch(e.target.value)
+              }
+              className="w-full h-12
+              pl-11 pr-4
+              border border-slate-200
+              rounded-xl bg-slate-50
+              text-sm outline-none
+              focus:bg-white
+              focus:border-indigo-400
+              focus:ring-4 focus:ring-indigo-50
+              transition"
+            />
 
+          </div>
 
 
-      {
-        loading && (
+          {/* FILTER */}
 
-          <p>
-            Loading roles...
-          </p>
+          <select
+            value={typeFilter}
+            onChange={(e) =>
+              setTypeFilter(e.target.value)
+            }
+            className="h-12 min-w-[180px]
+            px-4 border border-slate-200
+            rounded-xl bg-slate-50
+            text-sm text-slate-700
+            outline-none
+            focus:bg-white
+            focus:border-indigo-400
+            focus:ring-4 focus:ring-indigo-50"
+          >
 
-        )
-      }
+            <option value="All">
+              All Roles
+            </option>
 
+            <option value="System">
+              System Roles
+            </option>
 
+            <option value="Custom">
+              Custom Roles
+            </option>
 
+          </select>
 
+        </div>
 
-      {
-        error && (
+      </div>
 
-          <p className="text-red-500">
-            {error}
-          </p>
 
-        )
-      }
+      {/* ================================================= */}
+      {/* ERROR */}
+      {/* ================================================= */}
 
+      {error && (
 
+        <div
+          className="mb-6 p-4 rounded-xl
+          bg-red-50 border border-red-200
+          text-red-600 text-sm"
+        >
+          {error}
+        </div>
 
+      )}
 
 
+      {/* ================================================= */}
+      {/* TABLE */}
+      {/* ================================================= */}
 
-      {/* Role Table */}
+      <div
+        className="bg-white rounded-2xl
+        border border-slate-200
+        shadow-sm overflow-hidden"
+      >
 
+        {/* TABLE HEADER */}
 
-      <div className="bg-white shadow rounded">
+        <div
+          className="px-6 py-5
+          border-b border-slate-200
+          flex items-center justify-between"
+        >
 
+          <div>
 
-        <table className="w-full">
+            <h2 className="font-bold text-slate-800">
+              All Roles
+            </h2>
 
+            <p className="text-xs text-slate-400 mt-1">
+              {filteredRoles?.length || 0} roles available
+            </p>
 
-          <thead className="bg-gray-100">
+          </div>
 
+          <div
+            className="flex items-center gap-2
+            text-xs text-slate-400"
+          >
+            <CheckCircle2 size={15} />
+            Access controlled
+          </div>
 
-            <tr>
+        </div>
 
 
-              <th className="p-3 text-left">
-                #
-              </th>
+        <div className="overflow-x-auto">
 
+          <table className="w-full">
 
-              <th className="p-3 text-left">
-                Role Name
-              </th>
+            <thead>
 
+              <tr className="bg-slate-50">
 
-              <th className="p-3 text-left">
-                Description
-              </th>
-
-
-              <th className="p-3 text-left">
-                Type
-              </th>
-
-
-            </tr>
-
-
-          </thead>
-
-
-
-
-
-          <tbody>
-
-
-          {
-            roles?.length > 0 ?
-
-
-            roles.map((role,index)=>(
-
-
-              <tr 
-                key={role._id}
-                className="border-b"
-              >
-
-
-                <td className="p-3">
-                  {index+1}
-                </td>
-
-
-
-                <td className="p-3 font-semibold">
-                  {role.name}
-                </td>
-
-
-
-                <td className="p-3">
-                  {role.description || "-"}
-                </td>
-
-
-
-                <td className="p-3">
-
-                  {
-                    role.isSystem 
-                    ? 
-                    "System Role"
-                    :
-                    "Custom Role"
-                  }
-
-                </td>
-
-
-
-              </tr>
-
-
-            ))
-
-            :
-
-            (
-
-              <tr>
-
-                <td 
-                colSpan="4"
-                className="text-center p-5"
+                <th
+                  className="px-6 py-4 text-left
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
                 >
+                  #
+                </th>
 
-                  No Roles Found
+                <th
+                  className="px-6 py-4 text-left
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
+                >
+                  Role
+                </th>
 
-                </td>
+                <th
+                  className="px-6 py-4 text-left
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
+                >
+                  Description
+                </th>
 
+                <th
+                  className="px-6 py-4 text-left
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
+                >
+                  Type
+                </th>
+
+                <th
+                  className="px-6 py-4 text-left
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
+                >
+                  Permissions
+                </th>
+
+                <th
+                  className="px-6 py-4 text-right
+                  text-[11px] font-bold uppercase
+                  tracking-wider text-slate-400"
+                >
+                  Actions
+                </th>
 
               </tr>
 
-            )
+            </thead>
 
 
-          }
+            <tbody className="divide-y divide-slate-100">
+
+              {/* ================= LOADING ================= */}
+
+              {loading ? (
+
+                <tr>
+
+                  <td
+                    colSpan="6"
+                    className="py-16 text-center"
+                  >
+
+                    <div
+                      className="w-8 h-8 mx-auto
+                      border-[3px]
+                      border-indigo-600
+                      border-t-transparent
+                      rounded-full animate-spin"
+                    />
+
+                    <p className="text-sm text-slate-500 mt-4">
+                      Loading roles...
+                    </p>
+
+                  </td>
+
+                </tr>
+
+              ) : filteredRoles?.length > 0 ? (
+
+                filteredRoles.map((role, index) => (
+
+                  <tr
+                    key={role._id}
+                    className="group hover:bg-slate-50/80
+                    transition-colors"
+                  >
+
+                    {/* NUMBER */}
+
+                    <td className="px-6 py-5">
+
+                      <span className="text-sm text-slate-400">
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+
+                    </td>
 
 
-          </tbody>
+                    {/* ROLE */}
+
+                    <td className="px-6 py-5">
+
+                      <div className="flex items-center gap-3">
+
+                        <div
+                          className="w-11 h-11 rounded-xl
+                          bg-gradient-to-br
+                          from-indigo-50 to-violet-50
+                          text-indigo-600
+                          flex items-center justify-center
+                          border border-indigo-100"
+                        >
+                          <ShieldCheck size={20} />
+                        </div>
+
+                        <div>
+
+                          <p className="font-semibold text-slate-800">
+                            {role.name}
+                          </p>
+
+                          {role.isDefault && (
+
+                            <span
+                              className="text-[11px]
+                              font-medium text-indigo-500"
+                            >
+                              Default Role
+                            </span>
+
+                          )}
+
+                        </div>
+
+                      </div>
+
+                    </td>
 
 
+                    {/* DESCRIPTION */}
 
-        </table>
+                    <td className="px-6 py-5 max-w-sm">
+
+                      <p
+                        className="text-sm text-slate-500
+                        line-clamp-2"
+                      >
+                        {role.description || "No description provided"}
+                      </p>
+
+                    </td>
 
 
+                    {/* TYPE */}
+
+                    <td className="px-6 py-5">
+
+                      {role.isSystem ? (
+
+                        <span
+                          className="inline-flex items-center
+                          gap-1.5 px-3 py-1.5
+                          rounded-full
+                          bg-blue-50 text-blue-700
+                          border border-blue-100
+                          text-xs font-semibold"
+                        >
+                          <Lock size={12} />
+                          System
+                        </span>
+
+                      ) : (
+
+                        <span
+                          className="inline-flex items-center
+                          gap-1.5 px-3 py-1.5
+                          rounded-full
+                          bg-emerald-50 text-emerald-700
+                          border border-emerald-100
+                          text-xs font-semibold"
+                        >
+                          <Users size={12} />
+                          Custom
+                        </span>
+
+                      )}
+
+                    </td>
+
+
+                    {/* PERMISSIONS */}
+
+                    <td className="px-6 py-5">
+
+                      <div className="flex items-center gap-2">
+
+                        <div
+                          className="w-8 h-8 rounded-lg
+                          bg-violet-50 text-violet-600
+                          flex items-center justify-center"
+                        >
+                          <Settings size={15} />
+                        </div>
+
+                        <div>
+
+                          <p className="text-sm font-semibold text-slate-700">
+                            {getPermissionCount(role)}
+                          </p>
+
+                          <p className="text-[11px] text-slate-400">
+                            Modules
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </td>
+
+
+                    {/* ACTIONS */}
+
+                    <td className="px-6 py-5">
+
+                      <div
+                        className="flex items-center
+                        justify-end gap-2"
+                      >
+
+                        <button
+                          title="View Role"
+                          className="w-9 h-9 rounded-lg
+                          border border-slate-200
+                          bg-white text-slate-500
+                          flex items-center justify-center
+                          hover:text-indigo-600
+                          hover:border-indigo-200
+                          hover:bg-indigo-50
+                          transition"
+                        >
+                          <Eye size={16} />
+                        </button>
+
+                        <button
+                          title="Edit Role"
+                          className="w-9 h-9 rounded-lg
+                          border border-slate-200
+                          bg-white text-slate-500
+                          flex items-center justify-center
+                          hover:text-indigo-600
+                          hover:border-indigo-200
+                          hover:bg-indigo-50
+                          transition"
+                        >
+                          <Edit size={16} />
+                        </button>
+
+                        <button
+                          title="Delete Role"
+                          className="w-9 h-9 rounded-lg
+                          border border-slate-200
+                          bg-white text-slate-500
+                          flex items-center justify-center
+                          hover:text-red-600
+                          hover:border-red-200
+                          hover:bg-red-50
+                          transition"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+
+                        <button
+                          title="More"
+                          className="w-9 h-9 rounded-lg
+                          border border-slate-200
+                          bg-white text-slate-500
+                          flex items-center justify-center
+                          hover:bg-slate-100
+                          transition"
+                        >
+                          <MoreHorizontal size={16} />
+                        </button>
+
+                      </div>
+
+                    </td>
+
+                  </tr>
+
+                ))
+
+              ) : (
+
+                /* ================= EMPTY ================= */
+
+                <tr>
+
+                  <td
+                    colSpan="6"
+                    className="py-16 text-center"
+                  >
+
+                    <div
+                      className="w-14 h-14 mx-auto
+                      rounded-2xl bg-slate-100
+                      text-slate-400
+                      flex items-center justify-center mb-4"
+                    >
+                      <ShieldCheck size={26} />
+                    </div>
+
+                    <h3 className="font-semibold text-slate-700">
+                      No roles found
+                    </h3>
+
+                    <p className="text-sm text-slate-400 mt-1">
+                      Try changing your search or filter.
+                    </p>
+
+                  </td>
+
+                </tr>
+
+              )}
+
+            </tbody>
+
+          </table>
+
+        </div>
 
       </div>
-
-
 
     </div>
-
   );
-
 };
-
 
 export default Roles;

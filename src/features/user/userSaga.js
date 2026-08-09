@@ -11,48 +11,140 @@ import {
   createUserFailure,
 
 
-   getUsersRequest,
+  getUsersRequest,
   getUsersSuccess,
   getUsersFailure,
+
+
+  getUserByIdRequest,
+  getUserByIdSuccess,
+  getUserByIdFailure,
+
+ 
+ updateUserRequest,
+  updateUserSuccess,
+  updateUserFailure,
+
+  deleteUserRequest,
+  deleteUserSuccess,
+  deleteUserFailure,
+
 } from "./userSlice";
 
-const onSuccess = (message, navigate, path) => {
-  successToast(message);
 
-  if (navigate && path) {
-    navigate(path);
-  }
-};
 
 // ================= CREATE USER =================
 
+
+
+
+// ================= GET USERS =================
+
+function* handleGetUsers(action) {
+
+  try {
+
+    const response = yield call(
+      axiosInstance.get,
+      API_ENDPOINTS.GET_USERS,
+       {
+                params: action.payload
+            }
+    );
+
+    yield put(
+      getUsersSuccess(response.data.data)
+    );
+
+  } catch (error) {
+
+    const message =
+      error.response?.data?.message || error.message;
+
+    yield put(
+      getUsersFailure(message)
+    );
+
+    errorToast(message);
+
+  }
+
+}
+
+
+function* handleGetUserById(action) {
+  try {
+    const response = yield call(
+      axiosInstance.get,
+      `${API_ENDPOINTS.GET_USER_BY_ID}/${action.payload}`
+    );
+
+    yield put(
+      getUserByIdSuccess(response.data.data)
+    );
+
+  } catch (error) {
+
+    yield put(
+      getUserByIdFailure(
+        error.response?.data?.message || error.message
+      )
+    );
+
+    errorToast(
+      error.response?.data?.message || error.message
+    );
+  }
+}
+
+
+
 function* handleCreateUser(action) {
   try {
-    const { data, navigate, onSuccessCallback } = action.payload;
-
     const response = yield call(
       axiosInstance.post,
       API_ENDPOINTS.CREATE_USER,
+      action.payload
+    );
+
+    successToast(response.data.message);
+
+    yield put(
+      createUserSuccess(response.data)
+    );
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message;
+
+    yield put(
+      createUserFailure(message)
+    );
+
+    errorToast(message);
+  }
+}
+
+// ================= UPDATE USER =================
+
+function* handleUpdateUser(action) {
+  try {
+    const { id, data } = action.payload;
+
+    const response = yield call(
+      axiosInstance.put,
+      `${API_ENDPOINTS.UPDATE_USER}/${id}`,
       data
     );
 
-    yield put(createUserSuccess());
+    successToast(response.data.message);
 
-    if (onSuccessCallback) {
-      onSuccessCallback();
-    }
-
-    onSuccess(
-      response.data.message,
-      navigate,
-      "/admin/users"
-    );
-
+    yield put(updateUserSuccess(response.data));
   } catch (error) {
     const message =
       error.response?.data?.message || error.message;
 
-    yield put(createUserFailure(message));
+    yield put(updateUserFailure(message));
 
     errorToast(message);
   }
@@ -60,35 +152,28 @@ function* handleCreateUser(action) {
 
 
 
-// ================= GET USERS =================
+function* handleDeleteUser(action) {
+  try {
+    const userId = action.payload;
 
-function* handleGetUsers() {
+    const response = yield call(
+      axiosInstance.delete,
+      `${API_ENDPOINTS.DELETE_USER}/${userId}`
+    );
 
-    try {
+    yield put(deleteUserSuccess(response.data));
 
-        const response = yield call(
-            axiosInstance.get,
-            API_ENDPOINTS.GET_USERS
-        );
-
-        yield put(
-            getUsersSuccess(response.data.data)
-        );
-
-    } catch (error) {
-
-        const message =
-            error.response?.data?.message || error.message;
-
-        yield put(
-            getUsersFailure(message)
-        );
-
-        errorToast(message);
-
-    }
-
+  } catch (error) {
+    yield put(
+      deleteUserFailure(
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to delete user"
+      )
+    );
+  }
 }
+
 
 // ================= WATCHER =================
 
@@ -100,5 +185,18 @@ export default function* userSaga() {
   yield takeLatest(
     getUsersRequest.type,
     handleGetUsers
+  );
+yield takeLatest(
+  getUserByIdRequest.type,
+  handleGetUserById
 );
+
+
+ yield takeLatest(
+    updateUserRequest.type,
+    handleUpdateUser
+  );
+
+  yield takeLatest(deleteUserRequest.type, handleDeleteUser);
+
 }

@@ -27,18 +27,18 @@ const taskSlice = createSlice({
     },
 
 
-    reducers:{
+    reducers: {
 
 
         // ================= GET TASK =================
 
-        getTasksRequest:(state)=>{
+        getTasksRequest: (state) => {
             state.loading = true;
             state.error = null;
         },
 
 
-        getTasksSuccess:(state,action)=>{
+        getTasksSuccess: (state, action) => {
 
             state.loading = false;
 
@@ -49,7 +49,7 @@ const taskSlice = createSlice({
         },
 
 
-        getTasksFailure:(state,action)=>{
+        getTasksFailure: (state, action) => {
 
             state.loading = false;
 
@@ -62,7 +62,7 @@ const taskSlice = createSlice({
         // ================= CREATE TASK =================
 
 
-        createTaskRequest:(state)=>{
+        createTaskRequest: (state) => {
 
             state.createLoading = true;
             state.createSuccess = false;
@@ -71,7 +71,7 @@ const taskSlice = createSlice({
         },
 
 
-        createTaskSuccess:(state,action)=>{
+        createTaskSuccess: (state, action) => {
 
             state.createLoading = false;
             state.createSuccess = true;
@@ -81,7 +81,7 @@ const taskSlice = createSlice({
         },
 
 
-        createTaskFailure:(state,action)=>{
+        createTaskFailure: (state, action) => {
 
             state.createLoading = false;
             state.createError = action.payload;
@@ -90,26 +90,47 @@ const taskSlice = createSlice({
 
 
 
+        // ============== GET TASK BY ID ==============
+
+        getTaskByIdRequest: (state) => {
+            state.loading = true;
+            state.error = null;
+            state.task = null;
+        },
+
+        getTaskByIdSuccess: (state, action) => {
+            state.loading = false;
+            state.task = action.payload;
+        },
+
+        getTaskByIdFailure: (state, action) => {
+            state.loading = false;
+            state.error = action.payload;
+        },
+
+
         // ================= UPDATE TASK =================
 
 
-        updateTaskRequest:(state)=>{
+        updateTaskRequest: (state) => {
 
             state.updateLoading = true;
 
         },
 
 
-        updateTaskSuccess:(state,action)=>{
+        updateTaskSuccess: (state, action) => {
 
             state.updateLoading = false;
+                state.updateSuccess = true;
+
 
             const index = state.tasks.findIndex(
-                item=>item._id === action.payload._id
+                item => item._id === action.payload._id
             );
 
 
-            if(index !== -1){
+            if (index !== -1) {
 
                 state.tasks[index] = action.payload;
 
@@ -118,7 +139,7 @@ const taskSlice = createSlice({
         },
 
 
-        updateTaskFailure:(state,action)=>{
+        updateTaskFailure: (state, action) => {
 
             state.updateLoading = false;
 
@@ -131,27 +152,27 @@ const taskSlice = createSlice({
         // ================= DELETE TASK =================
 
 
-        deleteTaskRequest:(state)=>{
+        deleteTaskRequest: (state) => {
 
             state.deleteLoading = true;
 
         },
 
 
-        deleteTaskSuccess:(state,action)=>{
+        deleteTaskSuccess: (state, action) => {
 
             state.deleteLoading = false;
 
 
             state.tasks =
-            state.tasks.filter(
-                item=>item._id !== action.payload
-            );
+                state.tasks.filter(
+                    item => item._id !== action.payload
+                );
 
         },
 
 
-        deleteTaskFailure:(state,action)=>{
+        deleteTaskFailure: (state, action) => {
 
             state.deleteLoading = false;
 
@@ -164,13 +185,17 @@ const taskSlice = createSlice({
         // ================= CLEAR =================
 
 
-        clearTaskState:(state)=>{
+     clearTaskState: (state) => {
+    state.createLoading = false;
+    state.createSuccess = false;
+    state.createError = null;
 
-            state.createSuccess = false;
-            state.error = null;
+    state.updateLoading = false;
+    state.updateSuccess = false;
 
-        }
-
+    state.error = null;
+    state.task = null;
+},
 
     }
 
@@ -188,6 +213,12 @@ export const {
     createTaskSuccess,
     createTaskFailure,
 
+
+    getTaskByIdRequest,
+    getTaskByIdSuccess,
+    getTaskByIdFailure,
+
+
     updateTaskRequest,
     updateTaskSuccess,
     updateTaskFailure,
@@ -198,7 +229,7 @@ export const {
 
     clearTaskState
 
-}=taskSlice.actions;
+} = taskSlice.actions;
 
 
 

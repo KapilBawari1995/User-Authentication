@@ -4,6 +4,9 @@ import axiosInstance from "../../app/api/axiosInstance";
 
 import { API_ENDPOINTS } from "../../app/api/apiEndpoints";
 
+import { successToast, errorToast } from "../../utils/toast";
+
+
 
 import {
 
@@ -18,6 +21,11 @@ import {
     updateTaskRequest,
     updateTaskSuccess,
     updateTaskFailure,
+
+    getTaskByIdRequest,
+  getTaskByIdSuccess,
+  getTaskByIdFailure,
+
 
     deleteTaskRequest,
     deleteTaskSuccess,
@@ -97,6 +105,9 @@ function* handleCreateTask(action){
             )
         );
 
+                successToast(response.data.message);
+
+
 
     }
     catch(error){
@@ -109,12 +120,29 @@ function* handleCreateTask(action){
             )
         );
 
+                errorToast(message);
+
     }
 
 }
 
 
+function* handleGetTaskById(action) {
+  try {
+    const response = yield call(
+      axiosInstance.get,
+      `${API_ENDPOINTS.GET_TASK_BY_ID}/${action.payload}`
+    );
 
+    yield put(getTaskByIdSuccess(response.data.data));
+  } catch (error) {
+    yield put(
+      getTaskByIdFailure(
+        error.response?.data?.message || "Failed to fetch task."
+      )
+    );
+  }
+}
 
 // ================= UPDATE TASK =================
 
@@ -146,6 +174,7 @@ function* handleUpdateTask(action){
             )
 
         );
+                successToast(response.data.message);
 
 
     }
@@ -161,6 +190,9 @@ function* handleUpdateTask(action){
 
         );
 
+        
+                errorToast(message);
+
     }
 
 }
@@ -171,50 +203,31 @@ function* handleUpdateTask(action){
 // ================= DELETE TASK =================
 
 
-function* handleDeleteTask(action){
+function* handleDeleteTask(action) {
+  try {
 
-    try{
+    const response = yield call(
+      axiosInstance.delete,
+      `${API_ENDPOINTS.DELETE_TASK}/${action.payload}`
+    );
 
+    yield put(deleteTaskSuccess(action.payload));
 
-        yield call(
+    successToast(response.data.message);
 
-            axiosInstance.delete,
+  } catch (error) {
 
-            `${API_ENDPOINTS.DELETE_TASK}/${action.payload}`
+    yield put(
+      deleteTaskFailure(
+        error.response?.data?.message || error.message
+      )
+    );
 
-        );
-
-
-
-        yield put(
-
-            deleteTaskSuccess(
-                action.payload
-            )
-
-        );
-
-
-    }
-    catch(error){
-
-
-        yield put(
-
-            deleteTaskFailure(
-                error.response?.data?.message ||
-                error.message
-            )
-
-        );
-
-
-    }
-
+    errorToast(
+      error.response?.data?.message || error.message
+    );
+  }
 }
-
-
-
 
 
 // ================= WATCHER =================
@@ -240,7 +253,7 @@ export default function* taskSaga(){
         handleCreateTask
 
     );
-
+yield takeLatest(getTaskByIdRequest.type, handleGetTaskById);
 
 
     yield takeLatest(

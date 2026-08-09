@@ -22,6 +22,19 @@ import {
   deleteProjectRequest,
   deleteProjectSuccess,
   deleteProjectFailure,
+
+
+
+  addTeamMembersRequest,
+  addTeamMembersSuccess,
+  addTeamMembersFailure,
+
+
+  getProjectTeamMembersRequest,
+getProjectTeamMembersSuccess,
+getProjectTeamMembersFailure,
+
+
 } from "./projectSlice";
 
 
@@ -167,7 +180,85 @@ function* handleDeleteProject(action) {
   }
 }
 
+function* handleAddTeamMember(action) {
+  try {
+    const { projectId, teamMembers } = action.payload;
 
+    console.log("PROJECT ID:", projectId);
+    console.log("TEAM MEMBERS:", teamMembers);
+
+    if (!projectId) {
+      throw new Error("Project ID is missing");
+    }
+
+    const response = yield call(
+      axiosInstance.put,
+      `${API_ENDPOINTS.ADD_TEAM_MEMBER}/${projectId}/team-members`,
+      {
+        teamMembers,
+      }
+    );
+
+    console.log("ADD TEAM RESPONSE:", response.data);
+
+    yield put(
+      addTeamMembersSuccess(response.data.data)
+    );
+
+  } catch (error) {
+    console.log("ADD TEAM ERROR:", error);
+
+    yield put(
+      addTeamMembersFailure(
+        error?.response?.data?.message ||
+        error.message ||
+        "Failed to add team member"
+      )
+    );
+  }
+}
+
+// ================= GET PROJECT TEAM MEMBERS =================
+
+function* handleGetProjectTeamMembers(action) {
+  try {
+    const projectId = action.payload;
+
+    console.log(
+      "GET PROJECT TEAM MEMBERS:",
+      projectId
+    );
+
+    const response = yield call(
+      axiosInstance.get,
+      `${API_ENDPOINTS.GET_PROJECT_TEAM_MEMBERS}/${projectId}/team-members`
+    );
+
+    console.log(
+      "TEAM MEMBERS RESPONSE:",
+      response.data
+    );
+
+    yield put(
+      getProjectTeamMembersSuccess(
+        response.data.data || []
+      )
+    );
+
+  } catch (error) {
+    console.error(
+      "GET PROJECT TEAM MEMBERS ERROR:",
+      error
+    );
+
+    yield put(
+      getProjectTeamMembersFailure(
+        error?.response?.data?.message ||
+        "Failed to fetch project team members"
+      )
+    );
+  }
+}
 
 // ================= WATCHER =================
 
@@ -197,5 +288,15 @@ export default function* projectSaga() {
     deleteProjectRequest.type,
     handleDeleteProject
   );
+
+   yield takeLatest(
+    addTeamMembersRequest.type,
+    handleAddTeamMember
+  );
+
+  yield takeLatest(
+  getProjectTeamMembersRequest.type,
+  handleGetProjectTeamMembers
+);
 
 }

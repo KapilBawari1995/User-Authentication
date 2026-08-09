@@ -32,6 +32,11 @@ import notificationSaga from "../features/notification/notificationSaga";
 import profileReducer from '../features/profile/profileSlice';
 import profileSaga from '../features/profile/profileSaga';
 
+import departmentReducer from '../features/department/departmentSlice';
+import departmentSaga from '../features/department/departmentSaga';
+
+
+
 function* rootSaga() {
   yield all([
     productSaga(),
@@ -43,6 +48,7 @@ function* rootSaga() {
     projectSaga(),
     notificationSaga(),
     profileSaga(),
+    departmentSaga(),
   ]);
 }
 
@@ -59,6 +65,8 @@ export const store = configureStore({
     project:projectReducer,
     notification:notificationReducer,
     profile:profileReducer,
+    department:departmentReducer,
+
     
   },
   middleware: (getDefaultMiddleware) =>
