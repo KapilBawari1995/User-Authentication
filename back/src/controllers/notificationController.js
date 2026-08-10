@@ -1,7 +1,6 @@
 import Notification from "../models/Notification.js";
 
 
-// ================= CREATE NOTIFICATION =================
 
 export const createNotification = async (req, res) => {
   try {
@@ -43,7 +42,6 @@ export const createNotification = async (req, res) => {
 };
 
 
-// ================= GET ALL NOTIFICATIONS =================
 
 export const getNotifications = async (req, res) => {
   try {
@@ -89,7 +87,6 @@ export const getNotifications = async (req, res) => {
 };
 
 
-// ================= GET NOTIFICATION BY ID =================
 
 export const getNotificationById = async (req, res) => {
   try {
@@ -124,7 +121,6 @@ export const getNotificationById = async (req, res) => {
 };
 
 
-// ================= MARK AS READ =================
 
 export const markAsRead = async (req, res) => {
   try {
@@ -166,7 +162,6 @@ export const markAsRead = async (req, res) => {
 };
 
 
-// ================= MARK ALL AS READ =================
 
 export const markAllAsRead = async (req, res) => {
   try {
@@ -197,7 +192,6 @@ export const markAllAsRead = async (req, res) => {
 };
 
 
-// ================= DELETE NOTIFICATION =================
 
 export const deleteNotification = async (req, res) => {
   try {

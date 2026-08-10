@@ -1,7 +1,6 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
 
-// ================= CREATE PROJECT =================
 
 export const createProject = async (req, res) => {
   try {
@@ -52,10 +51,7 @@ export const getProjects = async (req, res) => {
     const pageSize = Number(req.query.pageSize) || 10;
     const search = req.query.search || "";
 
-    // =========================================
-    // LOGGED-IN USER
-    // =========================================
-
+  
     const user = await User.findById(req.user.id)
       .populate("role", "name");
 
@@ -67,23 +63,9 @@ export const getProjects = async (req, res) => {
     }
 
     const roleName = user.role?.name?.toLowerCase();
-
-    console.log("=================================");
-    console.log("GET PROJECTS");
-    console.log("Logged User ID:", user._id);
-    console.log("Logged User Name:", user.name);
-    console.log("Logged User Role:", roleName);
-    console.log("=================================");
-
-    // =========================================
-    // BASE QUERY
-    // =========================================
-
     const query = {};
 
-    // =========================================
-    // SEARCH
-    // =========================================
+   
 
     if (search.trim()) {
       query.name = {
@@ -92,29 +74,20 @@ export const getProjects = async (req, res) => {
       };
     }
 
-    // =========================================
-    // ADMIN / SUPER ADMIN
-    // =========================================
-
     if (
       roleName === "admin" ||
       roleName === "super admin" ||
       user.isSuperAdmin
     ) {
-      // Admin ko saare projects
+     
     }
 
-    // =========================================
-    // MANAGER
-    // =========================================
-
+    
     else if (roleName === "manager") {
       query.projectManager = user._id;
     }
 
-    // =========================================
-    // NORMAL USER / DEVELOPER
-    // =========================================
+   
 
     else {
       query.teamMembers = user._id;
@@ -122,15 +95,10 @@ export const getProjects = async (req, res) => {
 
     console.log("PROJECT QUERY:", query);
 
-    // =========================================
-    // COUNT
-    // =========================================
 
     const totalCount = await Project.countDocuments(query);
 
-    // =========================================
-    // GET PROJECTS
-    // =========================================
+   
 
     const projects = await Project.find(query)
       .populate("projectManager", "name email")
@@ -140,21 +108,8 @@ export const getProjects = async (req, res) => {
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    console.log(
-      "PROJECTS RETURNED:",
-      projects.map((project) => ({
-        id: project._id,
-        name: project.name,
-        manager: project.projectManager?._id,
-        teamMembers: project.teamMembers?.map(
-          (member) => member._id
-        ),
-      }))
-    );
+  
 
-    // =========================================
-    // RESPONSE
-    // =========================================
 
     return res.status(200).json({
       success: true,
@@ -171,7 +126,6 @@ export const getProjects = async (req, res) => {
     });
   }
 };
-// ================= GET PROJECT BY ID =================
 
 export const getProjectById = async (req, res) => {
   try {
@@ -284,7 +238,6 @@ export const addTeamMembers = async (req, res) => {
       });
     }
 
-    // Check project
     const project = await Project.findById(projectId);
 
     if (!project) {
@@ -294,7 +247,6 @@ export const addTeamMembers = async (req, res) => {
       });
     }
 
-    // Check users exist
     const users = await User.find({
       _id: { $in: teamMembers },
       isActive: true,
@@ -307,19 +259,16 @@ export const addTeamMembers = async (req, res) => {
       });
     }
 
-    // Remove duplicate IDs
     const uniqueMembers = [
       ...new Set(
         teamMembers.map((id) => id.toString())
       ),
     ];
 
-    // Existing members
     const existingMembers = project.teamMembers.map(
       (id) => id.toString()
     );
 
-    // Add only new members
     const newMembers = uniqueMembers.filter(
       (id) => !existingMembers.includes(id)
     );
@@ -328,7 +277,6 @@ export const addTeamMembers = async (req, res) => {
 
     await project.save();
 
-    // Populate response
     const updatedProject = await Project.findById(projectId)
       .populate("projectManager", "name email")
       .populate("teamMembers", "name email role");
@@ -351,7 +299,6 @@ export const addTeamMembers = async (req, res) => {
 };
 
 
-// ================= GET PROJECT TEAM MEMBERS =================
 
 export const getProjectTeamMembers = async (req, res) => {
   try {

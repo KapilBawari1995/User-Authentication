@@ -16,9 +16,6 @@ const Header = () => {
   return (
     <header style={styles.header}>
 
-      {/* ================================================= */}
-      {/* LOGO */}
-      {/* ================================================= */}
 
       <div style={styles.logoSection}>
 
@@ -38,13 +35,10 @@ const Header = () => {
 
       </div>
 
-      {/* ================================================= */}
-      {/* RIGHT SECTION */}
-      {/* ================================================= */}
+   
 
       <div style={styles.rightSection}>
 
-        {/* NOTIFICATION */}
 
         <button
           style={styles.iconBtn}

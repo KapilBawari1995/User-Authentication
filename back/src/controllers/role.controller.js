@@ -1,6 +1,5 @@
 import Role from "../models/Role.js";
 
-// ================= Create Role =================
 
 export const createRole = async (req, res) => {
   try {
@@ -35,7 +34,6 @@ export const createRole = async (req, res) => {
   }
 };
 
-// ================= Get All Roles =================
 
 export const getAllRoles = async (req, res) => {
   try {
@@ -56,7 +54,6 @@ export const getAllRoles = async (req, res) => {
   }
 };
 
-// ================= Get Role By Id =================
 
 export const getRoleById = async (req, res) => {
   try {
@@ -84,7 +81,6 @@ export const getRoleById = async (req, res) => {
   }
 };
 
-// ================= Update Role =================
 
 export const updateRole = async (req, res) => {
   try {
@@ -118,7 +114,6 @@ export const updateRole = async (req, res) => {
   }
 };
 
-// ================= Delete Role =================
 
 export const deleteRole = async (req, res) => {
   try {

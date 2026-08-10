@@ -55,16 +55,16 @@ const ProtectedRoute = ({ children }) => {
   }
 
 
-  if (
-    user?.role?.name === "User" &&
-    (!user?.permissions || user.permissions.length === 0)
-  ) {
+  // if (
+  //   user?.role?.name === "User" &&
+  //   (!user?.permissions || user.permissions.length === 0)
+  // ) {
 
-    if (location.pathname !== "/welcome") {
-      return <Navigate to="/welcome" replace />;
-    }
+  //   if (location.pathname !== "/welcome") {
+  //     return <Navigate to="/welcome" replace />;
+  //   }
 
-  }
+  // }
 
 
   return children;

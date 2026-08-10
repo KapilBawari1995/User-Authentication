@@ -1,6 +1,6 @@
 import Permission from "../models/Permission.js";
 
-// ================= Create Permission =================
+
 
 export const createPermission = async (req, res) => {
   try {
@@ -36,7 +36,6 @@ export const createPermission = async (req, res) => {
   }
 };
 
-// ================= Get All Permissions =================
 
 export const getAllPermissions = async (req, res) => {
   try {
@@ -57,7 +56,6 @@ export const getAllPermissions = async (req, res) => {
   }
 };
 
-// ================= Get Permission By Id =================
 
 export const getPermissionById = async (req, res) => {
   try {
@@ -85,7 +83,7 @@ export const getPermissionById = async (req, res) => {
   }
 };
 
-// ================= Update Permission =================
+
 
 export const updatePermission = async (req, res) => {
   try {
@@ -120,7 +118,6 @@ export const updatePermission = async (req, res) => {
   }
 };
 
-// ================= Delete Permission =================
 
 export const deletePermission = async (req, res) => {
   try {

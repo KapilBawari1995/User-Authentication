@@ -1,7 +1,6 @@
 import Department from "../models/department.model.js";
 import User from "../models/User.js";
 
-// ================= CREATE DEPARTMENT =================
 
 export const createDepartment = async (req, res) => {
   try {
@@ -43,7 +42,6 @@ export const createDepartment = async (req, res) => {
   }
 };
 
-// ================= GET ALL DEPARTMENTS =================
 
 export const getDepartments = async (req, res) => {
   try {
@@ -63,7 +61,6 @@ export const getDepartments = async (req, res) => {
   }
 };
 
-// ================= GET MANAGERS BY DEPARTMENT =================
 export const getDepartmentManagers = async (req, res) => {
   try {
     const managers = await User.find()
@@ -85,7 +82,6 @@ export const getDepartmentManagers = async (req, res) => {
     });
   }
 };
-// ================= ASSIGN DEPARTMENT MANAGER =================
 
 export const assignDepartmentManager = async (req, res) => {
   try {

@@ -33,7 +33,7 @@ const Welcome = () => {
           >
             {user?.name || "User"}
 
-            <ChevronDown size={18}/>
+            {/* <ChevronDown size={18}/> */}
           </button>
 
 
@@ -113,13 +113,13 @@ const Welcome = () => {
 
 
 
-          <button
+          {/* <button
             onClick={handleLogout}
             className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl bg-red-500 py-3 font-semibold text-white transition hover:bg-red-600"
           >
             <LogOut size={18}/>
             Logout
-          </button>
+          </button> */}
 
 
         </div>

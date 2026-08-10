@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 
 
-// Assign Role To User
 export const assignRoleToUser = async (req, res) => {
   try {
     const { userId } = req.params;

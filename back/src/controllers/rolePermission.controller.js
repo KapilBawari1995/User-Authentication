@@ -1,6 +1,5 @@
 import Role from "../models/Role.js";
 
-// ================= Assign Permission To Role =================
 
 export const assignPermissionToRole = async (req, res) => {
   try {
@@ -40,7 +39,6 @@ export const assignPermissionToRole = async (req, res) => {
   }
 };
 
-// ================= Get Role Permissions =================
 
 export const getRolePermissions = async (req, res) => {
   try {

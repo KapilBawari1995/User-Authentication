@@ -1,6 +1,5 @@
 export const API_ENDPOINTS = {
 
-  // ================= AUTH =================
 
   SIGNUP: "/auth/signup",
   VERIFY_OTP: "/auth/verify-otp",
@@ -16,7 +15,6 @@ export const API_ENDPOINTS = {
   VERIFY_AND_CHANGE_PASSWORD: "/auth/verify-and-change-password",
   CREATE_NEW_PASSWORD: "/auth/create-new-password",
 
-  // ================= PRODUCTS =================
 
   GET_PRODUCTS: "/products",
   ADD_PRODUCT: "/products/add",
@@ -24,7 +22,6 @@ export const API_ENDPOINTS = {
   UPDATE_PRODUCT: "/products",
   GET_PRODUCT_BY_ID: "/products",
 
-  // ================= ROLES =================
 
   CREATE_ROLE: "/roles",
   GET_ROLES: "/roles",
@@ -32,7 +29,6 @@ export const API_ENDPOINTS = {
   UPDATE_ROLE: "/roles",
   DELETE_ROLE: "/roles",
 
-  // ================= USERS =================
 
   CREATE_USER: "/users",
   GET_USERS: "/users",
@@ -43,7 +39,6 @@ export const API_ENDPOINTS = {
   // Assign Role To User
   ASSIGN_ROLE_TO_USER: "/users",
 
-  // ================= PERMISSION MASTER =================
 
   CREATE_PERMISSION: "/permissions",
   GET_ALL_PERMISSIONS: "/permissions",
@@ -53,7 +48,6 @@ export const API_ENDPOINTS = {
 
 
 
-  // ================= TASK =================
 
     GET_TASKS: "/tasks",
     CREATE_TASK: "/tasks",
@@ -72,7 +66,6 @@ ADD_TEAM_MEMBERS: "/projects",
   ADD_TEAM_MEMBER: "/projects",
 GET_PROJECT_TEAM_MEMBERS: "/projects",
 
-// ================= DEPARTMENT =================
 
 CREATE_DEPARTMENT: "/departments",
 GET_DEPARTMENTS: "/departments",
@@ -84,12 +77,9 @@ ASSIGN_DEPARTMENT_MANAGER: "/departments",
 
 
 
-  // ================= ROLE PERMISSION =================
 GET_PROFILE:"/users/profile/me",
 
     GET_NOTIFICATIONS: "/notifications",
-
-
   GET_ROLE_PERMISSIONS: "/role-permission",
   ASSIGN_ROLE_PERMISSIONS: "/role-permission",
 

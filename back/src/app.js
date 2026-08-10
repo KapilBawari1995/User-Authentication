@@ -40,7 +40,6 @@ app.use(
   "/api/v1/departments",
   departmentRouter
 );
-// Role Permission Routes
 app.use("/api/v1/role-permission", rolePermissionRoutes);
 
 export default app;

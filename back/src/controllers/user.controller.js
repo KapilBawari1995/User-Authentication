@@ -2,7 +2,6 @@ import User from "../models/User.js";
 import Role from "../models/Role.js";
 import bcrypt from "bcryptjs";
 
-// ================= CREATE USER =================
 
 export const createUser = async (req, res) => {
   try {
@@ -17,7 +16,6 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // Check existing user
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -27,7 +25,6 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // Check role
     const roleData = await Role.findById(role);
 
     if (!roleData) {
@@ -37,10 +34,8 @@ export const createUser = async (req, res) => {
       });
     }
 
-    // Hash Default Password
     const hashedPassword = await bcrypt.hash(defaultPassword, 10);
 
-    // Create User
     const user = await User.create({
       name,
       email,
@@ -50,7 +45,6 @@ export const createUser = async (req, res) => {
       mustChangePassword: true,
     });
 
-    // Get Created User
     const createdUser = await User.findById(user._id)
       .select("-password -otp -otpExpiry")
       .populate("role", "name");
@@ -68,7 +62,6 @@ export const createUser = async (req, res) => {
     });
   }
 };
-// ================= GET ALL USERS =================
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -78,7 +71,6 @@ export const getAllUsers = async (req, res) => {
       isSuperAdmin: false,
     };
 
-    // Search by Name
     if (search) {
       filter.name = {
         $regex: search,
@@ -86,7 +78,6 @@ export const getAllUsers = async (req, res) => {
       };
     }
 
-    // Filter by Active / Inactive
     if (status) {
       filter.isActive = status === "active";
     }
@@ -109,7 +100,6 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-// ================= GET SINGLE USER =================
 
 export const getUserById = async (req, res) => {
   try {
@@ -140,7 +130,6 @@ export const getUserById = async (req, res) => {
 };
 
 
-// ================= UPDATE USER =================
 
 export const updateUser = async (req, res) => {
   try {
@@ -156,7 +145,6 @@ export const updateUser = async (req, res) => {
       });
     }
 
-    // Email duplicate check
     if (email && email !== user.email) {
       const emailExists = await User.findOne({
         email,
@@ -171,7 +159,6 @@ export const updateUser = async (req, res) => {
       }
     }
 
-    // Role validation
     if (role) {
       const roleExists = await Role.findById(role);
 
@@ -214,7 +201,6 @@ export const updateUser = async (req, res) => {
 
 
 
-// ================= DELETE USER =================
 
 export const deleteUser = async (req, res) => {
   try {
@@ -229,7 +215,6 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    // Super Admin ko delete na hone do
     if (user.isSuperAdmin) {
       return res.status(403).json({
         success: false,
@@ -254,7 +239,6 @@ export const deleteUser = async (req, res) => {
 
 
 
-// ================= GET MY PROFILE =================
 
 export const getProfile = async (req, res) => {
 

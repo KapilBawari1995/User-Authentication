@@ -13,7 +13,6 @@ import {
 
 const router = express.Router();
 
-// ================= CREATE PROJECT =================
 
 router.post(
   "/",
@@ -21,7 +20,6 @@ router.post(
   createProject
 );
 
-// ================= GET ALL PROJECTS =================
 
 router.get(
   "/",
@@ -29,15 +27,13 @@ router.get(
   getProjects
 );
 
-// ================= ADD TEAM MEMBERS =================
-// IMPORTANT: this must come BEFORE /:id
+
 
 router.put(
   "/:projectId/team-members",
   verifyToken,
   addTeamMembers
 );
-// ================= GET PROJECT TEAM MEMBERS =================
 
 router.get(
   "/:projectId/team-members",
@@ -46,7 +42,6 @@ router.get(
 );
 
 
-// ================= GET PROJECT BY ID =================
 
 router.get(
   "/:id",
@@ -54,7 +49,6 @@ router.get(
   getProjectById
 );
 
-// ================= UPDATE PROJECT =================
 
 router.put(
   "/:id",
@@ -62,7 +56,6 @@ router.put(
   updateProject
 );
 
-// ================= DELETE PROJECT =================
 
 router.delete(
   "/:id",

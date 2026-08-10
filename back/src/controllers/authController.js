@@ -209,7 +209,6 @@ export const loginUser = async (req, res) => {
     const token = generateToken(user._id);
 
 
-    // Admin / Super Admin ko force password change nahi karna
     const requirePasswordChange =
       user.mustChangePassword && !user.isSuperAdmin;
 
@@ -256,7 +255,6 @@ export const sendChangePasswordOtp = async (req, res) => {
       });
     }
 
-    // Sirf normal users ke liye old password verify karo
     if (!user.mustChangePassword) {
       if (!oldPassword) {
         return res.status(400).json({
@@ -344,11 +342,9 @@ export const verifyAndChangePassword = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     user.password = await bcrypt.hash(newPassword, salt);
 
-    // Clear OTP
     user.otp = null;
     user.otpExpiry = null;
 
-    // First login completed
     user.mustChangePassword = false;
 
     await user.save();
@@ -468,7 +464,6 @@ export const forgotPassword = async (req, res) => {
 };
 
 
-// ================= LOGOUT =================
 
 export const logout = async (req, res) => {
   try {

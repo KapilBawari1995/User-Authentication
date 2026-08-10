@@ -29,7 +29,6 @@ router.get(
   getDepartmentManagers
 );
 
-// ================= ASSIGN DEPARTMENT MANAGER =================
 
 router.put(
   "/:departmentId/assign-manager",

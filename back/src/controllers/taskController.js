@@ -3,25 +3,8 @@ import User from "../models/User.js";
 import Project from "../models/Project.js";
 
 import Notification from "../models/Notification.js";
-// ================= Create Task =================
-
-
-
-// =====================================================
-// CREATE TASK
-// =====================================================
-
 export const createTask = async (req, res) => {
   try {
-    console.log("=================================");
-    console.log("CREATE TASK");
-    console.log("BODY:", req.body);
-    console.log("LOGGED USER:", req.user?.id);
-    console.log("=================================");
-
-    // ===================================================
-    // GET DATA
-    // ===================================================
 
     const {
       title,
@@ -32,10 +15,6 @@ export const createTask = async (req, res) => {
       estimatedHours,
       project,
     } = req.body;
-
-    // ===================================================
-    // VALIDATION
-    // ===================================================
 
     if (!title?.trim()) {
       return res.status(400).json({
@@ -65,9 +44,7 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // ===================================================
-    // CHECK LOGGED-IN USER
-    // ===================================================
+
 
     const loggedUser = await User.findById(req.user.id);
 
@@ -78,10 +55,7 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // ===================================================
-    // CHECK ASSIGNED USER
-    // ===================================================
-
+  
     const assignedUser = await User.findById(assignedTo);
 
     if (!assignedUser) {
@@ -90,10 +64,6 @@ export const createTask = async (req, res) => {
         message: "Assigned user not found.",
       });
     }
-
-    // ===================================================
-    // CHECK PROJECT
-    // ===================================================
 
     const projectData = await Project.findById(project);
 
@@ -104,9 +74,6 @@ export const createTask = async (req, res) => {
       });
     }
 
-    // ===================================================
-    // CREATE TASK
-    // ===================================================
 
     const task = await Task.create({
       title: title.trim(),
@@ -136,18 +103,10 @@ export const createTask = async (req, res) => {
       isActive: true,
     });
 
-    // ===================================================
-    // POPULATE TASK
-    // ===================================================
-
     const populatedTask = await Task.findById(task._id)
       .populate("assignedTo", "name email")
       .populate("createdBy", "name email")
       .populate("project", "name");
-
-    // ===================================================
-    // CREATE NOTIFICATION
-    // ===================================================
 
     await Notification.create({
       title: "New Task Assigned",
@@ -165,10 +124,6 @@ export const createTask = async (req, res) => {
       referenceType: "Task",
     });
 
-    // ===================================================
-    // RESPONSE
-    // ===================================================
-
     return res.status(201).json({
       success: true,
 
@@ -177,10 +132,7 @@ export const createTask = async (req, res) => {
       data: populatedTask,
     });
   } catch (error) {
-    console.error("=================================");
-    console.error("CREATE TASK ERROR:", error);
-    console.error("=================================");
-
+   
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -188,21 +140,14 @@ export const createTask = async (req, res) => {
   }
 };
 
-// ================= Get All Tasks =================
 
 
 export const getTasks = async (req, res) => {
   try {
-    // =========================================
-    // PAGINATION
-    // =========================================
-
+  
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
 
-    // =========================================
-    // QUERY PARAMS
-    // =========================================
 
     const {
       search = "",
@@ -211,9 +156,7 @@ export const getTasks = async (req, res) => {
       project = "",
     } = req.query;
 
-    // =========================================
-    // LOGGED-IN USER
-    // =========================================
+   
 
     const user = await User.findById(req.user.id)
       .populate("role", "name");
@@ -227,24 +170,10 @@ export const getTasks = async (req, res) => {
 
     const roleName = user.role?.name?.toLowerCase();
 
-    console.log("=================================");
-    console.log("GET TASKS");
-    console.log("Logged User ID:", user._id);
-    console.log("Logged User Name:", user.name);
-    console.log("Logged User Role:", roleName);
-    console.log("Project Filter:", project);
-    console.log("=================================");
-
-    // =========================================
-    // BASE QUERY
-    // =========================================
-
+   
     const query = {};
 
-    // =========================================
-    // SEARCH
-    // =========================================
-
+  
     if (search.trim()) {
       query.title = {
         $regex: search.trim(),
@@ -252,28 +181,17 @@ export const getTasks = async (req, res) => {
       };
     }
 
-    // =========================================
-    // STATUS
-    // =========================================
-
+  
     if (status.trim()) {
       query.status = status;
     }
 
-    // =========================================
-    // PRIORITY
-    // =========================================
-
+    
     if (priority.trim()) {
       query.priority = priority;
     }
 
-    // =========================================
-    // MANAGER
-    // =========================================
-    // Manager ko sirf apne managed projects
-    // ke tasks dikhne chahiye.
-    // =========================================
+   
 
     if (roleName === "manager") {
       const managedProjects = await Project.find({
@@ -289,10 +207,7 @@ export const getTasks = async (req, res) => {
         projectIds
       );
 
-      // -----------------------------------------
-      // Agar manager ke paas koi project nahi
-      // -----------------------------------------
-
+     
       if (projectIds.length === 0) {
         return res.status(200).json({
           success: true,
@@ -301,17 +216,13 @@ export const getTasks = async (req, res) => {
         });
       }
 
-      // -----------------------------------------
-      // Specific project selected
-      // -----------------------------------------
-
+      
       if (project.trim()) {
         const isManagedProject = projectIds.some(
           (id) =>
             id.toString() === project.toString()
         );
 
-        // Manager is project ka manager nahi hai
         if (!isManagedProject) {
           return res.status(200).json({
             success: true,
@@ -324,22 +235,13 @@ export const getTasks = async (req, res) => {
 
       } else {
 
-        // -----------------------------------------
-        // Manager ke saare managed projects
-        // -----------------------------------------
-
+      
         query.project = {
           $in: projectIds,
         };
       }
     }
 
-    // =========================================
-    // NORMAL USER
-    // =========================================
-    // Normal user ko sirf assigned tasks
-    // dikhne chahiye.
-    // =========================================
 
     else if (
       roleName !== "admin" &&
@@ -348,38 +250,24 @@ export const getTasks = async (req, res) => {
     ) {
       query.assignedTo = user._id;
 
-      // Agar normal user specific project
-      // filter kare
+    
       if (project.trim()) {
         query.project = project;
       }
     }
 
-    // =========================================
-    // ADMIN / SUPER ADMIN
-    // =========================================
-    // Admin ko normally saare tasks dikh sakte hain.
-    // Agar project filter diya hai to us project
-    // ke tasks dikhayenge.
-    // =========================================
-
+   
     else {
       if (project.trim()) {
         query.project = project;
       }
     }
 
-    console.log("FINAL TASK QUERY:", query);
-
-    // =========================================
-    // TOTAL COUNT
-    // =========================================
+    
 
     const totalCount = await Task.countDocuments(query);
 
-    // =========================================
-    // GET TASKS
-    // =========================================
+    
 
     const tasks = await Task.find(query)
       .populate("assignedTo", "name email")
@@ -389,9 +277,6 @@ export const getTasks = async (req, res) => {
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    // =========================================
-    // RESPONSE
-    // =========================================
 
     return res.status(200).json({
       success: true,
@@ -400,7 +285,6 @@ export const getTasks = async (req, res) => {
     });
 
   } catch (error) {
-    console.error("GET TASKS ERROR:", error);
 
     return res.status(500).json({
       success: false,
@@ -409,7 +293,6 @@ export const getTasks = async (req, res) => {
   }
 };
 
-// ================= Get Task By Id =================
 
 export const getTaskById = async (req, res) => {
   try {
@@ -441,7 +324,6 @@ export const getTaskById = async (req, res) => {
 };
 
 
-// ================= Update Task =================
 
 export const updateTask = async (req, res) => {
   try {
@@ -478,7 +360,6 @@ export const updateTask = async (req, res) => {
 };
 
 
-// ================= Delete Task =================
 
 export const deleteTask = async (req, res) => {
   try {
@@ -508,7 +389,6 @@ export const deleteTask = async (req, res) => {
 };
 
 
-// ================= Change Status =================
 
 export const changeTaskStatus = async (req, res) => {
   try {

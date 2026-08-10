@@ -34,15 +34,12 @@ router.put(
 );
 
 
-// Update Role
 router.put("/:id", verifyToken, updateRole);
 
 
-// Delete Role
 router.delete("/:id", verifyToken, deleteRole);
 
 
-// Get Single Role
 router.get("/:id", verifyToken, getRoleById);
 
 

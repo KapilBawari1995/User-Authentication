@@ -14,7 +14,7 @@ import verifyToken from "../middlewares/authMiddleware.js";
 const router = express.Router();
 
 
-// ================= Create Task =================
+
 router.post(
   "/tasks",
   verifyToken,
@@ -22,7 +22,7 @@ router.post(
 );
 
 
-// ================= Get All Tasks =================
+
 router.get(
   "/tasks",
   verifyToken,
@@ -30,7 +30,6 @@ router.get(
 );
 
 
-// ================= Get Task By Id =================
 router.get(
   "/tasks/:id",
   verifyToken,
@@ -38,7 +37,6 @@ router.get(
 );
 
 
-// ================= Update Task =================
 router.put(
   "/tasks/:id",
   verifyToken,
@@ -46,7 +44,6 @@ router.put(
 );
 
 
-// ================= Delete Task =================
 router.delete(
   "/tasks/:id",
   verifyToken,
@@ -54,7 +51,6 @@ router.delete(
 );
 
 
-// ================= Change Status =================
 router.patch(
   "/tasks/:id/status",
   verifyToken,
