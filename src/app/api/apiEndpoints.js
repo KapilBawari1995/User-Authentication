@@ -75,12 +75,23 @@ DELETE_DEPARTMENT: "/departments",
 GET_DEPARTMENT_MANAGERS: "/departments",
 ASSIGN_DEPARTMENT_MANAGER: "/departments",
 
-
+GET_DASHBOARD: "/dashboard",
 
 GET_PROFILE:"/users/profile/me",
 
     GET_NOTIFICATIONS: "/notifications",
   GET_ROLE_PERMISSIONS: "/role-permission",
   ASSIGN_ROLE_PERMISSIONS: "/role-permission",
+
+  CALENDAR: "/calendar",
+GET_CALENDAR: "/calendar",
+GET_CALENDAR_TODAY: "/calendar/today",
+GET_CALENDAR_BY_ID: "/calendar",
+CREATE_CALENDAR: "/calendar",
+UPDATE_CALENDAR: "/calendar",
+DELETE_CALENDAR: "/calendar",
+
+
+ GET_REPORT_OVERVIEW: "/reports",
 
 };

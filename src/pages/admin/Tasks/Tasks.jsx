@@ -5,7 +5,6 @@ import {
   Eye,
   Edit,
   Trash2,
-  MoreHorizontal,
   CheckCircle2,
   Clock3,
   AlertCircle,
@@ -37,7 +36,6 @@ const Task = ({ projectId }) => {
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
 
-  const [openMenu, setOpenMenu] = useState(null);
   const [viewTask, setViewTask] = useState(false);
 
   // =====================================================
@@ -53,7 +51,7 @@ const Task = ({ projectId }) => {
   const lastRequestRef = useRef("");
 
   // =====================================================
-  // REDUX
+  // REDUX - TASK
   // =====================================================
 
   const {
@@ -63,39 +61,134 @@ const Task = ({ projectId }) => {
   } = useSelector((state) => state.task);
 
   // =====================================================
+  // REDUX - AUTH USER
+  // =====================================================
+
+  const { user } = useSelector((state) => state.auth);
+
+  // =====================================================
+  // GET USER ROLE
+  // =====================================================
+
+  const roleName =
+    typeof user?.role === "object"
+      ? user?.role?.name
+      : user?.role;
+
+  const normalizedRole = roleName?.toLowerCase();
+
+  // =====================================================
+  // ROLE CHECK
+  // =====================================================
+
+  const isAdmin = normalizedRole === "admin";
+
+  const isManager = normalizedRole === "manager";
+
+  const isDeveloper = normalizedRole === "developer";
+
+  // =====================================================
+  // TASK PERMISSIONS
+  // =====================================================
+
+  /*
+    ADMIN
+    --------------------------------
+    Create  ✅
+    View    ✅
+    Edit    ✅
+    Delete  ✅
+
+    MANAGER
+    --------------------------------
+    Create  ✅
+    View    ✅
+    Edit    ✅
+    Delete  ✅
+
+    DEVELOPER
+    --------------------------------
+    Create  ❌
+    View    ✅
+    Edit    ❌
+    Delete  ❌
+    Work    ✅
+  */
+
+  const canCreateTask =
+    isAdmin || isManager;
+
+  const canViewTask = true;
+
+  const canEditTask =
+    isAdmin || isManager;
+
+  const canDeleteTask =
+    isAdmin || isManager;
+
+  // =====================================================
+  // DEBUG ROLE
+  // =====================================================
+
+  console.log("USER:", user);
+
+  console.log("ROLE:", normalizedRole);
+
+  console.log("TASK PERMISSIONS:", {
+    canCreateTask,
+    canViewTask,
+    canEditTask,
+    canDeleteTask,
+  });
+
+  // =====================================================
   // FETCH TASKS
   // =====================================================
 
   useEffect(() => {
-    // Project ID nahi hai to API call mat karo
     if (!projectId) {
       return;
     }
 
     const requestData = {
       search: debouncedSearch?.trim() || "",
+
       status:
         statusFilter === "All"
           ? ""
           : statusFilter,
+
       priority:
         priorityFilter === "All"
           ? ""
           : priorityFilter,
+
       project: projectId,
     };
 
-    // Same request already bheji ja chuki hai
-    const requestKey = JSON.stringify(requestData);
+    // ===================================================
+    // REQUEST KEY
+    // ===================================================
 
-    if (lastRequestRef.current === requestKey) {
+    const requestKey =
+      JSON.stringify(requestData);
+
+    // ===================================================
+    // DUPLICATE REQUEST CHECK
+    // ===================================================
+
+    if (
+      lastRequestRef.current === requestKey
+    ) {
       return;
     }
 
-    // Current request save karo
     lastRequestRef.current = requestKey;
 
-    console.log("GET TASKS API CALL:", requestData);
+    console.log(
+      "GET TASKS API CALL:",
+      requestData
+    );
 
     dispatch(
       getTasksRequest(requestData)
@@ -114,17 +207,23 @@ const Task = ({ projectId }) => {
 
   const totalTasks = tasks.length;
 
-  const completedTasks = tasks.filter(
-    (item) => item.status === "Completed"
-  ).length;
+  const completedTasks =
+    tasks.filter(
+      (item) =>
+        item.status === "Completed"
+    ).length;
 
-  const pendingTasks = tasks.filter(
-    (item) => item.status === "Pending"
-  ).length;
+  const pendingTasks =
+    tasks.filter(
+      (item) =>
+        item.status === "Pending"
+    ).length;
 
-  const inProgressTasks = tasks.filter(
-    (item) => item.status === "In Progress"
-  ).length;
+  const inProgressTasks =
+    tasks.filter(
+      (item) =>
+        item.status === "In Progress"
+    ).length;
 
   // =====================================================
   // RESET FILTERS
@@ -132,8 +231,13 @@ const Task = ({ projectId }) => {
 
   const handleResetFilters = () => {
     setSearch("");
+
     setStatusFilter("All");
+
     setPriorityFilter("All");
+
+    // Reset request ref so API runs again
+    lastRequestRef.current = "";
   };
 
   // =====================================================
@@ -181,12 +285,15 @@ const Task = ({ projectId }) => {
   // =====================================================
 
   const handleViewTask = (taskId) => {
+    if (!canViewTask) {
+      return;
+    }
+
     dispatch(
       getTaskByIdRequest(taskId)
     );
 
     setViewTask(true);
-    setOpenMenu(null);
   };
 
   // =====================================================
@@ -194,7 +301,9 @@ const Task = ({ projectId }) => {
   // =====================================================
 
   const handleEditTask = (taskId) => {
-    setOpenMenu(null);
+    if (!canEditTask) {
+      return;
+    }
 
     navigate(
       `/admin/tasks/edit/${taskId}`
@@ -206,11 +315,14 @@ const Task = ({ projectId }) => {
   // =====================================================
 
   const handleDeleteTask = (taskId) => {
-    setOpenMenu(null);
+    if (!canDeleteTask) {
+      return;
+    }
 
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this task?"
-    );
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this task?"
+      );
 
     if (!confirmDelete) {
       return;
@@ -229,7 +341,7 @@ const Task = ({ projectId }) => {
     <div>
 
       {/* ================================================= */}
-      {/* SUMMARY */}
+      {/* SUMMARY CARDS */}
       {/* ================================================= */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-7">
@@ -267,7 +379,8 @@ const Task = ({ projectId }) => {
 
             <div
               className="
-                w-12 h-12
+                w-12
+                h-12
                 rounded-xl
                 bg-indigo-50
                 text-indigo-600
@@ -315,7 +428,8 @@ const Task = ({ projectId }) => {
 
             <div
               className="
-                w-12 h-12
+                w-12
+                h-12
                 rounded-xl
                 bg-emerald-50
                 text-emerald-600
@@ -363,7 +477,8 @@ const Task = ({ projectId }) => {
 
             <div
               className="
-                w-12 h-12
+                w-12
+                h-12
                 rounded-xl
                 bg-yellow-50
                 text-yellow-600
@@ -411,7 +526,8 @@ const Task = ({ projectId }) => {
 
             <div
               className="
-                w-12 h-12
+                w-12
+                h-12
                 rounded-xl
                 bg-red-50
                 text-red-600
@@ -645,6 +761,7 @@ const Task = ({ projectId }) => {
             "
           >
             <CheckCircle2 size={15} />
+
             Task management
           </div>
 
@@ -653,6 +770,8 @@ const Task = ({ projectId }) => {
         <div className="overflow-x-auto">
 
           <table className="w-full">
+
+            {/* TABLE HEAD */}
 
             <thead>
 
@@ -690,9 +809,13 @@ const Task = ({ projectId }) => {
 
             </thead>
 
+            {/* TABLE BODY */}
+
             <tbody className="divide-y divide-slate-100">
 
+              {/* ================================================= */}
               {/* LOADING */}
+              {/* ================================================= */}
 
               {loading ? (
 
@@ -725,6 +848,10 @@ const Task = ({ projectId }) => {
                 </tr>
 
               ) : tasks.length > 0 ? (
+
+                /* ================================================= */
+                /* TASK LIST */
+                /* ================================================= */
 
                 tasks.map((item, index) => (
 
@@ -841,7 +968,9 @@ const Task = ({ projectId }) => {
                           border
                           text-xs
                           font-semibold
-                          ${getPriorityStyle(item.priority)}
+                          ${getPriorityStyle(
+                            item.priority
+                          )}
                         `}
                       >
                         {item.priority || "-"}
@@ -863,7 +992,9 @@ const Task = ({ projectId }) => {
                           border
                           text-xs
                           font-semibold
-                          ${getStatusStyle(item.status)}
+                          ${getStatusStyle(
+                            item.status
+                          )}
                         `}
                       >
                         {item.status || "-"}
@@ -887,7 +1018,9 @@ const Task = ({ projectId }) => {
 
                     </td>
 
+                    {/* ================================================= */}
                     {/* ACTIONS */}
+                    {/* ================================================= */}
 
                     <td className="px-6 py-5">
 
@@ -900,119 +1033,107 @@ const Task = ({ projectId }) => {
                         "
                       >
 
-                        {/* VIEW */}
+                        {/* =========================================== */}
+                        {/* VIEW - ADMIN + MANAGER + DEVELOPER */}
+                        {/* =========================================== */}
 
-                        <button
-                          type="button"
-                          title="View Task"
-                          onClick={() =>
-                            handleViewTask(item._id)
-                          }
-                          className="
-                            w-9
-                            h-9
-                            rounded-lg
-                            border
-                            border-slate-200
-                            bg-white
-                            text-slate-500
-                            flex
-                            items-center
-                            justify-center
-                            hover:text-indigo-600
-                            hover:border-indigo-200
-                            hover:bg-indigo-50
-                            transition
-                          "
-                        >
-                          <Eye size={16} />
-                        </button>
+                        {canViewTask && (
+                          <button
+                            type="button"
+                            title="View Task"
+                            onClick={() =>
+                              handleViewTask(
+                                item._id
+                              )
+                            }
+                            className="
+                              w-9
+                              h-9
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-white
+                              text-slate-500
+                              flex
+                              items-center
+                              justify-center
+                              hover:text-indigo-600
+                              hover:border-indigo-200
+                              hover:bg-indigo-50
+                              transition
+                            "
+                          >
+                            <Eye size={16} />
+                          </button>
+                        )}
 
-                        {/* EDIT */}
+                        {/* =========================================== */}
+                        {/* EDIT - ADMIN + MANAGER ONLY */}
+                        {/* =========================================== */}
 
-                        <button
-                          type="button"
-                          title="Edit Task"
-                          onClick={() =>
-                            handleEditTask(item._id)
-                          }
-                          className="
-                            w-9
-                            h-9
-                            rounded-lg
-                            border
-                            border-slate-200
-                            bg-white
-                            text-slate-500
-                            flex
-                            items-center
-                            justify-center
-                            hover:text-indigo-600
-                            hover:border-indigo-200
-                            hover:bg-indigo-50
-                            transition
-                          "
-                        >
-                          <Edit size={16} />
-                        </button>
+                        {canEditTask && (
+                          <button
+                            type="button"
+                            title="Edit Task"
+                            onClick={() =>
+                              handleEditTask(
+                                item._id
+                              )
+                            }
+                            className="
+                              w-9
+                              h-9
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-white
+                              text-slate-500
+                              flex
+                              items-center
+                              justify-center
+                              hover:text-indigo-600
+                              hover:border-indigo-200
+                              hover:bg-indigo-50
+                              transition
+                            "
+                          >
+                            <Edit size={16} />
+                          </button>
+                        )}
 
-                        {/* DELETE */}
+                        {/* =========================================== */}
+                        {/* DELETE - ADMIN + MANAGER ONLY */}
+                        {/* =========================================== */}
 
-                        <button
-                          type="button"
-                          title="Delete Task"
-                          onClick={() =>
-                            handleDeleteTask(item._id)
-                          }
-                          className="
-                            w-9
-                            h-9
-                            rounded-lg
-                            border
-                            border-slate-200
-                            bg-white
-                            text-slate-500
-                            flex
-                            items-center
-                            justify-center
-                            hover:text-red-600
-                            hover:border-red-200
-                            hover:bg-red-50
-                            transition
-                          "
-                        >
-                          <Trash2 size={16} />
-                        </button>
-
-                        {/* MORE */}
-
-                        <button
-                          type="button"
-                          title="More"
-                          onClick={() =>
-                            setOpenMenu(
-                              openMenu === item._id
-                                ? null
-                                : item._id
-                            )
-                          }
-                          className="
-                            w-9
-                            h-9
-                            rounded-lg
-                            border
-                            border-slate-200
-                            bg-white
-                            text-slate-500
-                            flex
-                            items-center
-                            justify-center
-                            hover:bg-slate-100
-                            transition
-                          "
-                        >
-                          <MoreHorizontal size={16} />
-                        </button>
+                        {canDeleteTask && (
+                          <button
+                            type="button"
+                            title="Delete Task"
+                            onClick={() =>
+                              handleDeleteTask(
+                                item._id
+                              )
+                            }
+                            className="
+                              w-9
+                              h-9
+                              rounded-lg
+                              border
+                              border-slate-200
+                              bg-white
+                              text-slate-500
+                              flex
+                              items-center
+                              justify-center
+                              hover:text-red-600
+                              hover:border-red-200
+                              hover:bg-red-50
+                              transition
+                            "
+                          >
+                            <Trash2 size={16} />
+                          </button>
+                        )}
 
                       </div>
 
@@ -1024,7 +1145,9 @@ const Task = ({ projectId }) => {
 
               ) : (
 
+                /* ================================================= */
                 /* EMPTY */
+                /* ================================================= */
 
                 <tr>
 
@@ -1079,7 +1202,9 @@ const Task = ({ projectId }) => {
       <ViewTaskModal
         task={task}
         open={viewTask}
-        onClose={() => setViewTask(false)}
+        onClose={() =>
+          setViewTask(false)
+        }
       />
 
     </div>

@@ -11,6 +11,9 @@ import taskRoutes from "./routes/taskRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
 import departmentRouter from "./routes/department.routes.js";
+import dashboardRoutes from "./routes/dashboard.routes.js";
+import calendarRoutes from "./routes/calendar.routes.js";
+import reportRoutes from "./routes/report.routes.js";
 
 const app = express();
 
@@ -25,7 +28,12 @@ app.get("/", (req, res) => {
   });
 });
 
-// Routes
+// Routesapp.use(
+ app.use(
+  "/api/v1/dashboard",
+  dashboardRoutes
+);
+
 app.use("/api/v1", productRouter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/roles", roleRouter);
@@ -41,5 +49,14 @@ app.use(
   departmentRouter
 );
 app.use("/api/v1/role-permission", rolePermissionRoutes);
+app.use(
+  "/api/v1/calendar",
+  calendarRoutes
+);
+
+app.use(
+  "/api/v1/reports",
+  reportRoutes
+);
 
 export default app;

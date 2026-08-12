@@ -8,14 +8,12 @@ import {
 
 const router = express.Router();
 
-// ================= Assign Permissions To Role =================
 router.put(
   "/:roleId",
   verifyToken,
   assignPermissionToRole
 );
 
-// ================= Get Permissions By Role =================
 router.get(
   "/:roleId",
   verifyToken,

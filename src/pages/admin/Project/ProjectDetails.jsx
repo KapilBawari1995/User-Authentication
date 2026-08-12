@@ -311,36 +311,7 @@ const ProjectDetails = () => {
             "
           >
 
-            {/* EDIT */}
-
-            <button
-              onClick={() =>
-                navigate(
-                  `/admin/projects/edit/${project._id}`
-                )
-              }
-              className="
-                inline-flex
-                items-center
-                gap-2
-                px-4
-                py-2.5
-                rounded-xl
-                border
-                border-slate-200
-                bg-white
-                text-slate-700
-                text-sm
-                font-semibold
-                hover:bg-slate-50
-                transition
-              "
-            >
-              <Edit size={17} />
-              Edit Project
-            </button>
-
-            {/* ADD TASK */}
+        
 
             <button
               onClick={() =>

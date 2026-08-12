@@ -35,7 +35,14 @@ import profileSaga from '../features/profile/profileSaga';
 import departmentReducer from '../features/department/departmentSlice';
 import departmentSaga from '../features/department/departmentSaga';
 
+import dashboardRedeucer from '../features/dashboard/dashboardSlice';
+import dashboardSaga from '../features/dashboard/dashboardSaga';
 
+import calendarReducer from '../features/calendar/calendarSlice';
+import calendarSaga from  '../features/calendar/calendarSaga';
+
+import reportsReducer from '../features/reports/reportSlice';
+import reportsSaga from '../features/reports/reportSaga'
 
 function* rootSaga() {
   yield all([
@@ -49,6 +56,9 @@ function* rootSaga() {
     notificationSaga(),
     profileSaga(),
     departmentSaga(),
+    dashboardSaga(),
+    calendarSaga(),
+    reportsSaga(),
   ]);
 }
 
@@ -66,6 +76,9 @@ export const store = configureStore({
     notification:notificationReducer,
     profile:profileReducer,
     department:departmentReducer,
+    dashboard:dashboardRedeucer,
+    calendar:calendarReducer,
+    reports:reportsReducer,
 
     
   },

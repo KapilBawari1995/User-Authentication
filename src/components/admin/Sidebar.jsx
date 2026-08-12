@@ -31,7 +31,6 @@ const Sidebar = () => {
     isSuperAdmin,
   } = useSelector((state) => state.auth);
 
-  // ================= LOGOUT =================
 
   const handleLogout = () => {
     dispatch(
@@ -41,7 +40,6 @@ const Sidebar = () => {
     );
   };
 
-  // ================= MENU =================
 
   const menu = [
     {
