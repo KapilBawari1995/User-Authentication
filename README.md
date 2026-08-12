@@ -334,3 +334,62 @@ EMAIL_PASS=
 **Kapil Bawari**
 
 React Developer | MERN Stack Developer
+
+
+Role-Based Project & Task Management Workflow
+
+<img width="1366" height="1068" alt="admin" src="https://github.com/user-attachments/assets/8555c9b0-1734-4c81-9777-440b91963c73" />
+
+Admin – Project Management
+
+Admin creates and manages projects and assigns a Manager to the project.
+
+<img width="1366" height="751" alt="manger" src="https://github.com/user-attachments/assets/e1fc76d0-93ca-4bb9-b3e1-11e55480e6af" />
+
+Manager – Assigned Projects
+
+Manager logs in and views the projects assigned to them by the Admin
+
+
+<img width="1366" height="1356" alt="mangertask" src="https://github.com/user-attachments/assets/f282fd51-292e-4f1d-a9b4-c9ba2d54327d" />
+
+Manager – Team & Task Management
+
+Manager opens the assigned project, adds team members and creates/assigns tasks to Developers.
+
+<img width="1366" height="751" alt="devlop" src="https://github.com/user-attachments/assets/1602702d-f337-4d83-b008-b06a5c912b13" />
+
+
+Developer – Assigned Project
+
+Developer logs in and sees the project assigned to them based on their role and permissions
+
+
+<img width="1366" height="1271" alt="dev2" src="https://github.com/user-attachments/assets/537f1952-c413-4695-8a63-89d24c81393e" />
+
+
+Developer – Assigned Tasks
+
+Developer opens the assigned project and views the tasks assigned by the Manager with priority, status and due dates.
+
+
+Admin creates project
+        ↓
+Admin assigns Manager
+        ↓
+Manager views assigned project
+        ↓
+Manager adds team members
+        ↓
+Manager assigns tasks
+        ↓
+Developer views assigned project
+        ↓
+Developer views assigned tasks
+
+
+
+
+
+
+
