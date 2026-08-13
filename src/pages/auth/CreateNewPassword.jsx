@@ -9,9 +9,12 @@ export default function CreateNewPassword() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const email = location.state?.email || localStorage.getItem("forgotEmail");
+  const email =
+    location.state?.email || localStorage.getItem("forgotEmail");
 
-  const { createPasswordLoading } = useSelector((state) => state.auth);
+  const { createPasswordLoading } = useSelector(
+    (state) => state.auth
+  );
 
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -22,17 +25,20 @@ export default function CreateNewPassword() {
   });
 
   const handleChange = (e) => {
-    setForm({
-      ...form,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
     if (form.newPassword !== form.confirmPassword) {
-      return alert("Passwords do not match");
+      alert("Passwords do not match");
+      return;
     }
 
     dispatch(
@@ -47,82 +53,109 @@ export default function CreateNewPassword() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-5">
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center px-4">
+      <div className="w-full max-w-md bg-white border border-slate-200 rounded-xl shadow-sm p-7">
 
-        <div className="flex justify-center mb-6">
-          <div className="bg-blue-100 p-4 rounded-full">
-            <Lock className="w-8 h-8 text-blue-600" />
+        {/* Header */}
+        <div className="text-center mb-7">
+          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-indigo-50 flex items-center justify-center">
+            <Lock className="w-6 h-6 text-indigo-600" />
           </div>
+
+          <h2 className="text-2xl font-semibold text-slate-800">
+            Create New Password
+          </h2>
+
+          <p className="text-sm text-slate-500 mt-2">
+            Enter your new password below.
+          </p>
         </div>
 
-        <h2 className="text-3xl font-bold text-center">
-          Create New Password
-        </h2>
-
-        <p className="text-center text-gray-500 mt-2 mb-8">
-          Enter your new password below.
-        </p>
-
+        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
 
+          {/* New Password */}
           <div>
-            <label className="font-medium">New Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              New Password
+            </label>
 
-            <div className="relative mt-2">
+            <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 name="newPassword"
                 value={form.newPassword}
                 onChange={handleChange}
                 placeholder="Enter new password"
-                className="w-full border rounded-lg px-4 py-3 outline-none focus:border-blue-600"
+                autoComplete="new-password"
+                className="w-full h-11 border border-slate-300 rounded-lg px-3 pr-11 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               />
 
               <button
                 type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-3"
+                onClick={() =>
+                  setShowPassword((prev) => !prev)
+                }
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-indigo-600"
               >
-                {showPassword ? <EyeOff /> : <Eye />}
+                {showPassword ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
           </div>
 
           {/* Confirm Password */}
           <div>
-            <label className="font-medium">Confirm Password</label>
+            <label className="block text-sm font-medium text-slate-700 mb-2">
+              Confirm Password
+            </label>
 
-            <div className="relative mt-2">
+            <div className="relative">
               <input
                 type={showConfirm ? "text" : "password"}
                 name="confirmPassword"
                 value={form.confirmPassword}
                 onChange={handleChange}
-                placeholder="Confirm password"
-                className="w-full border rounded-lg px-4 py-3 outline-none focus:border-blue-600"
+                placeholder="Confirm new password"
+                autoComplete="new-password"
+                className="w-full h-11 border border-slate-300 rounded-lg px-3 pr-11 text-sm text-slate-800 outline-none focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
               />
 
               <button
                 type="button"
-                onClick={() => setShowConfirm(!showConfirm)}
-                className="absolute right-3 top-3"
+                onClick={() =>
+                  setShowConfirm((prev) => !prev)
+                }
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 flex items-center justify-center text-slate-400 hover:text-indigo-600"
               >
-                {showConfirm ? <EyeOff /> : <Eye />}
+                {showConfirm ? (
+                  <EyeOff size={18} />
+                ) : (
+                  <Eye size={18} />
+                )}
               </button>
             </div>
           </div>
 
+          {/* Submit */}
           <button
             type="submit"
             disabled={createPasswordLoading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold"
+            className="w-full h-11 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-400 text-white rounded-lg text-sm font-semibold transition"
           >
             {createPasswordLoading
               ? "Updating..."
               : "Create New Password"}
           </button>
         </form>
+
+        {/* Bottom text */}
+        <p className="text-center text-xs text-slate-400 mt-6">
+          Make sure both passwords are the same.
+        </p>
       </div>
     </div>
   );

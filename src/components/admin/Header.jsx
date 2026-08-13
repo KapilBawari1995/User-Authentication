@@ -1,6 +1,9 @@
-
 import React from "react";
-import { Bell, User, ChevronDown, ShieldCheck } from "lucide-react";
+import {
+  Bell,
+  ChevronDown,
+  ShieldCheck,
+} from "lucide-react";
 import { useSelector } from "react-redux";
 
 const Header = () => {
@@ -9,208 +12,312 @@ const Header = () => {
   );
 
   const userName = user?.name || "Admin";
+
   const roleName = isSuperAdmin
     ? "Super Admin"
     : user?.role?.name || "User";
 
   return (
-    <header style={styles.header}>
+    <header
+      className="
+        fixed
+        top-0
+        left-0
+        right-0
+        z-[100]
 
+        h-[70px]
 
-      <div style={styles.logoSection}>
+        flex
+        items-center
+        justify-between
 
-        <div style={styles.logoIcon}>
+        px-[30px]
+
+        bg-white
+        dark:bg-slate-900
+
+        border-b
+        border-slate-200
+        dark:border-slate-800
+
+        shadow-[0_2px_8px_rgba(0,0,0,0.05)]
+        dark:shadow-[0_2px_8px_rgba(0,0,0,0.25)]
+
+        transition-colors
+        duration-300
+      "
+    >
+      {/* ================================================= */}
+      {/* LOGO SECTION */}
+      {/* ================================================= */}
+
+      <div
+        className="
+          flex
+          items-center
+          gap-3
+        "
+      >
+        {/* LOGO ICON */}
+
+        <div
+          className="
+            w-[42px]
+            h-[42px]
+
+            rounded-xl
+
+            flex
+            items-center
+            justify-center
+
+            bg-gradient-to-br
+            from-indigo-600
+            to-violet-600
+
+            text-white
+
+            shadow-[0_5px_12px_rgba(79,70,229,0.20)]
+          "
+        >
           <ShieldCheck size={22} />
         </div>
 
+        {/* LOGO TEXT */}
+
         <div>
-          <h2 style={styles.logo}>
+          <h2
+            className="
+              m-0
+
+              text-[18px]
+              font-bold
+
+              text-slate-800
+              dark:text-white
+
+              transition-colors
+              duration-300
+            "
+          >
             Task Portal
           </h2>
 
-          <p style={styles.subtitle}>
+          <p
+            className="
+              mt-0.5
+              mb-0
+
+              text-[10px]
+
+              text-slate-400
+              dark:text-slate-500
+            "
+          >
             Management System
           </p>
         </div>
-
       </div>
 
-   
+      {/* ================================================= */}
+      {/* RIGHT SECTION */}
+      {/* ================================================= */}
 
-      <div style={styles.rightSection}>
-
+      <div
+        className="
+          flex
+          items-center
+          gap-[18px]
+        "
+      >
+        {/* ================================================= */}
+        {/* NOTIFICATION */}
+        {/* ================================================= */}
 
         <button
-          style={styles.iconBtn}
+          type="button"
           title="Notifications"
+          className="
+            relative
+
+            w-[42px]
+            h-[42px]
+
+            rounded-xl
+
+            flex
+            items-center
+            justify-center
+
+            cursor-pointer
+
+            border
+            border-slate-200
+            dark:border-slate-700
+
+            bg-slate-50
+            dark:bg-slate-800
+
+            text-slate-500
+            dark:text-slate-300
+
+            transition-all
+            duration-200
+
+            hover:bg-slate-100
+            dark:hover:bg-slate-700
+
+            hover:text-slate-700
+            dark:hover:text-white
+          "
         >
           <Bell size={20} />
 
-          <span style={styles.notificationDot} />
+          {/* NOTIFICATION DOT */}
+
+          <span
+            className="
+              absolute
+
+              top-2
+              right-2
+
+              w-[7px]
+              h-[7px]
+
+              rounded-full
+
+              bg-red-500
+
+              border-2
+              border-white
+              dark:border-slate-800
+            "
+          />
         </button>
 
+        {/* ================================================= */}
         {/* PROFILE */}
+        {/* ================================================= */}
 
-        <div style={styles.profile}>
+        <div
+          className="
+            flex
+            items-center
+            gap-2.5
 
-          <div style={styles.avatar}>
-            {userName
-              ?.charAt(0)
-              ?.toUpperCase()}
+            min-w-[165px]
+
+            px-2.5
+            py-1.5
+            pl-[7px]
+
+            rounded-xl
+
+            bg-slate-50
+            dark:bg-slate-800
+
+            border
+            border-slate-200
+            dark:border-slate-700
+
+            transition-colors
+            duration-300
+          "
+        >
+          {/* AVATAR */}
+
+          <div
+            className="
+              w-[38px]
+              h-[38px]
+              min-w-[38px]
+
+              rounded-[10px]
+
+              flex
+              items-center
+              justify-center
+
+              bg-gradient-to-br
+              from-indigo-50
+              to-violet-50
+
+              dark:from-indigo-500/20
+              dark:to-violet-500/20
+
+              text-indigo-600
+              dark:text-indigo-400
+
+              text-[15px]
+              font-bold
+            "
+          >
+            {userName?.charAt(0)?.toUpperCase()}
           </div>
 
-          <div style={styles.profileInfo}>
+          {/* PROFILE INFO */}
 
-            <p style={styles.userName}>
+          <div
+            className="
+              flex-1
+              min-w-0
+            "
+          >
+            <p
+              className="
+                m-0
+
+                text-[13px]
+                font-bold
+
+                text-slate-800
+                dark:text-white
+
+                whitespace-nowrap
+                overflow-hidden
+                text-ellipsis
+
+                transition-colors
+                duration-300
+              "
+            >
               {userName}
             </p>
 
-            <span style={styles.role}>
+            <span
+              className="
+                block
+
+                mt-0.5
+
+                text-[10px]
+                font-medium
+
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
               {roleName}
             </span>
-
           </div>
+
+          {/* CHEVRON */}
 
           <ChevronDown
             size={17}
-            color="#64748b"
+            className="
+              text-slate-500
+              dark:text-slate-400
+
+              shrink-0
+            "
           />
-
         </div>
-
       </div>
-
     </header>
   );
-};
-
-const styles = {
-  header: {
-    height: "70px",
-    backgroundColor: "#ffffff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    padding: "0 30px",
-    borderBottom: "1px solid #e2e8f0",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-    position: "fixed",
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 100,
-  },
-
-  logoSection: {
-    display: "flex",
-    alignItems: "center",
-    gap: "12px",
-  },
-
-  logoIcon: {
-    width: "42px",
-    height: "42px",
-    borderRadius: "12px",
-    background:
-      "linear-gradient(135deg, #4f46e5, #7c3aed)",
-    color: "#ffffff",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    boxShadow: "0 5px 12px rgba(79,70,229,.20)",
-  },
-
-  logo: {
-    margin: 0,
-    fontSize: "18px",
-    fontWeight: "700",
-    color: "#1e293b",
-  },
-
-  subtitle: {
-    margin: "2px 0 0",
-    fontSize: "10px",
-    color: "#94a3b8",
-  },
-
-  rightSection: {
-    display: "flex",
-    alignItems: "center",
-    gap: "18px",
-  },
-
-  iconBtn: {
-    position: "relative",
-    border: "1px solid #e2e8f0",
-    background: "#f8fafc",
-    width: "42px",
-    height: "42px",
-    borderRadius: "12px",
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color: "#475569",
-  },
-
-  notificationDot: {
-    position: "absolute",
-    top: "8px",
-    right: "8px",
-    width: "7px",
-    height: "7px",
-    borderRadius: "50%",
-    background: "#ef4444",
-    border: "2px solid #ffffff",
-  },
-
-  profile: {
-    display: "flex",
-    alignItems: "center",
-    gap: "10px",
-    backgroundColor: "#f8fafc",
-    border: "1px solid #e2e8f0",
-    padding: "6px 10px 6px 7px",
-    borderRadius: "12px",
-    minWidth: "165px",
-  },
-
-  avatar: {
-    width: "38px",
-    height: "38px",
-    borderRadius: "10px",
-    background:
-      "linear-gradient(135deg, #eef2ff, #ede9fe)",
-    color: "#4f46e5",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    fontSize: "15px",
-    fontWeight: "700",
-  },
-
-  profileInfo: {
-    flex: 1,
-    minWidth: 0,
-  },
-
-  userName: {
-    margin: 0,
-    fontSize: "13px",
-    fontWeight: "700",
-    color: "#1e293b",
-    whiteSpace: "nowrap",
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-  },
-
-  role: {
-    display: "block",
-    marginTop: "2px",
-    fontSize: "10px",
-    color: "#64748b",
-    fontWeight: "500",
-  },
 };
 
 export default Header;

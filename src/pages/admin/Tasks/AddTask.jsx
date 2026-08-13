@@ -17,12 +17,15 @@ import {
   clearTaskState,
 } from "../../../features/task/taskSlice";
 
-import {getProjectTeamMembersRequest} from '../../../features/project/projectSlice';
+import {
+  getProjectTeamMembersRequest,
+} from "../../../features/project/projectSlice";
+
 const AddTask = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-const { projectId, id } = useParams();
+  const { projectId, id } = useParams();
   const isEditMode = !!id;
 
   const {
@@ -33,11 +36,9 @@ const { projectId, id } = useParams();
     updateLoading,
   } = useSelector((state) => state.task);
 
-  const {
-    teamMembers,
-  } = useSelector((state) => state.project);
-
-
+  const { teamMembers } = useSelector(
+    (state) => state.project
+  );
 
   useEffect(() => {
     dispatch(
@@ -47,11 +48,7 @@ const { projectId, id } = useParams();
     if (isEditMode) {
       dispatch(getTaskByIdRequest(id));
     }
-  }, [dispatch, id, isEditMode,projectId]);
-
-  // =====================================================
-  // SUCCESS
-  // =====================================================
+  }, [dispatch, id, isEditMode, projectId]);
 
   useEffect(() => {
     if (createSuccess || updateSuccess) {
@@ -71,59 +68,38 @@ const { projectId, id } = useParams();
     projectId,
   ]);
 
-  // =====================================================
-  // CLEANUP
-  // =====================================================
-
   useEffect(() => {
     return () => {
       dispatch(clearTaskState());
     };
   }, [dispatch]);
 
-  // =====================================================
-  // FORMIK
-  // =====================================================
-
   const formik = useFormik({
     enableReinitialize: true,
 
     initialValues: {
       title: task?.title || "",
-
       description: task?.description || "",
-
-      // Project automatically comes from URL
       project:
         projectId ||
         task?.project?._id ||
         "",
-
-      // User comes from API
       assignedTo:
         task?.assignedTo?._id ||
         "",
-
       status:
         task?.status ||
         "Pending",
-
       priority:
         task?.priority ||
         "Medium",
-
       dueDate: task?.dueDate
         ? task.dueDate.substring(0, 10)
         : "",
-
       estimatedHours:
         task?.estimatedHours ||
         "",
     },
-
-    // =====================================================
-    // VALIDATION
-    // =====================================================
 
     validationSchema: Yup.object({
       title: Yup.string()
@@ -136,10 +112,6 @@ const { projectId, id } = useParams();
       dueDate: Yup.string()
         .required("Due date is required"),
     }),
-
-    // =====================================================
-    // SUBMIT
-    // =====================================================
 
     onSubmit: (values) => {
       const taskData = {
@@ -155,10 +127,6 @@ const { projectId, id } = useParams();
 
       console.log("TASK DATA:", taskData);
 
-      // =================================================
-      // UPDATE
-      // =================================================
-
       if (isEditMode) {
         dispatch(
           updateTaskRequest({
@@ -166,23 +134,13 @@ const { projectId, id } = useParams();
             data: taskData,
           })
         );
-      }
-
-      // =================================================
-      // CREATE
-      // =================================================
-
-      else {
+      } else {
         dispatch(
           createTaskRequest(taskData)
         );
       }
     },
   });
-
-  // =====================================================
-  // BACK
-  // =====================================================
 
   const handleBack = () => {
     if (projectId) {
@@ -193,7 +151,7 @@ const { projectId, id } = useParams();
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full text-slate-800 dark:text-slate-100">
 
       {/* =================================================
           HEADER
@@ -214,8 +172,8 @@ const { projectId, id } = useParams();
           <div className="
             w-12 h-12
             rounded-xl
-            bg-indigo-50
-            text-indigo-600
+            bg-indigo-50 dark:bg-indigo-500/10
+            text-indigo-600 dark:text-indigo-400
             flex
             items-center
             justify-center
@@ -228,7 +186,7 @@ const { projectId, id } = useParams();
             <h1 className="
               text-2xl
               font-bold
-              text-slate-800
+              text-slate-800 dark:text-white
             ">
               {isEditMode
                 ? "Edit Task"
@@ -237,7 +195,7 @@ const { projectId, id } = useParams();
 
             <p className="
               text-sm
-              text-slate-500
+              text-slate-500 dark:text-slate-400
               mt-1
             ">
               {isEditMode
@@ -259,15 +217,15 @@ const { projectId, id } = useParams();
             items-center
             justify-center
             gap-2
-            bg-white
+            bg-white dark:bg-slate-900
             border
-            border-slate-200
-            text-slate-700
+            border-slate-200 dark:border-slate-700
+            text-slate-700 dark:text-slate-300
             px-5
             py-2.5
             rounded-xl
             font-medium
-            hover:bg-slate-50
+            hover:bg-slate-50 dark:hover:bg-slate-800
             transition
             shadow-sm
           "
@@ -283,9 +241,9 @@ const { projectId, id } = useParams();
       ================================================= */}
 
       <div className="
-        bg-indigo-50
+        bg-indigo-50 dark:bg-indigo-500/10
         border
-        border-indigo-100
+        border-indigo-100 dark:border-indigo-500/20
         rounded-2xl
         px-5
         py-4
@@ -297,13 +255,13 @@ const { projectId, id } = useParams();
           <div className="
             w-10 h-10
             rounded-xl
-            bg-white
-            text-indigo-600
+            bg-white dark:bg-slate-900
+            text-indigo-600 dark:text-indigo-400
             flex
             items-center
             justify-center
             border
-            border-indigo-100
+            border-indigo-100 dark:border-indigo-500/20
           ">
             <ClipboardList size={19} />
           </div>
@@ -312,7 +270,7 @@ const { projectId, id } = useParams();
 
             <p className="
               text-xs
-              text-indigo-500
+              text-indigo-500 dark:text-indigo-400
               font-semibold
               uppercase
               tracking-wide
@@ -323,7 +281,7 @@ const { projectId, id } = useParams();
             <p className="
               text-sm
               font-semibold
-              text-slate-700
+              text-slate-700 dark:text-slate-200
               mt-0.5
             ">
               This task will automatically belong to the selected project.
@@ -340,11 +298,11 @@ const { projectId, id } = useParams();
       ================================================= */}
 
       <div className="
-        bg-white
+        bg-white dark:bg-slate-900
         border
-        border-slate-200
+        border-slate-200 dark:border-slate-700
         rounded-2xl
-        shadow-sm
+        shadow-sm dark:shadow-none
         max-w-5xl
         overflow-hidden
       ">
@@ -355,8 +313,8 @@ const { projectId, id } = useParams();
           px-7
           py-5
           border-b
-          border-slate-200
-          bg-slate-50/50
+          border-slate-200 dark:border-slate-700
+          bg-slate-50/50 dark:bg-slate-800/50
         ">
 
           <div className="flex items-center gap-3">
@@ -364,14 +322,14 @@ const { projectId, id } = useParams();
             <div className="
               w-10 h-10
               rounded-xl
-              bg-indigo-100
+              bg-indigo-100 dark:bg-indigo-500/10
               flex
               items-center
               justify-center
             ">
               <Save
                 size={20}
-                className="text-indigo-600"
+                className="text-indigo-600 dark:text-indigo-400"
               />
             </div>
 
@@ -379,14 +337,14 @@ const { projectId, id } = useParams();
 
               <h3 className="
                 font-semibold
-                text-slate-800
+                text-slate-800 dark:text-white
               ">
                 Task Information
               </h3>
 
               <p className="
                 text-sm
-                text-slate-500
+                text-slate-500 dark:text-slate-400
               ">
                 Enter the task details below
               </p>
@@ -406,9 +364,7 @@ const { projectId, id } = useParams();
           className="p-7 space-y-6"
         >
 
-          {/* =================================================
-              TITLE
-          ================================================= */}
+          {/* TITLE */}
 
           <div>
 
@@ -417,7 +373,7 @@ const { projectId, id } = useParams();
               mb-2
               text-sm
               font-semibold
-              text-slate-700
+              text-slate-700 dark:text-slate-300
             ">
               Task Title
               <span className="text-red-500 ml-1">
@@ -440,10 +396,14 @@ const { projectId, id } = useParams();
                 py-3
                 outline-none
                 transition
-                ${formik.touched.title &&
+                bg-white dark:bg-slate-800
+                text-slate-800 dark:text-slate-100
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
+                ${
+                  formik.touched.title &&
                   formik.errors.title
-                  ? "border-red-500 focus:ring-2 focus:ring-red-100"
-                  : "border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                    ? "border-red-500 focus:ring-2 focus:ring-red-500/20"
+                    : "border-slate-300 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                 }
               `}
             />
@@ -451,7 +411,7 @@ const { projectId, id } = useParams();
             {formik.touched.title &&
               formik.errors.title && (
                 <p className="
-                  text-red-500
+                  text-red-500 dark:text-red-400
                   text-sm
                   mt-1
                 ">
@@ -461,9 +421,7 @@ const { projectId, id } = useParams();
 
           </div>
 
-          {/* =================================================
-              DESCRIPTION
-          ================================================= */}
+          {/* DESCRIPTION */}
 
           <div>
 
@@ -472,7 +430,7 @@ const { projectId, id } = useParams();
               mb-2
               text-sm
               font-semibold
-              text-slate-700
+              text-slate-700 dark:text-slate-300
             ">
               Description
             </label>
@@ -486,98 +444,94 @@ const { projectId, id } = useParams();
               className="
                 w-full
                 border
-                border-slate-300
+                border-slate-300 dark:border-slate-700
                 rounded-xl
                 px-4
                 py-3
                 outline-none
                 resize-none
+                bg-white dark:bg-slate-800
+                text-slate-800 dark:text-slate-100
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
                 focus:border-indigo-500
                 focus:ring-2
-                focus:ring-indigo-100
+                focus:ring-indigo-500/20
                 transition
               "
             />
 
           </div>
 
-          {/* =================================================
-              ASSIGN USER
-          ================================================= */}
+          {/* ASSIGN TEAM MEMBER */}
 
-        {/* =================================================
-    ASSIGN TEAM MEMBER
-================================================= */}
+          <div>
 
-<div>
+            <label className="
+              block
+              mb-2
+              text-sm
+              font-semibold
+              text-slate-700 dark:text-slate-300
+            ">
+              Assign Team Member
+              <span className="text-red-500 ml-1">
+                *
+              </span>
+            </label>
 
-  <label className="
-    block
-    mb-2
-    text-sm
-    font-semibold
-    text-slate-700
-  ">
-    Assign Team Member
-    <span className="text-red-500 ml-1">
-      *
-    </span>
-  </label>
+            <select
+              name="assignedTo"
+              value={formik.values.assignedTo}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`
+                w-full
+                border
+                rounded-xl
+                px-4
+                py-3
+                bg-white dark:bg-slate-800
+                text-slate-800 dark:text-slate-100
+                outline-none
+                transition
+                ${
+                  formik.touched.assignedTo &&
+                  formik.errors.assignedTo
+                    ? "border-red-500"
+                    : "border-slate-300 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
+                }
+              `}
+            >
 
-  <select
-    name="assignedTo"
-    value={formik.values.assignedTo}
-    onChange={formik.handleChange}
-    onBlur={formik.handleBlur}
-    className={`
-      w-full
-      border
-      rounded-xl
-      px-4
-      py-3
-      bg-white
-      outline-none
-      transition
-      ${
-        formik.touched.assignedTo &&
-        formik.errors.assignedTo
-          ? "border-red-500"
-          : "border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
-      }
-    `}
-  >
+              <option value="">
+                Select Team Member
+              </option>
 
-    <option value="">
-      Select Team Member
-    </option>
+              {teamMembers?.map((member) => (
+                <option
+                  key={member._id}
+                  value={member._id}
+                >
+                  {member.name}
+                </option>
+              ))}
 
-    {teamMembers?.map((member) => (
-      <option
-        key={member._id}
-        value={member._id}
-      >
-        {member.name}
-      </option>
-    ))}
+            </select>
 
-  </select>
+            {formik.touched.assignedTo &&
+              formik.errors.assignedTo && (
+                <p className="
+                  text-red-500 dark:text-red-400
+                  text-sm
+                  mt-1
+                ">
+                  {formik.errors.assignedTo}
+                </p>
+              )}
 
-  {formik.touched.assignedTo &&
-    formik.errors.assignedTo && (
-      <p className="
-        text-red-500
-        text-sm
-        mt-1
-      ">
-        {formik.errors.assignedTo}
-      </p>
-    )}
+          </div>
 
-</div>
-
-          {/* =================================================
-              STATUS / PRIORITY
-          ================================================= */}
+          {/* STATUS / PRIORITY */}
 
           <div className="
             grid
@@ -595,7 +549,7 @@ const { projectId, id } = useParams();
                 mb-2
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
               ">
                 Status
               </label>
@@ -607,15 +561,16 @@ const { projectId, id } = useParams();
                 className="
                   w-full
                   border
-                  border-slate-300
+                  border-slate-300 dark:border-slate-700
                   rounded-xl
                   px-4
                   py-3
-                  bg-white
+                  bg-white dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
                   outline-none
                   focus:border-indigo-500
                   focus:ring-2
-                  focus:ring-indigo-100
+                  focus:ring-indigo-500/20
                 "
               >
 
@@ -648,7 +603,7 @@ const { projectId, id } = useParams();
                 mb-2
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
               ">
                 Priority
               </label>
@@ -660,15 +615,16 @@ const { projectId, id } = useParams();
                 className="
                   w-full
                   border
-                  border-slate-300
+                  border-slate-300 dark:border-slate-700
                   rounded-xl
                   px-4
                   py-3
-                  bg-white
+                  bg-white dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
                   outline-none
                   focus:border-indigo-500
                   focus:ring-2
-                  focus:ring-indigo-100
+                  focus:ring-indigo-500/20
                 "
               >
 
@@ -694,9 +650,7 @@ const { projectId, id } = useParams();
 
           </div>
 
-          {/* =================================================
-              DATE / HOURS
-          ================================================= */}
+          {/* DATE / HOURS */}
 
           <div className="
             grid
@@ -714,7 +668,7 @@ const { projectId, id } = useParams();
                 mb-2
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
               ">
                 Due Date
                 <span className="text-red-500 ml-1">
@@ -736,10 +690,13 @@ const { projectId, id } = useParams();
                   py-3
                   outline-none
                   transition
-                  ${formik.touched.dueDate &&
+                  bg-white dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
+                  ${
+                    formik.touched.dueDate &&
                     formik.errors.dueDate
-                    ? "border-red-500"
-                    : "border-slate-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-100"
+                      ? "border-red-500"
+                      : "border-slate-300 dark:border-slate-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20"
                   }
                 `}
               />
@@ -747,7 +704,7 @@ const { projectId, id } = useParams();
               {formik.touched.dueDate &&
                 formik.errors.dueDate && (
                   <p className="
-                    text-red-500
+                    text-red-500 dark:text-red-400
                     text-sm
                     mt-1
                   ">
@@ -766,7 +723,7 @@ const { projectId, id } = useParams();
                 mb-2
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
               ">
                 Estimated Hours
               </label>
@@ -781,14 +738,17 @@ const { projectId, id } = useParams();
                 className="
                   w-full
                   border
-                  border-slate-300
+                  border-slate-300 dark:border-slate-700
                   rounded-xl
                   px-4
                   py-3
                   outline-none
+                  bg-white dark:bg-slate-800
+                  text-slate-800 dark:text-slate-100
+                  placeholder:text-slate-400 dark:placeholder:text-slate-500
                   focus:border-indigo-500
                   focus:ring-2
-                  focus:ring-indigo-100
+                  focus:ring-indigo-500/20
                 "
               />
 
@@ -796,9 +756,7 @@ const { projectId, id } = useParams();
 
           </div>
 
-          {/* =================================================
-              ACTIONS
-          ================================================= */}
+          {/* ACTIONS */}
 
           <div className="
             flex
@@ -808,7 +766,7 @@ const { projectId, id } = useParams();
             gap-3
             pt-6
             border-t
-            border-slate-200
+            border-slate-200 dark:border-slate-700
           ">
 
             <button
@@ -819,10 +777,11 @@ const { projectId, id } = useParams();
                 py-3
                 rounded-xl
                 border
-                border-slate-300
-                text-slate-700
+                border-slate-300 dark:border-slate-700
+                text-slate-700 dark:text-slate-300
+                bg-white dark:bg-slate-900
                 font-semibold
-                hover:bg-slate-50
+                hover:bg-slate-50 dark:hover:bg-slate-800
                 transition
               "
             >
@@ -846,6 +805,7 @@ const { projectId, id } = useParams();
                 bg-indigo-600
                 hover:bg-indigo-700
                 disabled:bg-slate-400
+                dark:disabled:bg-slate-700
                 text-white
                 font-semibold
                 transition

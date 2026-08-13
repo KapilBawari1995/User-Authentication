@@ -1,6 +1,7 @@
 import User from "../models/User.js";
 import Role from "../models/Role.js";
 import bcrypt from "bcryptjs";
+import createNotification from "../utils/notificationHelper.js";
 
 
 export const createUser = async (req, res) => {
@@ -48,6 +49,17 @@ export const createUser = async (req, res) => {
     const createdUser = await User.findById(user._id)
       .select("-password -otp -otpExpiry")
       .populate("role", "name");
+
+await createNotification({
+  title: "New User Created",
+  message: `User "${user.name}" has been created.`,
+  type: "User",
+  receiver: user._id,
+  sender: req.user.id,
+  referenceId: user._id,
+  referenceType: "User",
+});
+
 
     return res.status(201).json({
       success: true,
@@ -185,6 +197,17 @@ export const updateUser = async (req, res) => {
       .select("-password -otp -otpExpiry")
       .populate("role", "name");
 
+await createNotification({
+  title: "User Updated",
+  message: `User "${user.name}" has been updated.`,
+  type: "User",
+  receiver: user._id,
+  sender: req.user.id,
+  referenceId: user._id,
+  referenceType: "User",
+});
+
+
     return res.status(200).json({
       success: true,
       message: "User updated successfully.",
@@ -223,6 +246,16 @@ export const deleteUser = async (req, res) => {
     }
 
     await User.findByIdAndDelete(id);
+await createNotification({
+  title: "User Updated",
+  message: `User "${user.name}" has been updated.`,
+  type: "User",
+  receiver: user._id,
+  sender: req.user.id,
+  referenceId: user._id,
+  referenceType: "User",
+});
+
 
     return res.status(200).json({
       success: true,

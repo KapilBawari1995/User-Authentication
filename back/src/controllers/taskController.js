@@ -1,6 +1,8 @@
 import Task from "../models/Task.js";
 import User from "../models/User.js";
 import Project from "../models/Project.js";
+import createNotification from "../utils/notificationHelper.js";
+
 
 import Notification from "../models/Notification.js";
 export const createTask = async (req, res) => {
@@ -108,22 +110,16 @@ export const createTask = async (req, res) => {
       .populate("createdBy", "name email")
       .populate("project", "name");
 
-    await Notification.create({
-      title: "New Task Assigned",
-
-      message: `You have been assigned a new task: ${task.title}`,
-
-      type: "Task",
-
-      receiver: assignedTo,
-
-      sender: req.user.id,
-
-      referenceId: task._id,
-
-      referenceType: "Task",
-    });
-
+   
+await createNotification({
+  title: "New Task Assigned",
+  message: `You have been assigned a new task: ${task.title}`,
+  type: "Task",
+  receiver: task.assignedTo,
+  sender: req.user.id,
+  referenceId: task._id,
+  referenceType: "Task",
+});
     return res.status(201).json({
       success: true,
 
@@ -343,6 +339,17 @@ export const updateTask = async (req, res) => {
       });
     }
 
+await createNotification({
+  title: "Task Updated",
+  message: `Task "${task.title}" has been updated.`,
+  type: "Task",
+  receiver: task.assignedTo,
+  sender: req.user.id,
+  referenceId: task._id,
+  referenceType: "Task",
+});
+
+
     return res.status(200).json({
       success: true,
       message: "Task updated successfully.",
@@ -372,6 +379,17 @@ export const deleteTask = async (req, res) => {
         message: "Task not found.",
       });
     }
+
+
+    await createNotification({
+  title: "Task Deleted",
+  message: `Task "${task.title}" has been deleted.`,
+  type: "Task",
+  receiver: task.assignedTo,
+  sender: req.user.id,
+  referenceId: task._id,
+  referenceType: "Task",
+});
 
     return res.status(200).json({
       success: true,

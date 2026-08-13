@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Building2,
@@ -86,7 +85,7 @@ const AssignManager = () => {
   };
 
   return (
-    <div>
+    <div className="text-slate-800 dark:text-slate-100">
 
       {/* ================================================= */}
       {/* HEADER */}
@@ -100,7 +99,7 @@ const AssignManager = () => {
             bg-gradient-to-br
             from-indigo-500 to-violet-600
             text-white
-            shadow-lg shadow-indigo-200
+            shadow-lg shadow-indigo-200 dark:shadow-none
             flex items-center justify-center
           "
         >
@@ -112,14 +111,14 @@ const AssignManager = () => {
           <h1
             className="
               text-3xl font-bold
-              text-slate-800
+              text-slate-800 dark:text-white
               tracking-tight
             "
           >
             Assign Department Manager
           </h1>
 
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Assign a manager to a department
           </p>
 
@@ -127,17 +126,16 @@ const AssignManager = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* FORM CARD */}
       {/* ================================================= */}
 
       <div
         className="
-          bg-white
+          bg-white dark:bg-slate-900
           rounded-2xl
-          border border-slate-200
-          shadow-sm
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
           overflow-hidden
           max-w-3xl
         "
@@ -148,7 +146,7 @@ const AssignManager = () => {
         <div
           className="
             px-6 py-5
-            border-b border-slate-200
+            border-b border-slate-200 dark:border-slate-700
             flex items-center gap-3
           "
         >
@@ -157,8 +155,8 @@ const AssignManager = () => {
             className="
               w-10 h-10
               rounded-xl
-              bg-indigo-50
-              text-indigo-600
+              bg-indigo-50 dark:bg-indigo-500/10
+              text-indigo-600 dark:text-indigo-400
               flex items-center justify-center
             "
           >
@@ -167,18 +165,17 @@ const AssignManager = () => {
 
           <div>
 
-            <h2 className="font-bold text-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-white">
               Department Manager
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               Select a department and assign its manager.
             </p>
 
           </div>
 
         </div>
-
 
         {/* FORM */}
 
@@ -198,7 +195,7 @@ const AssignManager = () => {
                 block
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
                 mb-2
               "
             >
@@ -214,16 +211,16 @@ const AssignManager = () => {
                 w-full
                 h-12
                 px-4
-                border border-slate-200
+                border border-slate-200 dark:border-slate-700
                 rounded-xl
-                bg-slate-50
+                bg-slate-50 dark:bg-slate-800
                 text-sm
-                text-slate-700
+                text-slate-700 dark:text-slate-200
                 outline-none
-                focus:bg-white
+                focus:bg-white dark:focus:bg-slate-900
                 focus:border-indigo-400
                 focus:ring-4
-                focus:ring-indigo-50
+                focus:ring-indigo-500/10
                 transition
               "
             >
@@ -245,7 +242,6 @@ const AssignManager = () => {
 
           </div>
 
-
           {/* ================================================= */}
           {/* MANAGER */}
           {/* ================================================= */}
@@ -257,7 +253,7 @@ const AssignManager = () => {
                 block
                 text-sm
                 font-semibold
-                text-slate-700
+                text-slate-700 dark:text-slate-300
                 mb-2
               "
             >
@@ -277,17 +273,18 @@ const AssignManager = () => {
                 w-full
                 h-12
                 px-4
-                border border-slate-200
+                border border-slate-200 dark:border-slate-700
                 rounded-xl
-                bg-slate-50
+                bg-slate-50 dark:bg-slate-800
                 text-sm
-                text-slate-700
+                text-slate-700 dark:text-slate-200
                 outline-none
-                focus:bg-white
+                focus:bg-white dark:focus:bg-slate-900
                 focus:border-indigo-400
                 focus:ring-4
-                focus:ring-indigo-50
+                focus:ring-indigo-500/10
                 disabled:bg-slate-100
+                dark:disabled:bg-slate-800
                 disabled:text-slate-400
                 transition
               "
@@ -310,7 +307,6 @@ const AssignManager = () => {
 
             </select>
 
-
             {/* NO MANAGER */}
 
             {!managersLoading &&
@@ -322,7 +318,7 @@ const AssignManager = () => {
                     flex items-center gap-2
                     mt-2
                     text-sm
-                    text-red-500
+                    text-red-500 dark:text-red-400
                   "
                 >
 
@@ -338,7 +334,6 @@ const AssignManager = () => {
 
           </div>
 
-
           {/* ================================================= */}
           {/* ERROR */}
           {/* ================================================= */}
@@ -350,9 +345,9 @@ const AssignManager = () => {
                 flex items-center gap-2
                 p-4
                 rounded-xl
-                bg-red-50
-                border border-red-200
-                text-red-600
+                bg-red-50 dark:bg-red-500/10
+                border border-red-200 dark:border-red-500/20
+                text-red-600 dark:text-red-400
                 text-sm
               "
             >
@@ -367,7 +362,6 @@ const AssignManager = () => {
 
           )}
 
-
           {/* ================================================= */}
           {/* SUCCESS */}
           {/* ================================================= */}
@@ -379,9 +373,9 @@ const AssignManager = () => {
                 flex items-center gap-2
                 p-4
                 rounded-xl
-                bg-emerald-50
-                border border-emerald-200
-                text-emerald-600
+                bg-emerald-50 dark:bg-emerald-500/10
+                border border-emerald-200 dark:border-emerald-500/20
+                text-emerald-600 dark:text-emerald-400
                 text-sm
               "
             >
@@ -396,7 +390,6 @@ const AssignManager = () => {
 
           )}
 
-
           {/* ================================================= */}
           {/* FOOTER */}
           {/* ================================================= */}
@@ -404,7 +397,7 @@ const AssignManager = () => {
           <div
             className="
               pt-5
-              border-t border-slate-200
+              border-t border-slate-200 dark:border-slate-700
               flex justify-end
             "
           >
@@ -424,6 +417,7 @@ const AssignManager = () => {
                 bg-indigo-600
                 hover:bg-indigo-700
                 disabled:bg-slate-300
+                dark:disabled:bg-slate-700
                 disabled:cursor-not-allowed
                 text-white
                 px-6
@@ -433,6 +427,7 @@ const AssignManager = () => {
                 text-sm
                 shadow-md
                 shadow-indigo-100
+                dark:shadow-none
                 transition
               "
             >

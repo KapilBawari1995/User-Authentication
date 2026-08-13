@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import generateToken from "../utils/generateToken.js";
 import sendEmailOtp from "../utils/emailService.js";
 
+import Notification from "../models/Notification.js";
 import Role from "../models/Role.js";
 
 
@@ -305,6 +306,9 @@ export const sendChangePasswordOtp = async (req, res) => {
     });
   }
 };
+
+
+
 export const verifyAndChangePassword = async (req, res) => {
   try {
     const { newPassword, otp } = req.body;
@@ -347,7 +351,21 @@ export const verifyAndChangePassword = async (req, res) => {
 
     user.mustChangePassword = false;
 
+
+    
+
     await user.save();
+await Notification.create({
+  title: "Password Changed",
+  message: "Your account password has been changed successfully.",
+  type: "security",
+  receiver: user._id,
+  sender: user._id,
+  referenceId: user._id,
+  referenceType: "User",
+});
+
+
 
     return res.status(200).json({
       success: true,
@@ -426,6 +444,17 @@ export const createNewPassword = async (req, res) => {
     user.otpExpires = undefined;
 
     await user.save();
+await Notification.create({
+  title: "Password Reset Successful",
+  message: "Your account password was reset successfully.",
+  type: "security",
+  receiver: user._id,
+  sender: user._id,
+  referenceId: user._id,
+  referenceType: "User",
+});
+
+
 
     res.status(200).json({
       success: true,

@@ -333,12 +333,14 @@ const Calendar = () => {
   if (loading && calendar.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
+
         <div className="text-center">
+
           <div
             className="
               w-10 h-10
               border-4
-              border-indigo-600
+              border-indigo-600 dark:border-indigo-400
               border-t-transparent
               rounded-full
               animate-spin
@@ -346,10 +348,12 @@ const Calendar = () => {
             "
           />
 
-          <p className="text-sm text-slate-500 mt-4">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
             Loading calendar...
           </p>
+
         </div>
+
       </div>
     );
   }
@@ -379,6 +383,7 @@ const Calendar = () => {
               text-white
               shadow-lg
               shadow-indigo-200
+              dark:shadow-none
               flex
               items-center
               justify-center
@@ -389,11 +394,11 @@ const Calendar = () => {
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               Task Calendar
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Manage deadlines and upcoming schedules.
             </p>
 
@@ -419,6 +424,7 @@ const Calendar = () => {
             text-sm
             shadow-md
             shadow-indigo-100
+            dark:shadow-none
             transition
           "
         >
@@ -438,12 +444,12 @@ const Calendar = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -452,15 +458,15 @@ const Calendar = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Total Events
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
                 {totalEvents}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 All scheduled events
               </p>
 
@@ -470,8 +476,8 @@ const Calendar = () => {
               className="
                 w-12 h-12
                 rounded-xl
-                bg-indigo-50
-                text-indigo-600
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
                 flex
                 items-center
                 justify-center
@@ -488,12 +494,12 @@ const Calendar = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -502,15 +508,15 @@ const Calendar = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Upcoming
               </p>
 
-              <h2 className="text-3xl font-bold text-blue-600 mt-2">
+              <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
                 {upcomingEvents.length}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Upcoming schedules
               </p>
 
@@ -520,8 +526,8 @@ const Calendar = () => {
               className="
                 w-12 h-12
                 rounded-xl
-                bg-blue-50
-                text-blue-600
+                bg-blue-50 dark:bg-blue-500/10
+                text-blue-600 dark:text-blue-400
                 flex
                 items-center
                 justify-center
@@ -538,12 +544,12 @@ const Calendar = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -552,15 +558,15 @@ const Calendar = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Due Today
               </p>
 
-              <h2 className="text-3xl font-bold text-red-600 mt-2">
+              <h2 className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                 {dueTodayEvents.length}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Tasks due today
               </p>
 
@@ -570,8 +576,8 @@ const Calendar = () => {
               className="
                 w-12 h-12
                 rounded-xl
-                bg-red-50
-                text-red-600
+                bg-red-50 dark:bg-red-500/10
+                text-red-600 dark:text-red-400
                 flex
                 items-center
                 justify-center
@@ -588,12 +594,12 @@ const Calendar = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -602,15 +608,15 @@ const Calendar = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Completed
               </p>
 
-              <h2 className="text-3xl font-bold text-emerald-600 mt-2">
+              <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                 {completedEvents.length}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Completed schedules
               </p>
 
@@ -620,8 +626,8 @@ const Calendar = () => {
               className="
                 w-12 h-12
                 rounded-xl
-                bg-emerald-50
-                text-emerald-600
+                bg-emerald-50 dark:bg-emerald-500/10
+                text-emerald-600 dark:text-emerald-400
                 flex
                 items-center
                 justify-center
@@ -649,10 +655,10 @@ const Calendar = () => {
         <div
           className="
             xl:col-span-2
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
-            shadow-sm
+            border border-slate-200 dark:border-slate-700
+            shadow-sm dark:shadow-none
             overflow-hidden
           "
         >
@@ -664,7 +670,7 @@ const Calendar = () => {
               px-6
               py-5
               border-b
-              border-slate-200
+              border-slate-200 dark:border-slate-700
               flex
               items-center
               justify-between
@@ -673,11 +679,11 @@ const Calendar = () => {
 
             <div>
 
-              <h2 className="font-bold text-slate-800 text-lg">
+              <h2 className="font-bold text-slate-800 dark:text-white text-lg">
                 {monthName} {currentYear}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Monthly task schedule
               </p>
 
@@ -691,13 +697,13 @@ const Calendar = () => {
                 className="
                   w-9 h-9
                   rounded-lg
-                  border border-slate-200
+                  border border-slate-200 dark:border-slate-700
                   flex
                   items-center
                   justify-center
-                  text-slate-500
-                  hover:bg-slate-50
-                  hover:text-indigo-600
+                  text-slate-500 dark:text-slate-400
+                  hover:bg-slate-50 dark:hover:bg-slate-800
+                  hover:text-indigo-600 dark:hover:text-indigo-400
                   transition
                 "
               >
@@ -710,13 +716,13 @@ const Calendar = () => {
                 className="
                   w-9 h-9
                   rounded-lg
-                  border border-slate-200
+                  border border-slate-200 dark:border-slate-700
                   flex
                   items-center
                   justify-center
-                  text-slate-500
-                  hover:bg-slate-50
-                  hover:text-indigo-600
+                  text-slate-500 dark:text-slate-400
+                  hover:bg-slate-50 dark:hover:bg-slate-800
+                  hover:text-indigo-600 dark:hover:text-indigo-400
                   transition
                 "
               >
@@ -751,7 +757,7 @@ const Calendar = () => {
                     text-center
                     text-xs
                     font-bold
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                     uppercase
                     py-3
                   "
@@ -833,8 +839,8 @@ const Calendar = () => {
                         isToday
                           ? "bg-indigo-600 text-white border-indigo-600 shadow-md"
                           : isSelected
-                          ? "bg-indigo-50 border-indigo-300 text-indigo-700"
-                          : "border-slate-100 text-slate-600 hover:bg-indigo-50 hover:border-indigo-200"
+                          ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-300 dark:border-indigo-500/30 text-indigo-700 dark:text-indigo-300"
+                          : "border-slate-100 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 hover:border-indigo-200 dark:hover:border-indigo-500/30"
                       }
                     `}
                   >
@@ -848,8 +854,8 @@ const Calendar = () => {
                           isToday
                             ? "text-white"
                             : isSelected
-                            ? "text-indigo-700"
-                            : "text-slate-700"
+                            ? "text-indigo-700 dark:text-indigo-300"
+                            : "text-slate-700 dark:text-slate-300"
                         }
                       `}
                     >
@@ -918,10 +924,10 @@ const Calendar = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
-            shadow-sm
+            border border-slate-200 dark:border-slate-700
+            shadow-sm dark:shadow-none
             overflow-hidden
           "
         >
@@ -933,11 +939,11 @@ const Calendar = () => {
               px-6
               py-5
               border-b
-              border-slate-200
+              border-slate-200 dark:border-slate-700
             "
           >
 
-            <h2 className="font-bold text-slate-800 text-lg">
+            <h2 className="font-bold text-slate-800 dark:text-white text-lg">
 
               {isSameDate(
                 selectedDate,
@@ -955,7 +961,7 @@ const Calendar = () => {
 
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               {isSameDate(
                 selectedDate,
                 today
@@ -1015,9 +1021,9 @@ const Calendar = () => {
                         gap-4
                         p-4
                         rounded-xl
-                        bg-indigo-50
+                        bg-indigo-50 dark:bg-indigo-500/10
                         border
-                        border-indigo-100
+                        border-indigo-100 dark:border-indigo-500/20
                       "
                     >
 
@@ -1048,7 +1054,7 @@ const Calendar = () => {
                         <h4
                           className="
                             font-semibold
-                            text-slate-800
+                            text-slate-800 dark:text-white
                             truncate
                           "
                         >
@@ -1066,7 +1072,7 @@ const Calendar = () => {
                               gap-1.5
                               mt-2
                               text-xs
-                              text-slate-500
+                              text-slate-500 dark:text-slate-400
                             "
                           >
                             <FolderKanban
@@ -1091,7 +1097,7 @@ const Calendar = () => {
                               gap-1.5
                               mt-1
                               text-xs
-                              text-slate-500
+                              text-slate-500 dark:text-slate-400
                             "
                           >
                             <User
@@ -1118,10 +1124,10 @@ const Calendar = () => {
 
                           <Clock
                             size={13}
-                            className="text-indigo-500"
+                            className="text-indigo-500 dark:text-indigo-400"
                           />
 
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-slate-500 dark:text-slate-400">
 
                             {eventDate
                               ? new Date(
@@ -1156,11 +1162,11 @@ const Calendar = () => {
                               ${
                                 eventStatus ===
                                 "Completed"
-                                  ? "bg-emerald-100 text-emerald-700"
+                                  ? "bg-emerald-100 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
                                   : eventStatus ===
                                     "In Progress"
-                                  ? "bg-yellow-100 text-yellow-700"
-                                  : "bg-red-100 text-red-700"
+                                  ? "bg-yellow-100 dark:bg-yellow-500/10 text-yellow-700 dark:text-yellow-400"
+                                  : "bg-red-100 dark:bg-red-500/10 text-red-700 dark:text-red-400"
                               }
                             `}
                           >
@@ -1176,10 +1182,10 @@ const Calendar = () => {
                                 rounded-full
                                 text-[10px]
                                 font-semibold
-                                bg-white
-                                text-slate-600
+                                bg-white dark:bg-slate-900
+                                text-slate-600 dark:text-slate-300
                                 border
-                                border-slate-200
+                                border-slate-200 dark:border-slate-700
                               "
                             >
                               {eventPriority}
@@ -1211,8 +1217,8 @@ const Calendar = () => {
                     w-14
                     h-14
                     rounded-2xl
-                    bg-slate-100
-                    text-slate-400
+                    bg-slate-100 dark:bg-slate-800
+                    text-slate-400 dark:text-slate-500
                     flex
                     items-center
                     justify-center
@@ -1225,11 +1231,11 @@ const Calendar = () => {
                   />
                 </div>
 
-                <h3 className="font-semibold text-slate-700">
+                <h3 className="font-semibold text-slate-700 dark:text-slate-200">
                   No tasks scheduled
                 </h3>
 
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                   No events found for this date.
                 </p>
 

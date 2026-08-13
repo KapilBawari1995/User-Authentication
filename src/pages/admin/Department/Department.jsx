@@ -70,7 +70,7 @@ const Departments = () => {
     ).length || 0;
 
   return (
-    <div>
+    <div className="text-slate-800 dark:text-slate-100">
 
       {/* ================================================= */}
       {/* HEADER */}
@@ -85,7 +85,7 @@ const Departments = () => {
               w-14 h-14 rounded-2xl
               bg-gradient-to-br from-indigo-500 to-violet-600
               text-white
-              shadow-lg shadow-indigo-200
+              shadow-lg shadow-indigo-200 dark:shadow-none
               flex items-center justify-center
             "
           >
@@ -94,11 +94,11 @@ const Departments = () => {
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
               Departments
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Manage departments and their assigned managers.
             </p>
 
@@ -116,7 +116,7 @@ const Departments = () => {
             px-5 py-3
             rounded-xl
             font-semibold
-            shadow-md shadow-indigo-100
+            shadow-md shadow-indigo-100 dark:shadow-none
             transition-all duration-200
           "
         >
@@ -125,7 +125,6 @@ const Departments = () => {
         </button>
 
       </div>
-
 
       {/* ================================================= */}
       {/* SUMMARY */}
@@ -137,12 +136,12 @@ const Departments = () => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -151,15 +150,15 @@ const Departments = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Total Departments
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
                 {totalDepartments}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 All available departments
               </p>
 
@@ -168,8 +167,8 @@ const Departments = () => {
             <div
               className="
                 w-12 h-12 rounded-xl
-                bg-indigo-50
-                text-indigo-600
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
                 flex items-center justify-center
               "
             >
@@ -180,17 +179,16 @@ const Departments = () => {
 
         </div>
 
-
         {/* ACTIVE */}
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -199,15 +197,15 @@ const Departments = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Active Departments
               </p>
 
-              <h2 className="text-3xl font-bold text-emerald-600 mt-2">
+              <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                 {activeDepartments}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Currently active
               </p>
 
@@ -216,8 +214,8 @@ const Departments = () => {
             <div
               className="
                 w-12 h-12 rounded-xl
-                bg-emerald-50
-                text-emerald-600
+                bg-emerald-50 dark:bg-emerald-500/10
+                text-emerald-600 dark:text-emerald-400
                 flex items-center justify-center
               "
             >
@@ -228,17 +226,16 @@ const Departments = () => {
 
         </div>
 
-
         {/* INACTIVE */}
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
@@ -247,15 +244,15 @@ const Departments = () => {
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Inactive Departments
               </p>
 
-              <h2 className="text-3xl font-bold text-red-600 mt-2">
+              <h2 className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                 {inactiveDepartments}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Currently inactive
               </p>
 
@@ -264,8 +261,8 @@ const Departments = () => {
             <div
               className="
                 w-12 h-12 rounded-xl
-                bg-red-50
-                text-red-600
+                bg-red-50 dark:bg-red-500/10
+                text-red-600 dark:text-red-400
                 flex items-center justify-center
               "
             >
@@ -278,19 +275,18 @@ const Departments = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* SEARCH / FILTER */}
       {/* ================================================= */}
 
       <div
         className="
-          bg-white
-          border border-slate-200
+          bg-white dark:bg-slate-900
+          border border-slate-200 dark:border-slate-700
           rounded-2xl
           p-4
           mb-6
-          shadow-sm
+          shadow-sm dark:shadow-none
         "
       >
 
@@ -305,7 +301,7 @@ const Departments = () => {
               className="
                 absolute left-4 top-1/2
                 -translate-y-1/2
-                text-slate-400
+                text-slate-400 dark:text-slate-500
               "
             />
 
@@ -317,21 +313,21 @@ const Departments = () => {
               className="
                 w-full h-12
                 pl-11 pr-4
-                border border-slate-200
+                border border-slate-200 dark:border-slate-700
                 rounded-xl
-                bg-slate-50
+                bg-slate-50 dark:bg-slate-800
+                text-slate-700 dark:text-slate-200
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
                 text-sm
                 outline-none
-                focus:bg-white
+                focus:bg-white dark:focus:bg-slate-900
                 focus:border-indigo-400
-                focus:ring-4
-                focus:ring-indigo-50
+                focus:ring-4 focus:ring-indigo-500/10
                 transition
               "
             />
 
           </div>
-
 
           {/* RESET */}
 
@@ -344,12 +340,12 @@ const Departments = () => {
               gap-2
               px-5
               rounded-xl
-              border border-slate-200
-              bg-white
-              text-slate-600
+              border border-slate-200 dark:border-slate-700
+              bg-white dark:bg-slate-900
+              text-slate-600 dark:text-slate-300
               text-sm
               font-semibold
-              hover:bg-slate-50
+              hover:bg-slate-50 dark:hover:bg-slate-800
               transition
             "
           >
@@ -361,7 +357,6 @@ const Departments = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* ERROR */}
       {/* ================================================= */}
@@ -372,9 +367,9 @@ const Departments = () => {
             mb-6
             p-4
             rounded-xl
-            bg-red-50
-            border border-red-200
-            text-red-600
+            bg-red-50 dark:bg-red-500/10
+            border border-red-200 dark:border-red-500/20
+            text-red-600 dark:text-red-400
             text-sm
           "
         >
@@ -382,17 +377,16 @@ const Departments = () => {
         </div>
       )}
 
-
       {/* ================================================= */}
       {/* TABLE CARD */}
       {/* ================================================= */}
 
       <div
         className="
-          bg-white
+          bg-white dark:bg-slate-900
           rounded-2xl
-          border border-slate-200
-          shadow-sm
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
           overflow-hidden
         "
       >
@@ -402,18 +396,18 @@ const Departments = () => {
         <div
           className="
             px-6 py-5
-            border-b border-slate-200
+            border-b border-slate-200 dark:border-slate-700
             flex items-center justify-between
           "
         >
 
           <div>
 
-            <h2 className="font-bold text-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-white">
               All Departments
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               {filteredDepartments?.length || 0} departments available
             </p>
 
@@ -422,7 +416,7 @@ const Departments = () => {
           <div
             className="
               flex items-center gap-2
-              text-xs text-slate-400
+              text-xs text-slate-400 dark:text-slate-500
             "
           >
             <CheckCircle2 size={15} />
@@ -430,7 +424,6 @@ const Departments = () => {
           </div>
 
         </div>
-
 
         {/* ================================================= */}
         {/* TABLE */}
@@ -442,16 +435,15 @@ const Departments = () => {
 
             <thead>
 
-              <tr className="bg-slate-50">
+              <tr className="bg-slate-50 dark:bg-slate-800/70">
 
                 <th
                   className="
                     px-6 py-4 text-left
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   #
@@ -461,10 +453,9 @@ const Departments = () => {
                   className="
                     px-6 py-4 text-left
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   Department
@@ -474,10 +465,9 @@ const Departments = () => {
                   className="
                     px-6 py-4 text-left
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   Description
@@ -487,10 +477,9 @@ const Departments = () => {
                   className="
                     px-6 py-4 text-left
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   Manager
@@ -500,10 +489,9 @@ const Departments = () => {
                   className="
                     px-6 py-4 text-left
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   Status
@@ -513,10 +501,9 @@ const Departments = () => {
                   className="
                     px-6 py-4 text-right
                     text-[11px]
-                    font-bold
-                    uppercase
+                    font-bold uppercase
                     tracking-wider
-                    text-slate-400
+                    text-slate-400 dark:text-slate-500
                   "
                 >
                   Actions
@@ -526,8 +513,7 @@ const Departments = () => {
 
             </thead>
 
-
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
               {/* LOADING */}
 
@@ -545,14 +531,14 @@ const Departments = () => {
                         w-8 h-8
                         mx-auto
                         border-[3px]
-                        border-indigo-600
+                        border-indigo-600 dark:border-indigo-400
                         border-t-transparent
                         rounded-full
                         animate-spin
                       "
                     />
 
-                    <p className="text-sm text-slate-500 mt-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
                       Loading departments...
                     </p>
 
@@ -569,6 +555,7 @@ const Departments = () => {
                     className="
                       group
                       hover:bg-slate-50/80
+                      dark:hover:bg-slate-800/60
                       transition-colors
                     "
                   >
@@ -577,12 +564,11 @@ const Departments = () => {
 
                     <td className="px-6 py-5">
 
-                      <span className="text-sm text-slate-400">
+                      <span className="text-sm text-slate-400 dark:text-slate-500">
                         {String(index + 1).padStart(2, "0")}
                       </span>
 
                     </td>
-
 
                     {/* DEPARTMENT */}
 
@@ -595,12 +581,12 @@ const Departments = () => {
                             w-11 h-11
                             rounded-xl
                             bg-gradient-to-br
-                            from-indigo-50
-                            to-violet-50
-                            text-indigo-600
+                            from-indigo-50 to-violet-50
+                            dark:from-indigo-500/10 dark:to-violet-500/10
+                            text-indigo-600 dark:text-indigo-400
                             flex items-center
                             justify-center
-                            border border-indigo-100
+                            border border-indigo-100 dark:border-indigo-500/20
                           "
                         >
                           <Building2 size={20} />
@@ -608,11 +594,11 @@ const Departments = () => {
 
                         <div>
 
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-slate-800 dark:text-slate-100">
                             {department.name}
                           </p>
 
-                          <span className="text-[11px] text-slate-400">
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500">
                             Department
                           </span>
 
@@ -622,7 +608,6 @@ const Departments = () => {
 
                     </td>
 
-
                     {/* DESCRIPTION */}
 
                     <td className="px-6 py-5 max-w-sm">
@@ -630,7 +615,7 @@ const Departments = () => {
                       <p
                         className="
                           text-sm
-                          text-slate-500
+                          text-slate-500 dark:text-slate-400
                           line-clamp-2
                         "
                       >
@@ -639,7 +624,6 @@ const Departments = () => {
                       </p>
 
                     </td>
-
 
                     {/* MANAGER */}
 
@@ -653,8 +637,8 @@ const Departments = () => {
                             className="
                               w-9 h-9
                               rounded-full
-                              bg-indigo-100
-                              text-indigo-700
+                              bg-indigo-100 dark:bg-indigo-500/10
+                              text-indigo-700 dark:text-indigo-400
                               flex items-center
                               justify-center
                               font-semibold
@@ -668,11 +652,11 @@ const Departments = () => {
 
                           <div>
 
-                            <p className="text-sm font-semibold text-slate-700">
+                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                               {department.manager.name}
                             </p>
 
-                            <p className="text-[11px] text-slate-400">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500">
                               Manager
                             </p>
 
@@ -688,8 +672,8 @@ const Departments = () => {
                             items-center gap-1.5
                             px-3 py-1.5
                             rounded-lg
-                            bg-slate-100
-                            text-slate-500
+                            bg-slate-100 dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
                             text-xs
                             font-semibold
                           "
@@ -701,7 +685,6 @@ const Departments = () => {
                       )}
 
                     </td>
-
 
                     {/* STATUS */}
 
@@ -715,9 +698,9 @@ const Departments = () => {
                             items-center gap-1.5
                             px-3 py-1.5
                             rounded-full
-                            bg-red-50
-                            text-red-700
-                            border border-red-100
+                            bg-red-50 dark:bg-red-500/10
+                            text-red-700 dark:text-red-400
+                            border border-red-100 dark:border-red-500/20
                             text-xs
                             font-semibold
                           "
@@ -734,9 +717,9 @@ const Departments = () => {
                             items-center gap-1.5
                             px-3 py-1.5
                             rounded-full
-                            bg-emerald-50
-                            text-emerald-700
-                            border border-emerald-100
+                            bg-emerald-50 dark:bg-emerald-500/10
+                            text-emerald-700 dark:text-emerald-400
+                            border border-emerald-100 dark:border-emerald-500/20
                             text-xs
                             font-semibold
                           "
@@ -749,10 +732,9 @@ const Departments = () => {
 
                     </td>
 
-
                     {/* ACTIONS */}
 
-                    <td className="px-6 py-5">
+                    <td className="px-6 py-5 relative">
 
                       <div
                         className="
@@ -769,20 +751,19 @@ const Departments = () => {
                           className="
                             w-9 h-9
                             rounded-lg
-                            border border-slate-200
-                            bg-white
-                            text-slate-500
+                            border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
                             flex items-center
                             justify-center
-                            hover:text-indigo-600
-                            hover:border-indigo-200
-                            hover:bg-indigo-50
+                            hover:text-indigo-600 dark:hover:text-indigo-400
+                            hover:border-indigo-200 dark:hover:border-indigo-500/30
+                            hover:bg-indigo-50 dark:hover:bg-indigo-500/10
                             transition
                           "
                         >
                           <Eye size={16} />
                         </button>
-
 
                         {/* EDIT */}
 
@@ -796,20 +777,19 @@ const Departments = () => {
                           className="
                             w-9 h-9
                             rounded-lg
-                            border border-slate-200
-                            bg-white
-                            text-slate-500
+                            border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
                             flex items-center
                             justify-center
-                            hover:text-indigo-600
-                            hover:border-indigo-200
-                            hover:bg-indigo-50
+                            hover:text-indigo-600 dark:hover:text-indigo-400
+                            hover:border-indigo-200 dark:hover:border-indigo-500/30
+                            hover:bg-indigo-50 dark:hover:bg-indigo-500/10
                             transition
                           "
                         >
                           <Edit size={16} />
                         </button>
-
 
                         {/* DELETE */}
 
@@ -818,20 +798,19 @@ const Departments = () => {
                           className="
                             w-9 h-9
                             rounded-lg
-                            border border-slate-200
-                            bg-white
-                            text-slate-500
+                            border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
                             flex items-center
                             justify-center
-                            hover:text-red-600
-                            hover:border-red-200
-                            hover:bg-red-50
+                            hover:text-red-600 dark:hover:text-red-400
+                            hover:border-red-200 dark:hover:border-red-500/30
+                            hover:bg-red-50 dark:hover:bg-red-500/10
                             transition
                           "
                         >
                           <Trash2 size={16} />
                         </button>
-
 
                         {/* MORE */}
 
@@ -847,12 +826,12 @@ const Departments = () => {
                           className="
                             w-9 h-9
                             rounded-lg
-                            border border-slate-200
-                            bg-white
-                            text-slate-500
+                            border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
                             flex items-center
                             justify-center
-                            hover:bg-slate-100
+                            hover:bg-slate-100 dark:hover:bg-slate-700
                             transition
                           "
                         >
@@ -860,6 +839,56 @@ const Departments = () => {
                         </button>
 
                       </div>
+
+                      {openMenu === department._id && (
+                        <div
+                          className="
+                            absolute
+                            right-6
+                            top-16
+                            z-50
+                            w-44
+                            rounded-xl
+                            border border-slate-200 dark:border-slate-700
+                            bg-white dark:bg-slate-900
+                            shadow-xl dark:shadow-black/30
+                            overflow-hidden
+                          "
+                        >
+                          <button
+                            type="button"
+                            onClick={() =>
+                              navigate(
+                                `/admin/departments/edit/${department._id}`
+                              )
+                            }
+                            className="
+                              w-full
+                              px-4 py-3
+                              text-left
+                              text-sm
+                              text-slate-600 dark:text-slate-300
+                              hover:bg-slate-50 dark:hover:bg-slate-800
+                            "
+                          >
+                            Edit Department
+                          </button>
+
+                          <button
+                            type="button"
+                            className="
+                              w-full
+                              px-4 py-3
+                              text-left
+                              text-sm
+                              text-red-600 dark:text-red-400
+                              hover:bg-red-50 dark:hover:bg-red-500/10
+                            "
+                          >
+                            Delete Department
+                          </button>
+                        </div>
+                      )}
 
                     </td>
 
@@ -883,8 +912,8 @@ const Departments = () => {
                         w-14 h-14
                         mx-auto
                         rounded-2xl
-                        bg-slate-100
-                        text-slate-400
+                        bg-slate-100 dark:bg-slate-800
+                        text-slate-400 dark:text-slate-500
                         flex items-center
                         justify-center
                         mb-4
@@ -893,11 +922,11 @@ const Departments = () => {
                       <Building2 size={26} />
                     </div>
 
-                    <h3 className="font-semibold text-slate-700">
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-200">
                       No departments found
                     </h3>
 
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
                       Try changing your search.
                     </p>
 

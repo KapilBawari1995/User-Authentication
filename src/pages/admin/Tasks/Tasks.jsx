@@ -35,7 +35,6 @@ const Task = ({ projectId }) => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
   const [priorityFilter, setPriorityFilter] = useState("All");
-
   const [viewTask, setViewTask] = useState(false);
 
   // =====================================================
@@ -82,56 +81,26 @@ const Task = ({ projectId }) => {
   // =====================================================
 
   const isAdmin = normalizedRole === "admin";
-
   const isManager = normalizedRole === "manager";
-
   const isDeveloper = normalizedRole === "developer";
 
   // =====================================================
   // TASK PERMISSIONS
   // =====================================================
 
-  /*
-    ADMIN
-    --------------------------------
-    Create  ✅
-    View    ✅
-    Edit    ✅
-    Delete  ✅
-
-    MANAGER
-    --------------------------------
-    Create  ✅
-    View    ✅
-    Edit    ✅
-    Delete  ✅
-
-    DEVELOPER
-    --------------------------------
-    Create  ❌
-    View    ✅
-    Edit    ❌
-    Delete  ❌
-    Work    ✅
-  */
-
-  const canCreateTask =
-    isAdmin || isManager;
+  const canCreateTask = isAdmin || isManager;
 
   const canViewTask = true;
 
-  const canEditTask =
-    isAdmin || isManager;
+  const canEditTask = isAdmin || isManager;
 
-  const canDeleteTask =
-    isAdmin || isManager;
+  const canDeleteTask = isAdmin || isManager;
 
   // =====================================================
   // DEBUG ROLE
   // =====================================================
 
   console.log("USER:", user);
-
   console.log("ROLE:", normalizedRole);
 
   console.log("TASK PERMISSIONS:", {
@@ -166,20 +135,9 @@ const Task = ({ projectId }) => {
       project: projectId,
     };
 
-    // ===================================================
-    // REQUEST KEY
-    // ===================================================
+    const requestKey = JSON.stringify(requestData);
 
-    const requestKey =
-      JSON.stringify(requestData);
-
-    // ===================================================
-    // DUPLICATE REQUEST CHECK
-    // ===================================================
-
-    if (
-      lastRequestRef.current === requestKey
-    ) {
+    if (lastRequestRef.current === requestKey) {
       return;
     }
 
@@ -207,23 +165,20 @@ const Task = ({ projectId }) => {
 
   const totalTasks = tasks.length;
 
-  const completedTasks =
-    tasks.filter(
-      (item) =>
-        item.status === "Completed"
-    ).length;
+  const completedTasks = tasks.filter(
+    (item) =>
+      item.status === "Completed"
+  ).length;
 
-  const pendingTasks =
-    tasks.filter(
-      (item) =>
-        item.status === "Pending"
-    ).length;
+  const pendingTasks = tasks.filter(
+    (item) =>
+      item.status === "Pending"
+  ).length;
 
-  const inProgressTasks =
-    tasks.filter(
-      (item) =>
-        item.status === "In Progress"
-    ).length;
+  const inProgressTasks = tasks.filter(
+    (item) =>
+      item.status === "In Progress"
+  ).length;
 
   // =====================================================
   // RESET FILTERS
@@ -231,12 +186,9 @@ const Task = ({ projectId }) => {
 
   const handleResetFilters = () => {
     setSearch("");
-
     setStatusFilter("All");
-
     setPriorityFilter("All");
 
-    // Reset request ref so API runs again
     lastRequestRef.current = "";
   };
 
@@ -247,16 +199,32 @@ const Task = ({ projectId }) => {
   const getStatusStyle = (status) => {
     switch (status) {
       case "Completed":
-        return "bg-emerald-50 text-emerald-700 border-emerald-100";
+        return `
+          bg-emerald-50 dark:bg-emerald-500/10
+          text-emerald-700 dark:text-emerald-400
+          border-emerald-100 dark:border-emerald-500/20
+        `;
 
       case "In Progress":
-        return "bg-yellow-50 text-yellow-700 border-yellow-100";
+        return `
+          bg-yellow-50 dark:bg-yellow-500/10
+          text-yellow-700 dark:text-yellow-400
+          border-yellow-100 dark:border-yellow-500/20
+        `;
 
       case "Pending":
-        return "bg-red-50 text-red-700 border-red-100";
+        return `
+          bg-red-50 dark:bg-red-500/10
+          text-red-700 dark:text-red-400
+          border-red-100 dark:border-red-500/20
+        `;
 
       default:
-        return "bg-slate-50 text-slate-600 border-slate-200";
+        return `
+          bg-slate-50 dark:bg-slate-800
+          text-slate-600 dark:text-slate-300
+          border-slate-200 dark:border-slate-700
+        `;
     }
   };
 
@@ -267,16 +235,32 @@ const Task = ({ projectId }) => {
   const getPriorityStyle = (priority) => {
     switch (priority) {
       case "High":
-        return "bg-red-50 text-red-600 border-red-100";
+        return `
+          bg-red-50 dark:bg-red-500/10
+          text-red-600 dark:text-red-400
+          border-red-100 dark:border-red-500/20
+        `;
 
       case "Medium":
-        return "bg-yellow-50 text-yellow-600 border-yellow-100";
+        return `
+          bg-yellow-50 dark:bg-yellow-500/10
+          text-yellow-600 dark:text-yellow-400
+          border-yellow-100 dark:border-yellow-500/20
+        `;
 
       case "Low":
-        return "bg-emerald-50 text-emerald-600 border-emerald-100";
+        return `
+          bg-emerald-50 dark:bg-emerald-500/10
+          text-emerald-600 dark:text-emerald-400
+          border-emerald-100 dark:border-emerald-500/20
+        `;
 
       default:
-        return "bg-slate-50 text-slate-600 border-slate-200";
+        return `
+          bg-slate-50 dark:bg-slate-800
+          text-slate-600 dark:text-slate-300
+          border-slate-200 dark:border-slate-700
+        `;
     }
   };
 
@@ -350,43 +334,38 @@ const Task = ({ projectId }) => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
           <div className="flex justify-between items-center">
 
             <div>
-
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Total Tasks
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
                 {totalTasks}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 All available tasks
               </p>
-
             </div>
 
             <div
               className="
-                w-12
-                h-12
+                w-12 h-12
                 rounded-xl
-                bg-indigo-50
-                text-indigo-600
-                flex
-                items-center
-                justify-center
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
+                flex items-center justify-center
               "
             >
               <ClipboardList size={23} />
@@ -399,43 +378,38 @@ const Task = ({ projectId }) => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
           <div className="flex justify-between items-center">
 
             <div>
-
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Completed
               </p>
 
-              <h2 className="text-3xl font-bold text-emerald-600 mt-2">
+              <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                 {completedTasks}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Completed tasks
               </p>
-
             </div>
 
             <div
               className="
-                w-12
-                h-12
+                w-12 h-12
                 rounded-xl
-                bg-emerald-50
-                text-emerald-600
-                flex
-                items-center
-                justify-center
+                bg-emerald-50 dark:bg-emerald-500/10
+                text-emerald-600 dark:text-emerald-400
+                flex items-center justify-center
               "
             >
               <CheckCircle2 size={22} />
@@ -448,43 +422,38 @@ const Task = ({ projectId }) => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
           <div className="flex justify-between items-center">
 
             <div>
-
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 In Progress
               </p>
 
-              <h2 className="text-3xl font-bold text-yellow-600 mt-2">
+              <h2 className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mt-2">
                 {inProgressTasks}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Currently running
               </p>
-
             </div>
 
             <div
               className="
-                w-12
-                h-12
+                w-12 h-12
                 rounded-xl
-                bg-yellow-50
-                text-yellow-600
-                flex
-                items-center
-                justify-center
+                bg-yellow-50 dark:bg-yellow-500/10
+                text-yellow-600 dark:text-yellow-400
+                flex items-center justify-center
               "
             >
               <Clock3 size={22} />
@@ -497,43 +466,38 @@ const Task = ({ projectId }) => {
 
         <div
           className="
-            bg-white
+            bg-white dark:bg-slate-900
             rounded-2xl
-            border border-slate-200
+            border border-slate-200 dark:border-slate-700
             p-5
-            shadow-sm
-            hover:shadow-md
+            shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
             transition
           "
         >
           <div className="flex justify-between items-center">
 
             <div>
-
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Pending
               </p>
 
-              <h2 className="text-3xl font-bold text-red-600 mt-2">
+              <h2 className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                 {pendingTasks}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Tasks waiting
               </p>
-
             </div>
 
             <div
               className="
-                w-12
-                h-12
+                w-12 h-12
                 rounded-xl
-                bg-red-50
-                text-red-600
-                flex
-                items-center
-                justify-center
+                bg-red-50 dark:bg-red-500/10
+                text-red-600 dark:text-red-400
+                flex items-center justify-center
               "
             >
               <AlertCircle size={22} />
@@ -550,15 +514,15 @@ const Task = ({ projectId }) => {
 
       <div
         className="
-          bg-white
-          border border-slate-200
+          bg-white dark:bg-slate-900
+          border border-slate-200 dark:border-slate-700
           rounded-2xl
           p-4
           mb-6
-          shadow-sm
+          shadow-sm dark:shadow-none
+          transition-colors
         "
       >
-
         <div className="flex flex-col md:flex-row gap-4">
 
           {/* SEARCH */}
@@ -568,11 +532,8 @@ const Task = ({ projectId }) => {
             <Search
               size={19}
               className="
-                absolute
-                left-4
-                top-1/2
-                -translate-y-1/2
-                text-slate-400
+                absolute left-4 top-1/2 -translate-y-1/2
+                text-slate-400 dark:text-slate-500
               "
             />
 
@@ -586,17 +547,18 @@ const Task = ({ projectId }) => {
               className="
                 w-full
                 h-12
-                pl-11
-                pr-4
-                border border-slate-200
+                pl-11 pr-4
+                border border-slate-200 dark:border-slate-700
                 rounded-xl
-                bg-slate-50
+                bg-slate-50 dark:bg-slate-800
+                text-slate-700 dark:text-slate-200
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
                 text-sm
                 outline-none
-                focus:bg-white
+                focus:bg-white dark:focus:bg-slate-900
                 focus:border-indigo-400
                 focus:ring-4
-                focus:ring-indigo-50
+                focus:ring-indigo-500/10
                 transition
               "
             />
@@ -614,35 +576,22 @@ const Task = ({ projectId }) => {
               h-12
               min-w-[180px]
               px-4
-              border border-slate-200
+              border border-slate-200 dark:border-slate-700
               rounded-xl
-              bg-slate-50
+              bg-slate-50 dark:bg-slate-800
               text-sm
-              text-slate-700
+              text-slate-700 dark:text-slate-200
               outline-none
-              focus:bg-white
+              focus:bg-white dark:focus:bg-slate-900
               focus:border-indigo-400
               focus:ring-4
-              focus:ring-indigo-50
+              focus:ring-indigo-500/10
             "
           >
-
-            <option value="All">
-              All Status
-            </option>
-
-            <option value="Pending">
-              Pending
-            </option>
-
-            <option value="In Progress">
-              In Progress
-            </option>
-
-            <option value="Completed">
-              Completed
-            </option>
-
+            <option value="All">All Status</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
           </select>
 
           {/* PRIORITY */}
@@ -656,35 +605,22 @@ const Task = ({ projectId }) => {
               h-12
               min-w-[180px]
               px-4
-              border border-slate-200
+              border border-slate-200 dark:border-slate-700
               rounded-xl
-              bg-slate-50
+              bg-slate-50 dark:bg-slate-800
               text-sm
-              text-slate-700
+              text-slate-700 dark:text-slate-200
               outline-none
-              focus:bg-white
+              focus:bg-white dark:focus:bg-slate-900
               focus:border-indigo-400
               focus:ring-4
-              focus:ring-indigo-50
+              focus:ring-indigo-500/10
             "
           >
-
-            <option value="All">
-              All Priority
-            </option>
-
-            <option value="High">
-              High
-            </option>
-
-            <option value="Medium">
-              Medium
-            </option>
-
-            <option value="Low">
-              Low
-            </option>
-
+            <option value="All">All Priority</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
           </select>
 
           {/* RESET */}
@@ -696,9 +632,9 @@ const Task = ({ projectId }) => {
               h-12
               px-5
               rounded-xl
-              bg-slate-100
-              hover:bg-slate-200
-              text-slate-700
+              bg-slate-100 dark:bg-slate-800
+              hover:bg-slate-200 dark:hover:bg-slate-700
+              text-slate-700 dark:text-slate-300
               text-sm
               font-medium
               transition
@@ -708,7 +644,6 @@ const Task = ({ projectId }) => {
           </button>
 
         </div>
-
       </div>
 
       {/* ================================================= */}
@@ -717,11 +652,12 @@ const Task = ({ projectId }) => {
 
       <div
         className="
-          bg-white
+          bg-white dark:bg-slate-900
           rounded-2xl
-          border border-slate-200
-          shadow-sm
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
           overflow-hidden
+          transition-colors
         "
       >
 
@@ -729,42 +665,31 @@ const Task = ({ projectId }) => {
 
         <div
           className="
-            px-6
-            py-5
-            border-b
-            border-slate-200
-            flex
-            items-center
-            justify-between
+            px-6 py-5
+            border-b border-slate-200 dark:border-slate-700
+            flex items-center justify-between
           "
         >
-
           <div>
-
-            <h2 className="font-bold text-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-white">
               All Tasks
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               {totalTasks} tasks available
             </p>
-
           </div>
 
           <div
             className="
-              flex
-              items-center
-              gap-2
+              flex items-center gap-2
               text-xs
-              text-slate-400
+              text-slate-400 dark:text-slate-500
             "
           >
             <CheckCircle2 size={15} />
-
             Task management
           </div>
-
         </div>
 
         <div className="overflow-x-auto">
@@ -774,84 +699,73 @@ const Task = ({ projectId }) => {
             {/* TABLE HEAD */}
 
             <thead>
+              <tr className="bg-slate-50 dark:bg-slate-800/70">
 
-              <tr className="bg-slate-50">
-
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   #
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Task
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Assigned To
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Priority
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Status
                 </th>
 
-                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-left text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Due Date
                 </th>
 
-                <th className="px-6 py-4 text-right text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <th className="px-6 py-4 text-right text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Actions
                 </th>
 
               </tr>
-
             </thead>
 
             {/* TABLE BODY */}
 
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
-              {/* ================================================= */}
               {/* LOADING */}
-              {/* ================================================= */}
 
               {loading ? (
 
                 <tr>
-
                   <td
                     colSpan="7"
                     className="py-16 text-center"
                   >
-
                     <div
                       className="
-                        w-8
-                        h-8
+                        w-8 h-8
                         mx-auto
                         border-[3px]
-                        border-indigo-600
+                        border-indigo-600 dark:border-indigo-400
                         border-t-transparent
                         rounded-full
                         animate-spin
                       "
                     />
 
-                    <p className="text-sm text-slate-500 mt-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
                       Loading tasks...
                     </p>
-
                   </td>
-
                 </tr>
 
               ) : tasks.length > 0 ? (
 
-                /* ================================================= */
                 /* TASK LIST */
-                /* ================================================= */
 
                 tasks.map((item, index) => (
 
@@ -859,7 +773,7 @@ const Task = ({ projectId }) => {
                     key={item._id}
                     className="
                       group
-                      hover:bg-slate-50/80
+                      hover:bg-slate-50/80 dark:hover:bg-slate-800/60
                       transition-colors
                     "
                   >
@@ -867,11 +781,9 @@ const Task = ({ projectId }) => {
                     {/* NUMBER */}
 
                     <td className="px-6 py-5">
-
-                      <span className="text-sm text-slate-400">
+                      <span className="text-sm text-slate-400 dark:text-slate-500">
                         {String(index + 1).padStart(2, "0")}
                       </span>
-
                     </td>
 
                     {/* TASK */}
@@ -882,18 +794,14 @@ const Task = ({ projectId }) => {
 
                         <div
                           className="
-                            w-11
-                            h-11
+                            w-11 h-11
                             rounded-xl
                             bg-gradient-to-br
-                            from-indigo-50
-                            to-violet-50
-                            text-indigo-600
-                            flex
-                            items-center
-                            justify-center
-                            border
-                            border-indigo-100
+                            from-indigo-50 to-violet-50
+                            dark:from-indigo-500/10 dark:to-violet-500/10
+                            text-indigo-600 dark:text-indigo-400
+                            flex items-center justify-center
+                            border border-indigo-100 dark:border-indigo-500/20
                           "
                         >
                           <ClipboardList size={20} />
@@ -901,11 +809,11 @@ const Task = ({ projectId }) => {
 
                         <div className="max-w-xs">
 
-                          <p className="font-semibold text-slate-800">
+                          <p className="font-semibold text-slate-800 dark:text-slate-100">
                             {item.title}
                           </p>
 
-                          <p className="text-xs text-slate-400 mt-1 truncate">
+                          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 truncate">
                             {item.description || "No description"}
                           </p>
 
@@ -923,14 +831,11 @@ const Task = ({ projectId }) => {
 
                         <div
                           className="
-                            w-9
-                            h-9
+                            w-9 h-9
                             rounded-lg
-                            bg-slate-100
-                            text-slate-500
-                            flex
-                            items-center
-                            justify-center
+                            bg-slate-100 dark:bg-slate-800
+                            text-slate-500 dark:text-slate-400
+                            flex items-center justify-center
                           "
                         >
                           <User size={16} />
@@ -938,12 +843,12 @@ const Task = ({ projectId }) => {
 
                         <div>
 
-                          <p className="text-sm font-semibold text-slate-700">
+                          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                             {item.assignedTo?.name || "-"}
                           </p>
 
                           {item.assignedTo?.email && (
-                            <p className="text-[11px] text-slate-400">
+                            <p className="text-[11px] text-slate-400 dark:text-slate-500">
                               {item.assignedTo.email}
                             </p>
                           )}
@@ -962,15 +867,12 @@ const Task = ({ projectId }) => {
                         className={`
                           inline-flex
                           items-center
-                          px-3
-                          py-1.5
+                          px-3 py-1.5
                           rounded-full
                           border
                           text-xs
                           font-semibold
-                          ${getPriorityStyle(
-                            item.priority
-                          )}
+                          ${getPriorityStyle(item.priority)}
                         `}
                       >
                         {item.priority || "-"}
@@ -986,15 +888,12 @@ const Task = ({ projectId }) => {
                         className={`
                           inline-flex
                           items-center
-                          px-3
-                          py-1.5
+                          px-3 py-1.5
                           rounded-full
                           border
                           text-xs
                           font-semibold
-                          ${getStatusStyle(
-                            item.status
-                          )}
+                          ${getStatusStyle(item.status)}
                         `}
                       >
                         {item.status || "-"}
@@ -1006,36 +905,27 @@ const Task = ({ projectId }) => {
 
                     <td className="px-6 py-5">
 
-                      <p className="text-sm text-slate-600">
-
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
                         {item.dueDate
                           ? new Date(
                               item.dueDate
                             ).toLocaleDateString()
                           : "-"}
-
                       </p>
 
                     </td>
 
-                    {/* ================================================= */}
                     {/* ACTIONS */}
-                    {/* ================================================= */}
 
                     <td className="px-6 py-5">
 
                       <div
                         className="
-                          flex
-                          items-center
-                          justify-end
-                          gap-2
+                          flex items-center justify-end gap-2
                         "
                       >
 
-                        {/* =========================================== */}
-                        {/* VIEW - ADMIN + MANAGER + DEVELOPER */}
-                        {/* =========================================== */}
+                        {/* VIEW */}
 
                         {canViewTask && (
                           <button
@@ -1047,19 +937,16 @@ const Task = ({ projectId }) => {
                               )
                             }
                             className="
-                              w-9
-                              h-9
+                              w-9 h-9
                               rounded-lg
                               border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              flex
-                              items-center
-                              justify-center
-                              hover:text-indigo-600
-                              hover:border-indigo-200
-                              hover:bg-indigo-50
+                              border-slate-200 dark:border-slate-700
+                              bg-white dark:bg-slate-800
+                              text-slate-500 dark:text-slate-400
+                              flex items-center justify-center
+                              hover:text-indigo-600 dark:hover:text-indigo-400
+                              hover:border-indigo-200 dark:hover:border-indigo-500/30
+                              hover:bg-indigo-50 dark:hover:bg-indigo-500/10
                               transition
                             "
                           >
@@ -1067,9 +954,7 @@ const Task = ({ projectId }) => {
                           </button>
                         )}
 
-                        {/* =========================================== */}
-                        {/* EDIT - ADMIN + MANAGER ONLY */}
-                        {/* =========================================== */}
+                        {/* EDIT */}
 
                         {canEditTask && (
                           <button
@@ -1081,19 +966,16 @@ const Task = ({ projectId }) => {
                               )
                             }
                             className="
-                              w-9
-                              h-9
+                              w-9 h-9
                               rounded-lg
                               border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              flex
-                              items-center
-                              justify-center
-                              hover:text-indigo-600
-                              hover:border-indigo-200
-                              hover:bg-indigo-50
+                              border-slate-200 dark:border-slate-700
+                              bg-white dark:bg-slate-800
+                              text-slate-500 dark:text-slate-400
+                              flex items-center justify-center
+                              hover:text-indigo-600 dark:hover:text-indigo-400
+                              hover:border-indigo-200 dark:hover:border-indigo-500/30
+                              hover:bg-indigo-50 dark:hover:bg-indigo-500/10
                               transition
                             "
                           >
@@ -1101,9 +983,7 @@ const Task = ({ projectId }) => {
                           </button>
                         )}
 
-                        {/* =========================================== */}
-                        {/* DELETE - ADMIN + MANAGER ONLY */}
-                        {/* =========================================== */}
+                        {/* DELETE */}
 
                         {canDeleteTask && (
                           <button
@@ -1115,19 +995,16 @@ const Task = ({ projectId }) => {
                               )
                             }
                             className="
-                              w-9
-                              h-9
+                              w-9 h-9
                               rounded-lg
                               border
-                              border-slate-200
-                              bg-white
-                              text-slate-500
-                              flex
-                              items-center
-                              justify-center
-                              hover:text-red-600
-                              hover:border-red-200
-                              hover:bg-red-50
+                              border-slate-200 dark:border-slate-700
+                              bg-white dark:bg-slate-800
+                              text-slate-500 dark:text-slate-400
+                              flex items-center justify-center
+                              hover:text-red-600 dark:hover:text-red-400
+                              hover:border-red-200 dark:hover:border-red-500/30
+                              hover:bg-red-50 dark:hover:bg-red-500/10
                               transition
                             "
                           >
@@ -1145,9 +1022,7 @@ const Task = ({ projectId }) => {
 
               ) : (
 
-                /* ================================================= */
                 /* EMPTY */
-                /* ================================================= */
 
                 <tr>
 
@@ -1158,26 +1033,23 @@ const Task = ({ projectId }) => {
 
                     <div
                       className="
-                        w-14
-                        h-14
+                        w-14 h-14
                         mx-auto
                         rounded-2xl
-                        bg-slate-100
-                        text-slate-400
-                        flex
-                        items-center
-                        justify-center
+                        bg-slate-100 dark:bg-slate-800
+                        text-slate-400 dark:text-slate-500
+                        flex items-center justify-center
                         mb-4
                       "
                     >
                       <ClipboardList size={26} />
                     </div>
 
-                    <h3 className="font-semibold text-slate-700">
+                    <h3 className="font-semibold text-slate-700 dark:text-slate-200">
                       No tasks found
                     </h3>
 
-                    <p className="text-sm text-slate-400 mt-1">
+                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
                       Try changing your search or filters.
                     </p>
 

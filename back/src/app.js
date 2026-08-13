@@ -14,6 +14,7 @@ import departmentRouter from "./routes/department.routes.js";
 import dashboardRoutes from "./routes/dashboard.routes.js";
 import calendarRoutes from "./routes/calendar.routes.js";
 import reportRoutes from "./routes/report.routes.js";
+import settingsRoutes from "./routes/settings.routes.js";
 
 const app = express();
 
@@ -57,6 +58,10 @@ app.use(
 app.use(
   "/api/v1/reports",
   reportRoutes
+);
+app.use(
+  "/api/v1/settings",
+  settingsRoutes
 );
 
 export default app;

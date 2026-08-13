@@ -1,5 +1,6 @@
 import Department from "../models/department.model.js";
 import User from "../models/User.js";
+import createNotification from "../utils/notificationHelper.js";
 
 
 export const createDepartment = async (req, res) => {
@@ -28,6 +29,16 @@ export const createDepartment = async (req, res) => {
       name: name.trim(),
       description,
     });
+await createNotification({
+  title: "Role Deleted",
+  message: `Role "${role.name}" has been deleted.`,
+  type: "Role",
+  receiver: req.user.id,
+  sender: req.user.id,
+  referenceId: role._id,
+  referenceType: "Role",
+});
+
 
     return res.status(201).json({
       success: true,
@@ -119,6 +130,16 @@ export const assignDepartmentManager = async (req, res) => {
     manager.department = departmentId;
 
     await manager.save();
+
+    await createNotification({
+  title: "Department Manager Assigned",
+  message: `You have been assigned as manager of department "${department.name}".`,
+  type: "Department",
+  receiver: manager._id,
+  sender: req.user.id,
+  referenceId: department._id,
+  referenceType: "Department",
+});
 
     return res.status(200).json({
       success: true,

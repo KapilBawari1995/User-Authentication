@@ -1,6 +1,9 @@
 import Project from "../models/Project.js";
 import User from "../models/User.js";
+import Task from "../models/Task.js";
 
+
+import createNotification from "../utils/notificationHelper.js";
 // =====================================================
 // CREATE PROJECT
 // =====================================================
@@ -10,33 +13,102 @@ export const createProject = async (req, res) => {
     const {
       name,
       description,
+      department,
       projectManager,
-      teamMembers,
-      status,
-      priority,
       startDate,
       endDate,
+      priority,
+      status,
       budget,
+      teamMembers,
     } = req.body;
 
+    // ==========================================
+    // VALIDATION
+    // ==========================================
+
+    if (!name) {
+      return res.status(400).json({
+        success: false,
+        message: "Project name is required.",
+      });
+    }
+
+    if (!department) {
+      return res.status(400).json({
+        success: false,
+        message: "Department is required.",
+      });
+    }
+
+    if (!projectManager) {
+      return res.status(400).json({
+        success: false,
+        message: "Project manager is required.",
+      });
+    }
+
+    if (!startDate) {
+      return res.status(400).json({
+        success: false,
+        message: "Start date is required.",
+      });
+    }
+
+    if (!endDate) {
+      return res.status(400).json({
+        success: false,
+        message: "End date is required.",
+      });
+    }
+
+    // ==========================================
+    // CREATE PROJECT
+    // ==========================================
+
     const project = await Project.create({
-      name,
-      description,
+      name: name.trim(),
+
+      description: description?.trim() || "",
+
+      // IMPORTANT
+      department,
+
       projectManager,
-      teamMembers,
-      status,
-      priority,
+
+      teamMembers: teamMembers || [],
+
       startDate,
+
       endDate,
-      budget,
-      createdBy: req.user.id,
+
+      priority: priority || "Medium",
+
+      status: status || "Planning",
+
+      budget: budget || 0,
+
+      createdBy: req.user._id,
     });
+
+    // ==========================================
+    // RESPONSE
+    // ==========================================
+
+    const populatedProject = await Project.findById(
+      project._id
+    )
+      .populate("department", "name")
+      .populate("projectManager", "name email")
+      .populate("teamMembers", "name email")
+      .populate("createdBy", "name");
 
     return res.status(201).json({
       success: true,
       message: "Project created successfully.",
-      data: project,
+      data: populatedProject,
     });
+
   } catch (error) {
     console.error("CREATE PROJECT ERROR:", error);
 
@@ -156,7 +228,8 @@ export const getProjectById = async (req, res) => {
     const project = await Project.findById(req.params.id)
       .populate("projectManager", "name email")
       .populate("teamMembers", "name email")
-      .populate("createdBy", "name");
+      .populate("createdBy", "name")
+        .populate("department", "name");
 
     if (!project) {
       return res.status(404).json({
@@ -201,6 +274,17 @@ export const updateProject = async (req, res) => {
       });
     }
 
+    // UPDATE PROJECT
+await createNotification({
+  title: "Project Updated",
+  message: `Project "${project.name}" has been updated.`,
+  type: "Project",
+  receiver: project.projectManager,
+  sender: req.user.id,
+  referenceId: project._id,
+  referenceType: "Project",
+});
+
     return res.status(200).json({
       success: true,
       message: "Project updated successfully.",
@@ -216,13 +300,16 @@ export const updateProject = async (req, res) => {
   }
 };
 
-// =====================================================
-// DELETE PROJECT
-// =====================================================
 
 export const deleteProject = async (req, res) => {
   try {
-    const project = await Project.findByIdAndDelete(req.params.id);
+    const projectId = req.params.id;
+
+    // =====================================================
+    // FIND PROJECT
+    // =====================================================
+
+    const project = await Project.findById(projectId);
 
     if (!project) {
       return res.status(404).json({
@@ -231,10 +318,49 @@ export const deleteProject = async (req, res) => {
       });
     }
 
+    // =====================================================
+    // DELETE ALL TASKS OF THIS PROJECT
+    // =====================================================
+
+    const deletedTasks = await Task.deleteMany({
+      project: projectId,
+    });
+
+    console.log(
+      `Deleted ${deletedTasks.deletedCount} tasks for project ${projectId}`
+    );
+
+    // =====================================================
+    // DELETE PROJECT
+    // =====================================================
+
+    await Project.findByIdAndDelete(projectId);
+
+    // =====================================================
+    // CREATE NOTIFICATION
+    // =====================================================
+
+    await createNotification({
+      title: "Project Deleted",
+      message: `Project "${project.name}" has been deleted.`,
+      type: "Project",
+      receiver: project.projectManager,
+      sender: req.user.id,
+      referenceId: project._id,
+      referenceType: "Project",
+    });
+
+    // =====================================================
+    // RESPONSE
+    // =====================================================
+
     return res.status(200).json({
       success: true,
-      message: "Project deleted successfully.",
+      message:
+        "Project deleted successfully.",
+      deletedTasks: deletedTasks.deletedCount,
     });
+
   } catch (error) {
     console.error("DELETE PROJECT ERROR:", error);
 
@@ -244,10 +370,6 @@ export const deleteProject = async (req, res) => {
     });
   }
 };
-
-// =====================================================
-// ADD TEAM MEMBERS
-// =====================================================
 
 export const addTeamMembers = async (req, res) => {
   try {

@@ -44,6 +44,9 @@ import calendarSaga from  '../features/calendar/calendarSaga';
 import reportsReducer from '../features/reports/reportSlice';
 import reportsSaga from '../features/reports/reportSaga'
 
+import settingsReducer from  "../features/settings/settingsSlice";
+import settingsSaga from   '../features/settings/settingsSaga';
+
 function* rootSaga() {
   yield all([
     productSaga(),
@@ -59,6 +62,7 @@ function* rootSaga() {
     dashboardSaga(),
     calendarSaga(),
     reportsSaga(),
+    settingsSaga(),
   ]);
 }
 
@@ -79,6 +83,7 @@ export const store = configureStore({
     dashboard:dashboardRedeucer,
     calendar:calendarReducer,
     reports:reportsReducer,
+   settings: settingsReducer,
 
     
   },

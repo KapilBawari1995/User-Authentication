@@ -15,10 +15,8 @@ import * as Yup from "yup";
 
 import { useDispatch, useSelector } from "react-redux";
 
-
 import {
   addTeamMembersRequest,
-  getProjectByIdRequest,
 } from "../../../features/project/projectSlice";
 
 import { getUsersRequest } from "../../../features/user/userSlice";
@@ -30,7 +28,7 @@ const TeamMembersTask = ({
   const dispatch = useDispatch();
 
   const [showModal, setShowModal] = useState(false);
-const [selectedMembers, setSelectedMembers] = useState([]);
+
   // =====================================================
   // REDUX
   // =====================================================
@@ -42,7 +40,7 @@ const [selectedMembers, setSelectedMembers] = useState([]);
   } = useSelector((state) => state.project);
 
   const {
-    users,
+    users = [],
     getUsersLoading,
   } = useSelector((state) => state.user);
 
@@ -51,29 +49,21 @@ const [selectedMembers, setSelectedMembers] = useState([]);
   // =====================================================
 
   useEffect(() => {
-    if (showModal) {
-      dispatch(getUsersRequest());
-    }
+    if (!showModal) return;
+
+    dispatch(getUsersRequest());
   }, [showModal, dispatch]);
 
   // =====================================================
-  // SUCCESS
+  // ADD MEMBER SUCCESS
   // =====================================================
 
   useEffect(() => {
-    if (addTeamMembersSuccess) {
-      setShowModal(false);
+    if (!addTeamMembersSuccess) return;
 
-      if (projectId) {
-        dispatch(getProjectByIdRequest(projectId));
-      }
-
-    }
-  }, [
-    addTeamMembersSuccess,
-    projectId,
-    dispatch,
-  ]);
+    setShowModal(false);
+    formik.resetForm();
+  }, [addTeamMembersSuccess]);
 
   // =====================================================
   // FORMIK
@@ -90,20 +80,23 @@ const [selectedMembers, setSelectedMembers] = useState([]);
         .required("Please select team members"),
     }),
 
-   
-onSubmit: (values) => {
-  console.log("PROJECT ID:", projectId);
-  console.log("SELECTED TEAM MEMBERS:", values.teamMembers);
+    onSubmit: (values) => {
+      if (!projectId) {
+        console.error("Project ID is missing");
+        return;
+      }
 
-  dispatch(
-    addTeamMembersRequest({
-      projectId,
-      teamMembers: values.teamMembers,
-    })
-  );
-},
+      if (!values.teamMembers.length) {
+        return;
+      }
 
-
+      dispatch(
+        addTeamMembersRequest({
+          projectId,
+          teamMembers: values.teamMembers,
+        })
+      );
+    },
   });
 
   // =====================================================
@@ -123,11 +116,14 @@ onSubmit: (values) => {
     if (addTeamMembersLoading) return;
 
     formik.resetForm();
+
+    dispatch(clearAddTeamMembersState());
+
     setShowModal(false);
   };
 
   // =====================================================
-  // CHECK USER
+  // SELECT USER
   // =====================================================
 
   const handleUserSelect = (userId) => {
@@ -160,8 +156,8 @@ onSubmit: (values) => {
             className="
               w-11 h-11
               rounded-xl
-              bg-indigo-50
-              text-indigo-600
+              bg-indigo-50 dark:bg-indigo-500/10
+              text-indigo-600 dark:text-indigo-400
               flex
               items-center
               justify-center
@@ -172,11 +168,11 @@ onSubmit: (values) => {
 
           <div>
 
-            <h2 className="text-lg font-bold text-slate-800">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
               Team Members
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               People assigned to this project
             </p>
 
@@ -184,7 +180,7 @@ onSubmit: (values) => {
 
         </div>
 
-        {/* ================= ADD MEMBER ================= */}
+        {/* ADD MEMBER */}
 
         <button
           type="button"
@@ -225,9 +221,9 @@ onSubmit: (values) => {
           py-3
           mb-5
           rounded-xl
-          bg-slate-50
+          bg-slate-50 dark:bg-slate-800
           border
-          border-slate-100
+          border-slate-100 dark:border-slate-700
         "
       >
 
@@ -235,10 +231,10 @@ onSubmit: (values) => {
 
           <Users
             size={17}
-            className="text-slate-400"
+            className="text-slate-400 dark:text-slate-500"
           />
 
-          <span className="text-sm text-slate-500">
+          <span className="text-sm text-slate-500 dark:text-slate-400">
             Total Team Members
           </span>
 
@@ -249,8 +245,8 @@ onSubmit: (values) => {
             px-3
             py-1
             rounded-full
-            bg-indigo-50
-            text-indigo-600
+            bg-indigo-50 dark:bg-indigo-500/10
+            text-indigo-600 dark:text-indigo-400
             text-xs
             font-bold
           "
@@ -283,18 +279,19 @@ onSubmit: (values) => {
               className="
                 group
                 relative
-                bg-white
+                bg-white dark:bg-slate-900
                 border
-                border-slate-200
+                border-slate-200 dark:border-slate-700
                 rounded-xl
                 p-4
-                hover:border-indigo-200
+                hover:border-indigo-200 dark:hover:border-indigo-500/30
                 hover:shadow-sm
+                dark:hover:bg-slate-800
                 transition
               "
             >
 
-              {/* ================= TOP ================= */}
+              {/* TOP */}
 
               <div className="flex items-start justify-between">
 
@@ -331,7 +328,7 @@ onSubmit: (values) => {
                       className="
                         text-sm
                         font-bold
-                        text-slate-800
+                        text-slate-800 dark:text-white
                         truncate
                       "
                     >
@@ -342,10 +339,10 @@ onSubmit: (values) => {
 
                       <UserRound
                         size={12}
-                        className="text-slate-400"
+                        className="text-slate-400 dark:text-slate-500"
                       />
 
-                      <span className="text-xs text-slate-400">
+                      <span className="text-xs text-slate-400 dark:text-slate-500">
                         Team Member
                       </span>
 
@@ -365,9 +362,9 @@ onSubmit: (values) => {
                     flex
                     items-center
                     justify-center
-                    text-slate-400
-                    hover:bg-slate-100
-                    hover:text-slate-600
+                    text-slate-400 dark:text-slate-500
+                    hover:bg-slate-100 dark:hover:bg-slate-800
+                    hover:text-slate-600 dark:hover:text-slate-300
                     transition
                   "
                 >
@@ -376,14 +373,14 @@ onSubmit: (values) => {
 
               </div>
 
-              {/* ================= EMAIL ================= */}
+              {/* EMAIL */}
 
               <div
                 className="
                   mt-4
                   pt-3
                   border-t
-                  border-slate-100
+                  border-slate-100 dark:border-slate-800
                   flex
                   items-center
                   gap-2
@@ -392,13 +389,13 @@ onSubmit: (values) => {
 
                 <Mail
                   size={14}
-                  className="text-slate-400 shrink-0"
+                  className="text-slate-400 dark:text-slate-500 shrink-0"
                 />
 
                 <p
                   className="
                     text-xs
-                    text-slate-500
+                    text-slate-500 dark:text-slate-400
                     truncate
                   "
                 >
@@ -415,18 +412,18 @@ onSubmit: (values) => {
 
       ) : (
 
-        /* ================= EMPTY STATE ================= */
+        /* EMPTY STATE */
 
         <div
           className="
             border
             border-dashed
-            border-slate-200
+            border-slate-200 dark:border-slate-700
             rounded-2xl
             py-12
             px-5
             text-center
-            bg-slate-50/50
+            bg-slate-50/50 dark:bg-slate-900/50
           "
         >
 
@@ -434,8 +431,8 @@ onSubmit: (values) => {
             className="
               w-14 h-14
               rounded-2xl
-              bg-indigo-50
-              text-indigo-500
+              bg-indigo-50 dark:bg-indigo-500/10
+              text-indigo-500 dark:text-indigo-400
               flex
               items-center
               justify-center
@@ -446,11 +443,11 @@ onSubmit: (values) => {
             <Users size={25} />
           </div>
 
-          <h3 className="text-sm font-bold text-slate-700">
+          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
             No Team Members
           </h3>
 
-          <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-sm mx-auto">
             No team members have been assigned to this project yet.
           </p>
 
@@ -466,12 +463,12 @@ onSubmit: (values) => {
               py-2.5
               rounded-xl
               border
-              border-indigo-200
-              bg-white
-              text-indigo-600
+              border-indigo-200 dark:border-indigo-500/30
+              bg-white dark:bg-slate-900
+              text-indigo-600 dark:text-indigo-400
               text-sm
               font-semibold
-              hover:bg-indigo-50
+              hover:bg-indigo-50 dark:hover:bg-indigo-500/10
               transition
             "
           >
@@ -493,11 +490,12 @@ onSubmit: (values) => {
           className="
             fixed
             inset-0
-            z-50
+            z-[9999]
             flex
             items-center
             justify-center
             bg-slate-900/40
+            dark:bg-black/60
             backdrop-blur-sm
             p-4
           "
@@ -507,21 +505,21 @@ onSubmit: (values) => {
             className="
               w-full
               max-w-lg
-              bg-white
+              bg-white dark:bg-slate-900
               rounded-2xl
               shadow-2xl
               overflow-hidden
             "
           >
 
-            {/* ================= MODAL HEADER ================= */}
+            {/* MODAL HEADER */}
 
             <div
               className="
                 px-6
                 py-5
                 border-b
-                border-slate-200
+                border-slate-200 dark:border-slate-700
                 flex
                 items-center
                 justify-between
@@ -534,8 +532,8 @@ onSubmit: (values) => {
                   className="
                     w-10 h-10
                     rounded-xl
-                    bg-indigo-50
-                    text-indigo-600
+                    bg-indigo-50 dark:bg-indigo-500/10
+                    text-indigo-600 dark:text-indigo-400
                     flex
                     items-center
                     justify-center
@@ -546,11 +544,11 @@ onSubmit: (values) => {
 
                 <div>
 
-                  <h3 className="font-bold text-slate-800">
+                  <h3 className="font-bold text-slate-800 dark:text-white">
                     Add Team Members
                   </h3>
 
-                  <p className="text-xs text-slate-400 mt-1">
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                     Select users for this project
                   </p>
 
@@ -561,15 +559,17 @@ onSubmit: (values) => {
               <button
                 type="button"
                 onClick={handleCloseModal}
+                disabled={addTeamMembersLoading}
                 className="
                   w-9 h-9
                   rounded-lg
                   flex
                   items-center
                   justify-center
-                  text-slate-400
-                  hover:bg-slate-100
-                  hover:text-slate-600
+                  text-slate-400 dark:text-slate-500
+                  hover:bg-slate-100 dark:hover:bg-slate-800
+                  hover:text-slate-600 dark:hover:text-slate-300
+                  disabled:opacity-50
                 "
               >
                 <X size={19} />
@@ -577,7 +577,7 @@ onSubmit: (values) => {
 
             </div>
 
-            {/* ================= FORM ================= */}
+            {/* FORM */}
 
             <form onSubmit={formik.handleSubmit}>
 
@@ -594,13 +594,13 @@ onSubmit: (values) => {
                     py-3
                     mb-4
                     rounded-xl
-                    bg-indigo-50
+                    bg-indigo-50 dark:bg-indigo-500/10
                     border
-                    border-indigo-100
+                    border-indigo-100 dark:border-indigo-500/20
                   "
                 >
 
-                  <span className="text-sm text-indigo-700 font-medium">
+                  <span className="text-sm text-indigo-700 dark:text-indigo-300 font-medium">
                     Selected Members
                   </span>
 
@@ -609,8 +609,8 @@ onSubmit: (values) => {
                       px-2.5
                       py-1
                       rounded-full
-                      bg-white
-                      text-indigo-600
+                      bg-white dark:bg-slate-800
+                      text-indigo-600 dark:text-indigo-400
                       text-xs
                       font-bold
                     "
@@ -627,12 +627,14 @@ onSubmit: (values) => {
                   {getUsersLoading ? (
 
                     <div className="py-8 text-center">
-                      <p className="text-sm text-slate-400">
+
+                      <p className="text-sm text-slate-400 dark:text-slate-500">
                         Loading users...
                       </p>
+
                     </div>
 
-                  ) : users?.length > 0 ? (
+                  ) : users.length > 0 ? (
 
                     users.map((user) => {
 
@@ -666,12 +668,13 @@ onSubmit: (values) => {
                             border
                             text-left
                             transition
+
                             ${
                               alreadyMember
-                                ? "bg-slate-50 border-slate-100 opacity-60 cursor-not-allowed"
+                                ? "bg-slate-50 dark:bg-slate-800 border-slate-100 dark:border-slate-700 opacity-60 cursor-not-allowed"
                                 : isSelected
-                                ? "bg-indigo-50 border-indigo-200"
-                                : "bg-white border-slate-200 hover:border-indigo-200 hover:bg-slate-50"
+                                ? "bg-indigo-50 dark:bg-indigo-500/10 border-indigo-200 dark:border-indigo-500/30"
+                                : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-indigo-200 dark:hover:border-indigo-500/30 hover:bg-slate-50 dark:hover:bg-slate-800"
                             }
                           `}
                         >
@@ -682,8 +685,8 @@ onSubmit: (values) => {
                             className="
                               w-10 h-10
                               rounded-xl
-                              bg-indigo-100
-                              text-indigo-600
+                              bg-indigo-100 dark:bg-indigo-500/10
+                              text-indigo-600 dark:text-indigo-400
                               flex
                               items-center
                               justify-center
@@ -701,11 +704,11 @@ onSubmit: (values) => {
 
                           <div className="flex-1 min-w-0">
 
-                            <p className="text-sm font-semibold text-slate-700 truncate">
+                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200 truncate">
                               {user?.name}
                             </p>
 
-                            <p className="text-xs text-slate-400 truncate mt-0.5">
+                            <p className="text-xs text-slate-400 dark:text-slate-500 truncate mt-0.5">
                               {user?.email}
                             </p>
 
@@ -715,7 +718,7 @@ onSubmit: (values) => {
 
                           {alreadyMember ? (
 
-                            <span className="text-[11px] font-semibold text-slate-400">
+                            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
                               Already Added
                             </span>
 
@@ -729,10 +732,11 @@ onSubmit: (values) => {
                                 flex
                                 items-center
                                 justify-center
+
                                 ${
                                   isSelected
                                     ? "bg-indigo-600 border-indigo-600 text-white"
-                                    : "border-slate-300"
+                                    : "border-slate-300 dark:border-slate-600"
                                 }
                               `}
                             >
@@ -755,10 +759,10 @@ onSubmit: (values) => {
 
                       <Users
                         size={30}
-                        className="mx-auto text-slate-300 mb-2"
+                        className="mx-auto text-slate-300 dark:text-slate-600 mb-2"
                       />
 
-                      <p className="text-sm text-slate-400">
+                      <p className="text-sm text-slate-400 dark:text-slate-500">
                         No users found.
                       </p>
 
@@ -773,7 +777,7 @@ onSubmit: (values) => {
                 {formik.touched.teamMembers &&
                   formik.errors.teamMembers && (
 
-                    <p className="text-red-500 text-xs mt-3">
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-3">
                       {formik.errors.teamMembers}
                     </p>
 
@@ -783,7 +787,7 @@ onSubmit: (values) => {
 
                 {addTeamMembersError && (
 
-                  <p className="text-red-500 text-sm mt-3">
+                  <p className="text-red-500 dark:text-red-400 text-sm mt-3">
                     {addTeamMembersError}
                   </p>
 
@@ -791,15 +795,15 @@ onSubmit: (values) => {
 
               </div>
 
-              {/* ================= FOOTER ================= */}
+              {/* FOOTER */}
 
               <div
                 className="
                   px-6
                   py-4
                   border-t
-                  border-slate-200
-                  bg-slate-50
+                  border-slate-200 dark:border-slate-700
+                  bg-slate-50 dark:bg-slate-800/60
                   flex
                   justify-end
                   gap-3
@@ -815,13 +819,14 @@ onSubmit: (values) => {
                     py-2.5
                     rounded-xl
                     border
-                    border-slate-200
-                    bg-white
-                    text-slate-700
+                    border-slate-200 dark:border-slate-700
+                    bg-white dark:bg-slate-900
+                    text-slate-700 dark:text-slate-300
                     text-sm
                     font-semibold
-                    hover:bg-slate-100
+                    hover:bg-slate-100 dark:hover:bg-slate-800
                     transition
+                    disabled:opacity-50
                   "
                 >
                   Cancel
@@ -842,7 +847,7 @@ onSubmit: (values) => {
                     rounded-xl
                     bg-indigo-600
                     hover:bg-indigo-700
-                    disabled:bg-slate-300
+                    disabled:bg-slate-300 dark:disabled:bg-slate-700
                     text-white
                     text-sm
                     font-semibold

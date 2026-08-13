@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -67,7 +66,7 @@ const AddDepartment = () => {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 text-slate-800 dark:text-slate-100">
 
       {/* ================================================= */}
       {/* HEADER */}
@@ -82,21 +81,24 @@ const AddDepartment = () => {
         <div className="flex items-center gap-4">
 
           <div
-            className="w-14 h-14 rounded-2xl
-            bg-gradient-to-br from-indigo-500 to-violet-600
-            text-white shadow-lg shadow-indigo-200
-            flex items-center justify-center"
+            className="
+              w-14 h-14 rounded-2xl
+              bg-gradient-to-br from-indigo-500 to-violet-600
+              text-white
+              shadow-lg shadow-indigo-200 dark:shadow-none
+              flex items-center justify-center
+            "
           >
             <Building2 size={27} />
           </div>
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               Create Department
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Add a new department to your organization.
             </p>
 
@@ -104,24 +106,25 @@ const AddDepartment = () => {
 
         </div>
 
-
         {/* BACK BUTTON */}
 
         <button
           type="button"
           onClick={() => navigate("/admin/departments")}
-          className="inline-flex items-center
-          justify-center gap-2
-          px-5 py-3
-          rounded-xl
-          border border-slate-200
-          bg-white
-          text-slate-600
-          font-semibold text-sm
-          hover:bg-slate-50
-          hover:text-indigo-600
-          transition
-          shadow-sm"
+          className="
+            inline-flex items-center
+            justify-center gap-2
+            px-5 py-3
+            rounded-xl
+            border border-slate-200 dark:border-slate-700
+            bg-white dark:bg-slate-900
+            text-slate-600 dark:text-slate-300
+            font-semibold text-sm
+            hover:bg-slate-50 dark:hover:bg-slate-800
+            hover:text-indigo-600 dark:hover:text-indigo-400
+            transition
+            shadow-sm dark:shadow-none
+          "
         >
           <ArrowLeft size={18} />
           Back
@@ -129,48 +132,52 @@ const AddDepartment = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* FORM CARD */}
       {/* ================================================= */}
 
       <div
-        className="bg-white
-        rounded-2xl
-        border border-slate-200
-        shadow-sm
-        overflow-hidden
-        max-w-3xl"
+        className="
+          bg-white dark:bg-slate-900
+          rounded-2xl
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
+          overflow-hidden
+          max-w-3xl
+        "
       >
 
         {/* CARD HEADER */}
 
         <div
-          className="px-6 py-5
-          border-b border-slate-200
-          bg-slate-50/70"
+          className="
+            px-6 py-5
+            border-b border-slate-200 dark:border-slate-700
+            bg-slate-50/70 dark:bg-slate-800/50
+          "
         >
 
           <div className="flex items-center gap-3">
 
             <div
-              className="w-10 h-10
-              rounded-xl
-              bg-indigo-50
-              text-indigo-600
-              flex items-center
-              justify-center"
+              className="
+                w-10 h-10
+                rounded-xl
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
+                flex items-center justify-center
+              "
             >
               <Plus size={19} />
             </div>
 
             <div>
 
-              <h2 className="font-bold text-slate-800">
+              <h2 className="font-bold text-slate-800 dark:text-white">
                 Department Information
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Enter the details for the new department.
               </p>
 
@@ -179,7 +186,6 @@ const AddDepartment = () => {
           </div>
 
         </div>
-
 
         {/* FORM */}
 
@@ -197,9 +203,11 @@ const AddDepartment = () => {
             <div>
 
               <label
-                className="block mb-2
-                text-sm font-semibold
-                text-slate-700"
+                className="
+                  block mb-2
+                  text-sm font-semibold
+                  text-slate-700 dark:text-slate-300
+                "
               >
                 Department Name
               </label>
@@ -208,10 +216,12 @@ const AddDepartment = () => {
 
                 <Building2
                   size={18}
-                  className="absolute
-                  left-4 top-1/2
-                  -translate-y-1/2
-                  text-slate-400"
+                  className="
+                    absolute
+                    left-4 top-1/2
+                    -translate-y-1/2
+                    text-slate-400 dark:text-slate-500
+                  "
                 />
 
                 <input
@@ -222,35 +232,35 @@ const AddDepartment = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`w-full h-12
-                  border
-                  rounded-xl
-                  pl-11 pr-4
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  bg-slate-50
-                  focus:bg-white
-                  focus:ring-4
-                  transition
-                  ${
-                    formik.touched.name &&
-                    formik.errors.name
-                      ? "border-red-300 focus:border-red-400 focus:ring-red-50"
-                      : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-50"
-                  }`}
+                    border
+                    rounded-xl
+                    pl-11 pr-4
+                    text-sm
+                    text-slate-700 dark:text-slate-200
+                    outline-none
+                    bg-slate-50 dark:bg-slate-800
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    focus:bg-white dark:focus:bg-slate-900
+                    focus:ring-4
+                    transition
+                    ${
+                      formik.touched.name &&
+                      formik.errors.name
+                        ? "border-red-300 dark:border-red-500 focus:border-red-400 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-indigo-500/10"
+                    }`}
                 />
 
               </div>
 
               {formik.touched.name &&
                 formik.errors.name && (
-                  <p className="text-red-500 text-xs mt-2">
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-2">
                     {formik.errors.name}
                   </p>
                 )}
 
             </div>
-
 
             {/* ================================================= */}
             {/* DESCRIPTION */}
@@ -259,9 +269,11 @@ const AddDepartment = () => {
             <div>
 
               <label
-                className="block mb-2
-                text-sm font-semibold
-                text-slate-700"
+                className="
+                  block mb-2
+                  text-sm font-semibold
+                  text-slate-700 dark:text-slate-300
+                "
               >
                 Description
               </label>
@@ -270,9 +282,11 @@ const AddDepartment = () => {
 
                 <FileText
                   size={18}
-                  className="absolute
-                  left-4 top-4
-                  text-slate-400"
+                  className="
+                    absolute
+                    left-4 top-4
+                    text-slate-400 dark:text-slate-500
+                  "
                 />
 
                 <textarea
@@ -282,33 +296,35 @@ const AddDepartment = () => {
                   value={formik.values.description}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="w-full
-                  border border-slate-200
-                  rounded-xl
-                  pl-11 pr-4 py-3
-                  text-sm
-                  text-slate-700
-                  outline-none
-                  bg-slate-50
-                  resize-none
-                  focus:bg-white
-                  focus:border-indigo-400
-                  focus:ring-4
-                  focus:ring-indigo-50
-                  transition"
+                  className="
+                    w-full
+                    border border-slate-200 dark:border-slate-700
+                    rounded-xl
+                    pl-11 pr-4 py-3
+                    text-sm
+                    text-slate-700 dark:text-slate-200
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    outline-none
+                    bg-slate-50 dark:bg-slate-800
+                    resize-none
+                    focus:bg-white dark:focus:bg-slate-900
+                    focus:border-indigo-400
+                    focus:ring-4
+                    focus:ring-indigo-500/10
+                    transition
+                  "
                 />
 
               </div>
 
               {formik.touched.description &&
                 formik.errors.description && (
-                  <p className="text-red-500 text-xs mt-2">
+                  <p className="text-red-500 dark:text-red-400 text-xs mt-2">
                     {formik.errors.description}
                   </p>
                 )}
 
             </div>
-
 
             {/* ================================================= */}
             {/* API ERROR */}
@@ -317,28 +333,31 @@ const AddDepartment = () => {
             {createError && (
 
               <div
-                className="p-4
-                rounded-xl
-                bg-red-50
-                border border-red-200
-                text-red-600
-                text-sm"
+                className="
+                  p-4
+                  rounded-xl
+                  bg-red-50 dark:bg-red-500/10
+                  border border-red-200 dark:border-red-500/20
+                  text-red-600 dark:text-red-400
+                  text-sm
+                "
               >
                 {createError}
               </div>
 
             )}
 
-
             {/* ================================================= */}
             {/* ACTIONS */}
             {/* ================================================= */}
 
             <div
-              className="flex flex-col sm:flex-row
-              justify-end gap-3
-              pt-4
-              border-t border-slate-100"
+              className="
+                flex flex-col sm:flex-row
+                justify-end gap-3
+                pt-4
+                border-t border-slate-100 dark:border-slate-800
+              "
             >
 
               <button
@@ -346,43 +365,46 @@ const AddDepartment = () => {
                 onClick={() =>
                   navigate("/admin/departments")
                 }
-                className="inline-flex
-                items-center
-                justify-center
-                gap-2
-                px-5 py-3
-                rounded-xl
-                border border-slate-200
-                bg-white
-                text-slate-600
-                text-sm
-                font-semibold
-                hover:bg-slate-50
-                transition"
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-5 py-3
+                  rounded-xl
+                  border border-slate-200 dark:border-slate-700
+                  bg-white dark:bg-slate-900
+                  text-slate-600 dark:text-slate-300
+                  text-sm
+                  font-semibold
+                  hover:bg-slate-50 dark:hover:bg-slate-800
+                  transition
+                "
               >
                 <ArrowLeft size={17} />
                 Cancel
               </button>
 
-
               <button
                 type="submit"
                 disabled={createLoading}
-                className="inline-flex
-                items-center
-                justify-center
-                gap-2
-                px-6 py-3
-                rounded-xl
-                bg-indigo-600
-                hover:bg-indigo-700
-                disabled:bg-slate-400
-                text-white
-                text-sm
-                font-semibold
-                shadow-md
-                shadow-indigo-100
-                transition"
+                className="
+                  inline-flex
+                  items-center
+                  justify-center
+                  gap-2
+                  px-6 py-3
+                  rounded-xl
+                  bg-indigo-600
+                  hover:bg-indigo-700
+                  disabled:bg-slate-400
+                  text-white
+                  text-sm
+                  font-semibold
+                  shadow-md
+                  shadow-indigo-100 dark:shadow-none
+                  transition
+                "
               >
 
                 <Plus size={18} />

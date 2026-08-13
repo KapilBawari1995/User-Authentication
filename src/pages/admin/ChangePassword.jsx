@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Lock,
@@ -24,9 +23,10 @@ import {
 const ChangePassword = () => {
   const dispatch = useDispatch();
 
-  const { changePassLoading, changePassOtpSent } = useSelector(
-    (state) => state.auth
-  );
+  const {
+    changePassLoading,
+    changePassOtpSent,
+  } = useSelector((state) => state.auth);
 
   const [showPassword, setShowPassword] = useState({
     current: false,
@@ -40,8 +40,6 @@ const ChangePassword = () => {
       [field]: !prev[field],
     }));
   };
-
-  // ================= VALIDATION =================
 
   const validationSchema = Yup.object({
     currentPassword: Yup.string().required(
@@ -68,8 +66,6 @@ const ChangePassword = () => {
 
     otp: Yup.string(),
   });
-
-  // ================= FORMIK =================
 
   const formik = useFormik({
     initialValues: {
@@ -103,102 +99,46 @@ const ChangePassword = () => {
     },
   });
 
-  // ================= PASSWORD INPUT =================
+  const handleCancel = () => {
+    formik.resetForm();
 
-  const PasswordInput = ({
-    name,
-    label,
-    placeholder,
-    field,
-  }) => {
-    const hasError =
-      formik.touched[name] && formik.errors[name];
+    setShowPassword({
+      current: false,
+      new: false,
+      confirm: false,
+    });
 
-    return (
-      <div>
-        <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
-          <Lock size={16} className="text-indigo-500" />
-          {label}
-        </label>
-
-        <div
-          className={`relative ${
-            hasError ? "mb-1" : ""
-          }`}
-        >
-          <input
-            type={showPassword[field] ? "text" : "password"}
-            name={name}
-            placeholder={placeholder}
-            value={formik.values[name]}
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            className={`w-full h-12 px-4 pr-12 rounded-xl border
-              bg-slate-50 text-sm text-slate-700
-              outline-none transition
-              focus:bg-white
-              focus:ring-4
-              ${
-                hasError
-                  ? "border-red-300 focus:border-red-400 focus:ring-red-50"
-                  : "border-slate-200 focus:border-indigo-400 focus:ring-indigo-50"
-              }`}
-          />
-
-          <button
-            type="button"
-            onClick={() => togglePassword(field)}
-            className="absolute right-3 top-1/2 -translate-y-1/2
-              w-8 h-8 rounded-lg
-              text-slate-400 hover:text-indigo-600
-              hover:bg-indigo-50
-              flex items-center justify-center
-              transition"
-          >
-            {showPassword[field] ? (
-              <EyeOff size={19} />
-            ) : (
-              <Eye size={19} />
-            )}
-          </button>
-        </div>
-
-        {hasError && (
-          <p className="text-xs text-red-500 mt-1">
-            {formik.errors[name]}
-          </p>
-        )}
-      </div>
-    );
+    dispatch(clearChangePasswordState());
   };
 
   return (
-    <div className="min-h-full">
+    <div className="min-h-full text-slate-800 dark:text-slate-100">
 
-      {/* ================================================= */}
       {/* HEADER */}
-      {/* ================================================= */}
 
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
 
         <div className="flex items-center gap-4">
 
           <div
-            className="w-14 h-14 rounded-2xl
-            bg-gradient-to-br from-indigo-500 to-violet-600
-            text-white shadow-lg shadow-indigo-200
-            flex items-center justify-center"
+            className="
+              w-14 h-14 rounded-2xl
+              bg-gradient-to-br from-indigo-500 to-violet-600
+              text-white
+              shadow-lg shadow-indigo-200 dark:shadow-none
+              flex items-center justify-center
+            "
           >
             <ShieldCheck size={27} />
           </div>
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
               Change Password
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Update your account password securely.
             </p>
 
@@ -208,46 +148,51 @@ const ChangePassword = () => {
 
       </div>
 
-      {/* ================================================= */}
-      {/* MAIN CONTENT */}
-      {/* ================================================= */}
+      {/* MAIN */}
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
 
-        {/* ================================================= */}
-        {/* PASSWORD FORM */}
-        {/* ================================================= */}
+        {/* FORM CARD */}
 
         <div
-          className="xl:col-span-2
-          bg-white rounded-2xl
-          border border-slate-200
-          shadow-sm overflow-hidden"
+          className="
+            xl:col-span-2
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            shadow-sm dark:shadow-none
+            overflow-hidden
+          "
         >
 
           {/* CARD HEADER */}
 
           <div
-            className="px-6 py-5
-            border-b border-slate-200
-            flex items-center gap-3"
+            className="
+              px-6 py-5
+              border-b border-slate-200 dark:border-slate-700
+              flex items-center gap-3
+            "
           >
 
             <div
-              className="w-10 h-10 rounded-xl
-              bg-indigo-50 text-indigo-600
-              flex items-center justify-center"
+              className="
+                w-10 h-10 rounded-xl
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
+                flex items-center justify-center
+              "
             >
               <KeyRound size={20} />
             </div>
 
             <div>
 
-              <h2 className="font-bold text-slate-800">
+              <h2 className="font-bold text-slate-800 dark:text-white">
                 Password Security
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Enter your current and new password.
               </p>
 
@@ -262,38 +207,268 @@ const ChangePassword = () => {
             className="p-6 space-y-5"
           >
 
-            <PasswordInput
-              name="currentPassword"
-              label="Current Password"
-              placeholder="Enter current password"
-              field="current"
-            />
+            {/* CURRENT PASSWORD */}
 
-            <PasswordInput
-              name="newPassword"
-              label="New Password"
-              placeholder="Enter new password"
-              field="new"
-            />
+            <div>
 
-            <PasswordInput
-              name="confirmPassword"
-              label="Confirm Password"
-              placeholder="Confirm new password"
-              field="confirm"
-            />
+              <label
+                className="
+                  flex items-center gap-2
+                  text-sm font-semibold
+                  text-slate-700 dark:text-slate-200
+                  mb-2
+                "
+              >
+                <Lock
+                  size={16}
+                  className="text-indigo-500 dark:text-indigo-400"
+                />
+                Current Password
+              </label>
 
-            {/* ================================================= */}
+              <div className="relative">
+
+                <input
+                  type={
+                    showPassword.current
+                      ? "text"
+                      : "password"
+                  }
+                  name="currentPassword"
+                  placeholder="Enter current password"
+                  value={formik.values.currentPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  autoComplete="current-password"
+                  className={`w-full h-12 px-4 pr-12 rounded-xl border
+                    bg-slate-50 dark:bg-slate-800
+                    text-sm text-slate-700 dark:text-slate-200
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    outline-none transition
+                    focus:bg-white dark:focus:bg-slate-900
+                    focus:ring-4
+                    ${
+                      formik.touched.currentPassword &&
+                      formik.errors.currentPassword
+                        ? "border-red-300 dark:border-red-500/40 focus:border-red-400 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-indigo-500/10"
+                    }`}
+                />
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() =>
+                    togglePassword("current")
+                  }
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    w-8 h-8 rounded-lg
+                    text-slate-400 dark:text-slate-500
+                    hover:text-indigo-600 dark:hover:text-indigo-400
+                    hover:bg-indigo-50 dark:hover:bg-indigo-500/10
+                    flex items-center justify-center
+                    transition
+                  "
+                >
+                  {showPassword.current ? (
+                    <EyeOff size={19} />
+                  ) : (
+                    <Eye size={19} />
+                  )}
+                </button>
+
+              </div>
+
+              {formik.touched.currentPassword &&
+                formik.errors.currentPassword && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.currentPassword}
+                  </p>
+                )}
+
+            </div>
+
+            {/* NEW PASSWORD */}
+
+            <div>
+
+              <label
+                className="
+                  flex items-center gap-2
+                  text-sm font-semibold
+                  text-slate-700 dark:text-slate-200
+                  mb-2
+                "
+              >
+                <Lock
+                  size={16}
+                  className="text-indigo-500 dark:text-indigo-400"
+                />
+                New Password
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type={
+                    showPassword.new
+                      ? "text"
+                      : "password"
+                  }
+                  name="newPassword"
+                  placeholder="Enter new password"
+                  value={formik.values.newPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  autoComplete="new-password"
+                  className={`w-full h-12 px-4 pr-12 rounded-xl border
+                    bg-slate-50 dark:bg-slate-800
+                    text-sm text-slate-700 dark:text-slate-200
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    outline-none transition
+                    focus:bg-white dark:focus:bg-slate-900
+                    focus:ring-4
+                    ${
+                      formik.touched.newPassword &&
+                      formik.errors.newPassword
+                        ? "border-red-300 dark:border-red-500/40 focus:border-red-400 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-indigo-500/10"
+                    }`}
+                />
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() =>
+                    togglePassword("new")
+                  }
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    w-8 h-8 rounded-lg
+                    text-slate-400 dark:text-slate-500
+                    hover:text-indigo-600 dark:hover:text-indigo-400
+                    hover:bg-indigo-50 dark:hover:bg-indigo-500/10
+                    flex items-center justify-center
+                    transition
+                  "
+                >
+                  {showPassword.new ? (
+                    <EyeOff size={19} />
+                  ) : (
+                    <Eye size={19} />
+                  )}
+                </button>
+
+              </div>
+
+              {formik.touched.newPassword &&
+                formik.errors.newPassword && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.newPassword}
+                  </p>
+                )}
+
+            </div>
+
+            {/* CONFIRM PASSWORD */}
+
+            <div>
+
+              <label
+                className="
+                  flex items-center gap-2
+                  text-sm font-semibold
+                  text-slate-700 dark:text-slate-200
+                  mb-2
+                "
+              >
+                <Lock
+                  size={16}
+                  className="text-indigo-500 dark:text-indigo-400"
+                />
+                Confirm Password
+              </label>
+
+              <div className="relative">
+
+                <input
+                  type={
+                    showPassword.confirm
+                      ? "text"
+                      : "password"
+                  }
+                  name="confirmPassword"
+                  placeholder="Confirm new password"
+                  value={formik.values.confirmPassword}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  autoComplete="new-password"
+                  className={`w-full h-12 px-4 pr-12 rounded-xl border
+                    bg-slate-50 dark:bg-slate-800
+                    text-sm text-slate-700 dark:text-slate-200
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    outline-none transition
+                    focus:bg-white dark:focus:bg-slate-900
+                    focus:ring-4
+                    ${
+                      formik.touched.confirmPassword &&
+                      formik.errors.confirmPassword
+                        ? "border-red-300 dark:border-red-500/40 focus:border-red-400 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:border-indigo-400 focus:ring-indigo-500/10"
+                    }`}
+                />
+
+                <button
+                  type="button"
+                  onMouseDown={(e) => e.preventDefault()}
+                  onClick={() =>
+                    togglePassword("confirm")
+                  }
+                  className="
+                    absolute right-3 top-1/2 -translate-y-1/2
+                    w-8 h-8 rounded-lg
+                    text-slate-400 dark:text-slate-500
+                    hover:text-indigo-600 dark:hover:text-indigo-400
+                    hover:bg-indigo-50 dark:hover:bg-indigo-500/10
+                    flex items-center justify-center
+                    transition
+                  "
+                >
+                  {showPassword.confirm ? (
+                    <EyeOff size={19} />
+                  ) : (
+                    <Eye size={19} />
+                  )}
+                </button>
+
+              </div>
+
+              {formik.touched.confirmPassword &&
+                formik.errors.confirmPassword && (
+                  <p className="text-xs text-red-500 mt-1">
+                    {formik.errors.confirmPassword}
+                  </p>
+                )}
+
+            </div>
+
             {/* OTP */}
-            {/* ================================================= */}
 
             {changePassOtpSent && (
               <div>
 
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <label
+                  className="
+                    flex items-center gap-2
+                    text-sm font-semibold
+                    text-slate-700 dark:text-slate-200
+                    mb-2
+                  "
+                >
                   <ShieldCheck
                     size={16}
-                    className="text-indigo-500"
+                    className="text-indigo-500 dark:text-indigo-400"
                   />
                   Verification OTP
                 </label>
@@ -306,49 +481,51 @@ const ChangePassword = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   maxLength={6}
-                  className="w-full h-12 px-4
-                    rounded-xl
-                    border border-slate-200
-                    bg-slate-50
-                    text-sm
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  className="
+                    w-full h-12 px-4 rounded-xl
+                    border border-slate-200 dark:border-slate-700
+                    bg-slate-50 dark:bg-slate-800
+                    text-sm text-slate-700 dark:text-slate-200
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
                     outline-none
-                    focus:bg-white
+                    focus:bg-white dark:focus:bg-slate-900
                     focus:border-indigo-400
                     focus:ring-4
-                    focus:ring-indigo-50
-                    transition"
+                    focus:ring-indigo-500/10
+                  "
                 />
 
               </div>
             )}
 
-            {/* ================================================= */}
             {/* BUTTONS */}
-            {/* ================================================= */}
 
             <div
-              className="pt-4
-              border-t border-slate-100
-              flex flex-col sm:flex-row
-              justify-end gap-3"
+              className="
+                pt-4
+                border-t border-slate-100 dark:border-slate-800
+                flex flex-col sm:flex-row
+                justify-end gap-3
+              "
             >
 
               <button
                 type="button"
-                onClick={() => {
-                  formik.resetForm();
-                  dispatch(clearChangePasswordState());
-                }}
-                className="inline-flex items-center
+                onClick={handleCancel}
+                className="
+                  inline-flex items-center
                   justify-center gap-2
                   h-11 px-5
                   rounded-xl
-                  border border-slate-200
-                  bg-white
-                  text-slate-600
+                  border border-slate-200 dark:border-slate-700
+                  bg-white dark:bg-slate-800
+                  text-slate-600 dark:text-slate-300
                   text-sm font-semibold
-                  hover:bg-slate-50
-                  transition"
+                  hover:bg-slate-50 dark:hover:bg-slate-700
+                  transition
+                "
               >
                 <X size={17} />
                 Cancel
@@ -357,7 +534,8 @@ const ChangePassword = () => {
               <button
                 type="submit"
                 disabled={changePassLoading}
-                className="inline-flex items-center
+                className="
+                  inline-flex items-center
                   justify-center gap-2
                   h-11 px-6
                   rounded-xl
@@ -366,10 +544,9 @@ const ChangePassword = () => {
                   disabled:bg-slate-400
                   text-white
                   text-sm font-semibold
-                  shadow-md shadow-indigo-100
-                  transition"
+                  transition
+                "
               >
-
                 <Save size={17} />
 
                 {changePassLoading
@@ -377,7 +554,6 @@ const ChangePassword = () => {
                   : changePassOtpSent
                   ? "Verify OTP & Update"
                   : "Send OTP"}
-
               </button>
 
             </div>
@@ -386,40 +562,46 @@ const ChangePassword = () => {
 
         </div>
 
-        {/* ================================================= */}
-        {/* PASSWORD REQUIREMENTS */}
-        {/* ================================================= */}
+        {/* REQUIREMENTS */}
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          shadow-sm overflow-hidden
-          h-fit"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            shadow-sm dark:shadow-none
+            overflow-hidden
+            h-fit
+          "
         >
 
           <div
-            className="px-6 py-5
-            border-b border-slate-200"
+            className="
+              px-6 py-5
+              border-b border-slate-200 dark:border-slate-700
+            "
           >
 
             <div className="flex items-center gap-3">
 
               <div
-                className="w-10 h-10 rounded-xl
-                bg-emerald-50
-                text-emerald-600
-                flex items-center justify-center"
+                className="
+                  w-10 h-10 rounded-xl
+                  bg-emerald-50 dark:bg-emerald-500/10
+                  text-emerald-600 dark:text-emerald-400
+                  flex items-center justify-center
+                "
               >
                 <CheckCircle2 size={20} />
               </div>
 
               <div>
 
-                <h2 className="font-bold text-slate-800">
+                <h2 className="font-bold text-slate-800 dark:text-white">
                   Password Requirements
                 </h2>
 
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                   Keep your account secure.
                 </p>
 
@@ -433,72 +615,46 @@ const ChangePassword = () => {
 
             <div className="space-y-4">
 
-              <div className="flex items-center gap-3">
-                <CheckCircle2
-                  size={17}
-                  className="text-emerald-500"
-                />
-                <span className="text-sm text-slate-600">
-                  Minimum 8 characters
-                </span>
-              </div>
+              {[
+                "Minimum 8 characters",
+                "One uppercase letter",
+                "One lowercase letter",
+                "One number",
+                "One special character",
+              ].map((text) => (
+                <div
+                  key={text}
+                  className="flex items-center gap-3"
+                >
+                  <CheckCircle2
+                    size={17}
+                    className="text-emerald-500"
+                  />
 
-              <div className="flex items-center gap-3">
-                <CheckCircle2
-                  size={17}
-                  className="text-emerald-500"
-                />
-                <span className="text-sm text-slate-600">
-                  One uppercase letter
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <CheckCircle2
-                  size={17}
-                  className="text-emerald-500"
-                />
-                <span className="text-sm text-slate-600">
-                  One lowercase letter
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <CheckCircle2
-                  size={17}
-                  className="text-emerald-500"
-                />
-                <span className="text-sm text-slate-600">
-                  One number
-                </span>
-              </div>
-
-              <div className="flex items-center gap-3">
-                <CheckCircle2
-                  size={17}
-                  className="text-emerald-500"
-                />
-                <span className="text-sm text-slate-600">
-                  One special character
-                </span>
-              </div>
+                  <span className="text-sm text-slate-600 dark:text-slate-300">
+                    {text}
+                  </span>
+                </div>
+              ))}
 
             </div>
 
             <div
-              className="mt-6 p-4 rounded-xl
-              bg-indigo-50
-              border border-indigo-100"
+              className="
+                mt-6 p-4 rounded-xl
+                bg-indigo-50 dark:bg-indigo-500/10
+                border border-indigo-100 dark:border-indigo-500/20
+              "
             >
 
               <div className="flex gap-3">
 
                 <ShieldCheck
                   size={20}
-                  className="text-indigo-600 shrink-0"
+                  className="text-indigo-600 dark:text-indigo-400 shrink-0"
                 />
 
-                <p className="text-xs leading-5 text-indigo-700">
+                <p className="text-xs leading-5 text-indigo-700 dark:text-indigo-300">
                   Never share your password or OTP with
                   anyone. Use a strong password that you
                   don't use on other websites.

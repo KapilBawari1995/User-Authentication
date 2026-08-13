@@ -22,6 +22,7 @@ const notificationSchema = new mongoose.Schema(
         "User",
         "Role",
         "System",
+        "Security",
       ],
       default: "System",
     },
@@ -35,6 +36,7 @@ const notificationSchema = new mongoose.Schema(
     sender: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      default: null,
     },
 
     isRead: {
@@ -57,7 +59,4 @@ const notificationSchema = new mongoose.Schema(
   }
 );
 
-export default mongoose.model(
-  "Notification",
-  notificationSchema
-);
+export default mongoose.model("Notification", notificationSchema);

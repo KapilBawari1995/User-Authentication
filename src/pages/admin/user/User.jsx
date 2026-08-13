@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Search,
@@ -73,8 +72,16 @@ const Users = () => {
 
   const getStatusColor = (isActive) => {
     return isActive
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-      : "bg-red-50 text-red-700 border-red-200";
+      ? `
+        bg-emerald-50 dark:bg-emerald-500/10
+        text-emerald-700 dark:text-emerald-400
+        border-emerald-200 dark:border-emerald-500/20
+      `
+      : `
+        bg-red-50 dark:bg-red-500/10
+        text-red-700 dark:text-red-400
+        border-red-200 dark:border-red-500/20
+      `;
   };
 
   // ================= COUNTS =================
@@ -90,45 +97,48 @@ const Users = () => {
   const usersWithRole =
     users?.filter((item) => item.role?.name).length || 0;
 
-
-    const handleDeleteUser = (id) => {
- 
-
-  dispatch(deleteUserRequest(id));
-  setOpenMenu(null);
-};
+  const handleDeleteUser = (id) => {
+    dispatch(deleteUserRequest(id));
+    setOpenMenu(null);
+  };
 
   return (
-    <div>
+    <div className="text-slate-800 dark:text-slate-100">
 
       {/* ================================================= */}
       {/* HEADER */}
       {/* ================================================= */}
 
       <div
-        className="flex flex-col sm:flex-row
-        sm:items-center sm:justify-between
-        gap-5 mb-8"
+        className="
+          flex flex-col sm:flex-row
+          sm:items-center sm:justify-between
+          gap-5 mb-8
+        "
       >
 
         <div className="flex items-center gap-4">
 
           <div
-            className="w-14 h-14 rounded-2xl
-            bg-gradient-to-br from-indigo-500 to-violet-600
-            text-white shadow-lg shadow-indigo-200
-            flex items-center justify-center"
+            className="
+              w-14 h-14 rounded-2xl
+              bg-gradient-to-br from-indigo-500 to-violet-600
+              text-white
+              shadow-lg shadow-indigo-200
+              dark:shadow-none
+              flex items-center justify-center
+            "
           >
             <UsersIcon size={27} />
           </div>
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               Users
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Manage users, roles and account status
             </p>
 
@@ -140,13 +150,16 @@ const Users = () => {
           onClick={() =>
             navigate("/admin/users/add")
           }
-          className="inline-flex items-center
-          justify-center gap-2
-          bg-indigo-600 hover:bg-indigo-700
-          text-white px-5 py-3
-          rounded-xl font-semibold text-sm
-          shadow-md shadow-indigo-100
-          transition-all duration-200"
+          className="
+            inline-flex items-center
+            justify-center gap-2
+            bg-indigo-600 hover:bg-indigo-700
+            text-white px-5 py-3
+            rounded-xl font-semibold text-sm
+            shadow-md shadow-indigo-100
+            dark:shadow-none
+            transition-all duration-200
+          "
         >
           <Plus size={18} />
           Add User
@@ -154,49 +167,57 @@ const Users = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* SUMMARY */}
       {/* ================================================= */}
 
       <div
-        className="grid grid-cols-1
-        sm:grid-cols-2
-        xl:grid-cols-4
-        gap-5 mb-7"
+        className="
+          grid grid-cols-1
+          sm:grid-cols-2
+          xl:grid-cols-4
+          gap-5 mb-7
+        "
       >
 
         {/* TOTAL USERS */}
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          p-5 shadow-sm
-          hover:shadow-md transition"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            p-5 shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
+            transition
+          "
         >
 
           <div className="flex justify-between items-center">
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Total Users
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 mt-2">
+              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
                 {totalUsers}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 All registered users
               </p>
 
             </div>
 
             <div
-              className="w-12 h-12 rounded-xl
-              bg-indigo-50 text-indigo-600
-              flex items-center justify-center"
+              className="
+                w-12 h-12 rounded-xl
+                bg-indigo-50 dark:bg-indigo-500/10
+                text-indigo-600 dark:text-indigo-400
+                flex items-center justify-center
+              "
             >
               <UsersIcon size={22} />
             </div>
@@ -205,38 +226,44 @@ const Users = () => {
 
         </div>
 
-
         {/* ACTIVE */}
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          p-5 shadow-sm
-          hover:shadow-md transition"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            p-5 shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
+            transition
+          "
         >
 
           <div className="flex justify-between items-center">
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Active Users
               </p>
 
-              <h2 className="text-3xl font-bold text-emerald-600 mt-2">
+              <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
                 {activeUsers}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Currently active
               </p>
 
             </div>
 
             <div
-              className="w-12 h-12 rounded-xl
-              bg-emerald-50 text-emerald-600
-              flex items-center justify-center"
+              className="
+                w-12 h-12 rounded-xl
+                bg-emerald-50 dark:bg-emerald-500/10
+                text-emerald-600 dark:text-emerald-400
+                flex items-center justify-center
+              "
             >
               <UserCheck size={22} />
             </div>
@@ -245,38 +272,44 @@ const Users = () => {
 
         </div>
 
-
         {/* INACTIVE */}
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          p-5 shadow-sm
-          hover:shadow-md transition"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            p-5 shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
+            transition
+          "
         >
 
           <div className="flex justify-between items-center">
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Inactive Users
               </p>
 
-              <h2 className="text-3xl font-bold text-red-600 mt-2">
+              <h2 className="text-3xl font-bold text-red-600 dark:text-red-400 mt-2">
                 {inactiveUsers}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Currently inactive
               </p>
 
             </div>
 
             <div
-              className="w-12 h-12 rounded-xl
-              bg-red-50 text-red-600
-              flex items-center justify-center"
+              className="
+                w-12 h-12 rounded-xl
+                bg-red-50 dark:bg-red-500/10
+                text-red-600 dark:text-red-400
+                flex items-center justify-center
+              "
             >
               <UserX size={22} />
             </div>
@@ -285,38 +318,44 @@ const Users = () => {
 
         </div>
 
-
         {/* USERS WITH ROLE */}
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          p-5 shadow-sm
-          hover:shadow-md transition"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            p-5 shadow-sm dark:shadow-none
+            hover:shadow-md dark:hover:bg-slate-800
+            transition
+          "
         >
 
           <div className="flex justify-between items-center">
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
                 Assigned Roles
               </p>
 
-              <h2 className="text-3xl font-bold text-violet-600 mt-2">
+              <h2 className="text-3xl font-bold text-violet-600 dark:text-violet-400 mt-2">
                 {usersWithRole}
               </h2>
 
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                 Users with roles
               </p>
 
             </div>
 
             <div
-              className="w-12 h-12 rounded-xl
-              bg-violet-50 text-violet-600
-              flex items-center justify-center"
+              className="
+                w-12 h-12 rounded-xl
+                bg-violet-50 dark:bg-violet-500/10
+                text-violet-600 dark:text-violet-400
+                flex items-center justify-center
+              "
             >
               <ShieldCheck size={22} />
             </div>
@@ -327,22 +366,27 @@ const Users = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* FILTER CARD */}
       {/* ================================================= */}
 
       <div
-        className="bg-white rounded-2xl
-        border border-slate-200
-        shadow-sm p-5 mb-6"
+        className="
+          bg-white dark:bg-slate-900
+          rounded-2xl
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
+          p-5 mb-6
+        "
       >
 
         <div
-          className="flex flex-col
-          lg:flex-row
-          lg:items-center
-          gap-3"
+          className="
+            flex flex-col
+            lg:flex-row
+            lg:items-center
+            gap-3
+          "
         >
 
           {/* SEARCH */}
@@ -351,9 +395,11 @@ const Users = () => {
 
             <Search
               size={18}
-              className="absolute left-3.5
-              top-1/2 -translate-y-1/2
-              text-slate-400"
+              className="
+                absolute left-3.5
+                top-1/2 -translate-y-1/2
+                text-slate-400 dark:text-slate-500
+              "
             />
 
             <input
@@ -363,20 +409,23 @@ const Users = () => {
               onChange={(e) =>
                 setSearch(e.target.value)
               }
-              className="w-full h-11
-              border border-slate-200
-              bg-slate-50
-              rounded-xl
-              pl-11 pr-4
-              text-sm outline-none
-              focus:bg-white
-              focus:border-indigo-400
-              focus:ring-4 focus:ring-indigo-50
-              transition"
+              className="
+                w-full h-11
+                border border-slate-200 dark:border-slate-700
+                bg-slate-50 dark:bg-slate-800
+                text-slate-700 dark:text-slate-200
+                placeholder:text-slate-400 dark:placeholder:text-slate-500
+                rounded-xl
+                pl-11 pr-4
+                text-sm outline-none
+                focus:bg-white dark:focus:bg-slate-900
+                focus:border-indigo-400
+                focus:ring-4 focus:ring-indigo-500/10
+                transition
+              "
             />
 
           </div>
-
 
           {/* STATUS */}
 
@@ -385,18 +434,20 @@ const Users = () => {
             onChange={(e) =>
               setStatus(e.target.value)
             }
-            className="h-11
-            border border-slate-200
-            bg-slate-50
-            rounded-xl
-            px-4
-            text-sm text-slate-600
-            outline-none
-            focus:bg-white
-            focus:border-indigo-400
-            focus:ring-4 focus:ring-indigo-50
-            w-full lg:w-48
-            transition"
+            className="
+              h-11
+              border border-slate-200 dark:border-slate-700
+              bg-slate-50 dark:bg-slate-800
+              rounded-xl
+              px-4
+              text-sm text-slate-600 dark:text-slate-300
+              outline-none
+              focus:bg-white dark:focus:bg-slate-900
+              focus:border-indigo-400
+              focus:ring-4 focus:ring-indigo-500/10
+              w-full lg:w-48
+              transition
+            "
           >
 
             <option value="">
@@ -413,22 +464,23 @@ const Users = () => {
 
           </select>
 
-
           {/* RESET */}
 
           <button
             onClick={handleResetFilters}
-            className="h-11
-            inline-flex items-center
-            justify-center gap-2
-            px-5
-            rounded-xl
-            border border-slate-200
-            bg-white
-            text-slate-600
-            text-sm font-semibold
-            hover:bg-slate-50
-            transition"
+            className="
+              h-11
+              inline-flex items-center
+              justify-center gap-2
+              px-5
+              rounded-xl
+              border border-slate-200 dark:border-slate-700
+              bg-white dark:bg-slate-900
+              text-slate-600 dark:text-slate-300
+              text-sm font-semibold
+              hover:bg-slate-50 dark:hover:bg-slate-800
+              transition
+            "
           >
 
             <RefreshCcw size={16} />
@@ -441,49 +493,55 @@ const Users = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* TABLE CARD */}
       {/* ================================================= */}
 
       <div
-        className="bg-white rounded-2xl
-        border border-slate-200
-        shadow-sm overflow-hidden"
+        className="
+          bg-white dark:bg-slate-900
+          rounded-2xl
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
+          overflow-hidden
+        "
       >
 
         {/* TABLE HEADER */}
 
         <div
-          className="px-6 py-5
-          border-b border-slate-200
-          flex items-center justify-between"
+          className="
+            px-6 py-5
+            border-b border-slate-200 dark:border-slate-700
+            flex items-center justify-between
+          "
         >
 
           <div>
 
-            <h2 className="font-bold text-slate-800">
+            <h2 className="font-bold text-slate-800 dark:text-white">
               All Users
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               View and manage registered users
             </p>
 
           </div>
 
           <div
-            className="px-3 py-1.5
-            rounded-lg
-            bg-indigo-50
-            text-indigo-600
-            text-sm font-semibold"
+            className="
+              px-3 py-1.5
+              rounded-lg
+              bg-indigo-50 dark:bg-indigo-500/10
+              text-indigo-600 dark:text-indigo-400
+              text-sm font-semibold
+            "
           >
             {users?.length || 0} Users
           </div>
 
         </div>
-
 
         {/* ================================================= */}
         {/* TABLE */}
@@ -493,56 +551,66 @@ const Users = () => {
 
           <table className="w-full">
 
-            <thead className="bg-slate-50">
+            <thead className="bg-slate-50 dark:bg-slate-800/70">
 
               <tr>
 
                 <th
-                  className="text-left
-                  px-6 py-4
-                  text-xs font-bold
-                  uppercase tracking-wide
-                  text-slate-500"
+                  className="
+                    text-left
+                    px-6 py-4
+                    text-xs font-bold
+                    uppercase tracking-wide
+                    text-slate-500 dark:text-slate-400
+                  "
                 >
                   User
                 </th>
 
                 <th
-                  className="text-left
-                  px-6 py-4
-                  text-xs font-bold
-                  uppercase tracking-wide
-                  text-slate-500"
+                  className="
+                    text-left
+                    px-6 py-4
+                    text-xs font-bold
+                    uppercase tracking-wide
+                    text-slate-500 dark:text-slate-400
+                  "
                 >
                   Email
                 </th>
 
                 <th
-                  className="text-left
-                  px-6 py-4
-                  text-xs font-bold
-                  uppercase tracking-wide
-                  text-slate-500"
+                  className="
+                    text-left
+                    px-6 py-4
+                    text-xs font-bold
+                    uppercase tracking-wide
+                    text-slate-500 dark:text-slate-400
+                  "
                 >
                   Role
                 </th>
 
                 <th
-                  className="text-left
-                  px-6 py-4
-                  text-xs font-bold
-                  uppercase tracking-wide
-                  text-slate-500"
+                  className="
+                    text-left
+                    px-6 py-4
+                    text-xs font-bold
+                    uppercase tracking-wide
+                    text-slate-500 dark:text-slate-400
+                  "
                 >
                   Status
                 </th>
 
                 <th
-                  className="text-center
-                  px-6 py-4
-                  text-xs font-bold
-                  uppercase tracking-wide
-                  text-slate-500"
+                  className="
+                    text-center
+                    px-6 py-4
+                    text-xs font-bold
+                    uppercase tracking-wide
+                    text-slate-500 dark:text-slate-400
+                  "
                 >
                   Action
                 </th>
@@ -551,8 +619,7 @@ const Users = () => {
 
             </thead>
 
-
-            <tbody>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
               {/* LOADING */}
 
@@ -566,21 +633,25 @@ const Users = () => {
                   >
 
                     <div
-                      className="flex flex-col
-                      items-center justify-center
-                      gap-3"
+                      className="
+                        flex flex-col
+                        items-center justify-center
+                        gap-3
+                      "
                     >
 
                       <div
-                        className="w-8 h-8
-                        border-4
-                        border-indigo-100
-                        border-t-indigo-600
-                        rounded-full
-                        animate-spin"
+                        className="
+                          w-8 h-8
+                          border-4
+                          border-indigo-100 dark:border-indigo-500/20
+                          border-t-indigo-600 dark:border-t-indigo-400
+                          rounded-full
+                          animate-spin
+                        "
                       />
 
-                      <p className="text-sm text-slate-500">
+                      <p className="text-sm text-slate-500 dark:text-slate-400">
                         Loading users...
                       </p>
 
@@ -596,10 +667,11 @@ const Users = () => {
 
                   <tr
                     key={item._id}
-                    className="border-b
-                    border-slate-100
-                    hover:bg-slate-50/70
-                    transition"
+                    className="
+                      border-b border-slate-100 dark:border-slate-800
+                      hover:bg-slate-50/70 dark:hover:bg-slate-800/60
+                      transition
+                    "
                   >
 
                     {/* USER */}
@@ -609,15 +681,18 @@ const Users = () => {
                       <div className="flex items-center gap-3">
 
                         <div
-                          className="w-10 h-10
-                          rounded-xl
-                          bg-gradient-to-br
-                          from-indigo-50 to-violet-50
-                          text-indigo-700
-                          border border-indigo-100
-                          flex items-center
-                          justify-center
-                          font-bold"
+                          className="
+                            w-10 h-10
+                            rounded-xl
+                            bg-gradient-to-br
+                            from-indigo-50 to-violet-50
+                            dark:from-indigo-500/10 dark:to-violet-500/10
+                            text-indigo-700 dark:text-indigo-400
+                            border border-indigo-100 dark:border-indigo-500/20
+                            flex items-center
+                            justify-center
+                            font-bold
+                          "
                         >
                           {item.name
                             ?.charAt(0)
@@ -627,15 +702,20 @@ const Users = () => {
                         <div>
 
                           <p
-                            className="font-semibold
-                            text-slate-800"
+                            className="
+                              font-semibold
+                              text-slate-800 dark:text-slate-100
+                            "
                           >
                             {item.name}
                           </p>
 
                           <p
-                            className="text-xs
-                            text-slate-400 mt-0.5"
+                            className="
+                              text-xs
+                              text-slate-400 dark:text-slate-500
+                              mt-0.5
+                            "
                           >
                             Registered User
                           </p>
@@ -646,16 +726,17 @@ const Users = () => {
 
                     </td>
 
-
                     {/* EMAIL */}
 
                     <td
-                      className="px-6 py-4
-                      text-sm text-slate-600"
+                      className="
+                        px-6 py-4
+                        text-sm
+                        text-slate-600 dark:text-slate-300
+                      "
                     >
                       {item.email}
                     </td>
-
 
                     {/* ROLE */}
 
@@ -664,14 +745,16 @@ const Users = () => {
                       {item.role?.name ? (
 
                         <span
-                          className="inline-flex
-                          items-center gap-1.5
-                          px-3 py-1.5
-                          rounded-lg
-                          bg-indigo-50
-                          text-indigo-700
-                          border border-indigo-100
-                          text-xs font-semibold"
+                          className="
+                            inline-flex
+                            items-center gap-1.5
+                            px-3 py-1.5
+                            rounded-lg
+                            bg-indigo-50 dark:bg-indigo-500/10
+                            text-indigo-700 dark:text-indigo-400
+                            border border-indigo-100 dark:border-indigo-500/20
+                            text-xs font-semibold
+                          "
                         >
 
                           <ShieldCheck size={13} />
@@ -683,8 +766,10 @@ const Users = () => {
                       ) : (
 
                         <span
-                          className="text-slate-400
-                          text-sm"
+                          className="
+                            text-slate-400 dark:text-slate-500
+                            text-sm
+                          "
                         >
                           No Role
                         </span>
@@ -693,31 +778,32 @@ const Users = () => {
 
                     </td>
 
-
                     {/* STATUS */}
 
                     <td className="px-6 py-4">
 
                       <span
-                        className={`inline-flex
-                        items-center gap-1.5
-                        px-3 py-1.5
-                        rounded-full
-                        border
-                        text-xs font-semibold
-                        ${getStatusColor(
-                          item.isActive
-                        )}`}
+                        className={`
+                          inline-flex
+                          items-center gap-1.5
+                          px-3 py-1.5
+                          rounded-full
+                          border
+                          text-xs font-semibold
+                          ${getStatusColor(item.isActive)}
+                        `}
                       >
 
                         <span
-                          className={`w-1.5 h-1.5
-                          rounded-full
-                          ${
-                            item.isActive
-                              ? "bg-emerald-500"
-                              : "bg-red-500"
-                          }`}
+                          className={`
+                            w-1.5 h-1.5
+                            rounded-full
+                            ${
+                              item.isActive
+                                ? "bg-emerald-500"
+                                : "bg-red-500"
+                            }
+                          `}
                         />
 
                         {item.isActive
@@ -728,12 +814,13 @@ const Users = () => {
 
                     </td>
 
-
                     {/* ACTION */}
 
                     <td
-                      className="px-6 py-4
-                      text-center relative"
+                      className="
+                        px-6 py-4
+                        text-center relative
+                      "
                     >
 
                       <button
@@ -744,32 +831,35 @@ const Users = () => {
                               : item._id
                           )
                         }
-                        className="w-9 h-9
-                        inline-flex
-                        items-center
-                        justify-center
-                        rounded-lg
-                        text-slate-500
-                        hover:bg-slate-100
-                        hover:text-slate-700
-                        transition"
+                        className="
+                          w-9 h-9
+                          inline-flex
+                          items-center
+                          justify-center
+                          rounded-lg
+                          text-slate-500 dark:text-slate-400
+                          hover:bg-slate-100 dark:hover:bg-slate-800
+                          hover:text-slate-700 dark:hover:text-slate-200
+                          transition
+                        "
                       >
                         <MoreVertical size={19} />
                       </button>
 
-
                       {openMenu === item._id && (
 
                         <div
-                          className="absolute
-                          right-8 top-14
-                          bg-white
-                          border border-slate-200
-                          shadow-xl
-                          rounded-xl
-                          w-44
-                          z-50
-                          overflow-hidden"
+                          className="
+                            absolute
+                            right-8 top-14
+                            bg-white dark:bg-slate-900
+                            border border-slate-200 dark:border-slate-700
+                            shadow-xl
+                            rounded-xl
+                            w-44
+                            z-50
+                            overflow-hidden
+                          "
                         >
 
                           {/* VIEW */}
@@ -787,25 +877,26 @@ const Users = () => {
                               setOpenMenu(null);
 
                             }}
-                            className="flex
-                            items-center gap-3
-                            px-4 py-3
-                            w-full
-                            text-sm
-                            text-slate-600
-                            hover:bg-slate-50
-                            transition"
+                            className="
+                              flex
+                              items-center gap-3
+                              px-4 py-3
+                              w-full
+                              text-sm
+                              text-slate-600 dark:text-slate-300
+                              hover:bg-slate-50 dark:hover:bg-slate-800
+                              transition
+                            "
                           >
 
                             <Eye
                               size={16}
-                              className="text-indigo-500"
+                              className="text-indigo-500 dark:text-indigo-400"
                             />
 
                             View User
 
                           </button>
-
 
                           {/* EDIT */}
 
@@ -819,42 +910,50 @@ const Users = () => {
                               );
 
                             }}
-                            className="flex
-                            items-center gap-3
-                            w-full
-                            px-4 py-3
-                            text-sm
-                            text-slate-600
-                            hover:bg-slate-50
-                            transition"
+                            className="
+                              flex
+                              items-center gap-3
+                              w-full
+                              px-4 py-3
+                              text-sm
+                              text-slate-600 dark:text-slate-300
+                              hover:bg-slate-50 dark:hover:bg-slate-800
+                              transition
+                            "
                           >
 
                             <Edit
                               size={16}
-                              className="text-amber-500"
+                              className="text-amber-500 dark:text-amber-400"
                             />
 
                             Edit User
 
                           </button>
 
-
                           {/* DELETE */}
 
-                      <button
-  onClick={() => handleDeleteUser(item._id)}
-  className="flex
-  items-center gap-3
-  px-4 py-3
-  w-full
-  text-sm
-  text-red-600
-  hover:bg-red-50
-  transition"
->
-  <Trash2 size={16} />
-  Delete User
-</button>
+                          <button
+                            onClick={() =>
+                              handleDeleteUser(item._id)
+                            }
+                            className="
+                              flex
+                              items-center gap-3
+                              px-4 py-3
+                              w-full
+                              text-sm
+                              text-red-600 dark:text-red-400
+                              hover:bg-red-50 dark:hover:bg-red-500/10
+                              transition
+                            "
+                          >
+
+                            <Trash2 size={16} />
+
+                            Delete User
+
+                          </button>
 
                         </div>
 
@@ -878,32 +977,41 @@ const Users = () => {
                   >
 
                     <div
-                      className="flex flex-col
-                      items-center"
+                      className="
+                        flex flex-col
+                        items-center
+                      "
                     >
 
                       <div
-                        className="w-14 h-14
-                        rounded-2xl
-                        bg-slate-100
-                        text-slate-400
-                        flex items-center
-                        justify-center
-                        mb-3"
+                        className="
+                          w-14 h-14
+                          rounded-2xl
+                          bg-slate-100 dark:bg-slate-800
+                          text-slate-400 dark:text-slate-500
+                          flex items-center
+                          justify-center
+                          mb-3
+                        "
                       >
                         <UsersIcon size={25} />
                       </div>
 
                       <p
-                        className="font-semibold
-                        text-slate-700"
+                        className="
+                          font-semibold
+                          text-slate-700 dark:text-slate-200
+                        "
                       >
                         No Users Found
                       </p>
 
                       <p
-                        className="text-sm
-                        text-slate-400 mt-1"
+                        className="
+                          text-sm
+                          text-slate-400 dark:text-slate-500
+                          mt-1
+                        "
                       >
                         Try changing your search
                         or filter.
@@ -925,7 +1033,6 @@ const Users = () => {
 
       </div>
 
-
       {/* ================================================= */}
       {/* VIEW MODAL */}
       {/* ================================================= */}
@@ -942,4 +1049,3 @@ const Users = () => {
 };
 
 export default Users;
-

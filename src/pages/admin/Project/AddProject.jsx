@@ -1,4 +1,3 @@
-
 import React, { useEffect } from "react";
 import {
   ArrowLeft,
@@ -6,8 +5,10 @@ import {
   Users,
   Building2,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+
 import { useFormik } from "formik";
 import * as Yup from "yup";
 
@@ -16,95 +17,65 @@ import {
   getDepartmentManagersRequest,
 } from "../../../features/department/departmentSlice";
 
-import { createProjectRequest } from "../../../features/project/projectSlice";
+import {
+  createProjectRequest,
+  getProjectByIdRequest,
+  updateProjectRequest,
+  clearProjectState,
+} from "../../../features/project/projectSlice";
 
 const AddProject = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // =========================================================
-  // DEPARTMENT STATE
-  // =========================================================
+  const { id } = useParams();
 
   const {
     departments = [],
     managers = [],
     getDepartmentsLoading,
     managersLoading,
-  } = useSelector((state) => state.department);
-
-  // =========================================================
-  // PROJECT STATE
-  // =========================================================
+  } = useSelector((state) => state.department || {});
 
   const {
-    createLoading = false,
-    createSuccess = false,
-    createError = null,
+    project,
+    createLoading,
+    createProjectSuccess,
+    createError,
+    updateLoading,
+    updateProjectSuccess,
+    updateError,
+    getProjectByIdLoading,
   } = useSelector((state) => state.project || {});
 
-  // =========================================================
-  // GET DEPARTMENTS
-  // =========================================================
+  const submitting = createLoading || updateLoading;
+  const apiError = id ? updateError : createError;
 
   useEffect(() => {
     dispatch(getDepartmentsRequest());
   }, [dispatch]);
 
-  // =========================================================
-  // PROJECT CREATE SUCCESS
-  // =========================================================
-
   useEffect(() => {
-    if (createSuccess) {
-      navigate("/admin/projects");
+    if (id) {
+      dispatch(getProjectByIdRequest(id));
     }
-  }, [createSuccess, navigate]);
-
-  // =========================================================
-  // VALIDATION
-  // =========================================================
+  }, [dispatch, id]);
 
   const validationSchema = Yup.object({
-    name: Yup.string()
-      .trim()
-      .required("Project name is required"),
-
-    description: Yup.string()
-      .trim()
-      .required("Description is required"),
-
-    department: Yup.string()
-      .required("Please select department"),
-
-    projectManager: Yup.string()
-      .required("Please select manager"),
-
-    startDate: Yup.date()
-      .required("Start date is required"),
-
+    name: Yup.string().trim().required("Project name is required"),
+    description: Yup.string().trim().required("Description is required"),
+    department: Yup.string().required("Please select department"),
+    projectManager: Yup.string().required("Please select manager"),
+    startDate: Yup.date().required("Start date is required"),
     endDate: Yup.date()
       .required("End date is required")
-      .min(
-        Yup.ref("startDate"),
-        "End date must be after start date"
-      ),
-
-    priority: Yup.string()
-      .required("Please select priority"),
-
-    status: Yup.string()
-      .required("Please select status"),
-
+      .min(Yup.ref("startDate"), "End date must be after start date"),
+    priority: Yup.string().required("Please select priority"),
+    status: Yup.string().required("Please select status"),
     budget: Yup.number()
       .typeError("Budget must be a number")
       .min(0, "Budget cannot be negative")
       .required("Budget is required"),
   });
-
-  // =========================================================
-  // FORMIK
-  // =========================================================
 
   const formik = useFormik({
     initialValues: {
@@ -131,128 +102,149 @@ const AddProject = () => {
         endDate: values.endDate,
         priority: values.priority,
         status: values.status,
-        budget: values.budget,
+        budget: Number(values.budget),
       };
 
-      console.log("CREATE PROJECT PAYLOAD:", payload);
+      if (id) {
+        dispatch(updateProjectRequest({ id, data: payload }));
+        return;
+      }
 
       dispatch(createProjectRequest(payload));
     },
   });
 
-  // =========================================================
-  // DEPARTMENT CHANGE
-  // =========================================================
+  useEffect(() => {
+    if (!project || !id) return;
+
+    const projectData = project?.data || project;
+
+    const departmentId =
+      projectData?.department?._id ||
+      projectData?.department ||
+      "";
+
+    const managerId =
+      projectData?.projectManager?._id ||
+      projectData?.projectManager ||
+      "";
+
+    formik.setValues({
+      name: projectData?.name || "",
+      description: projectData?.description || "",
+      department: departmentId,
+      projectManager: managerId,
+      startDate: projectData?.startDate
+        ? new Date(projectData.startDate).toISOString().split("T")[0]
+        : "",
+      endDate: projectData?.endDate
+        ? new Date(projectData.endDate).toISOString().split("T")[0]
+        : "",
+      priority: projectData?.priority || "Medium",
+      status: projectData?.status || "Planning",
+      budget:
+        projectData?.budget !== undefined &&
+        projectData?.budget !== null
+          ? projectData.budget
+          : "",
+    });
+
+    if (departmentId) {
+      dispatch(getDepartmentManagersRequest(departmentId));
+    }
+  }, [project, id, dispatch]);
+
+  useEffect(() => {
+    if (createProjectSuccess || updateProjectSuccess) {
+      dispatch(clearProjectState());
+      navigate("/admin/projects");
+    }
+  }, [
+    createProjectSuccess,
+    updateProjectSuccess,
+    dispatch,
+    navigate,
+  ]);
 
   const handleDepartmentChange = (e) => {
     const departmentId = e.target.value;
 
-    // Set selected department
     formik.setFieldValue("department", departmentId);
-
-    // Reset manager whenever department changes
     formik.setFieldValue("projectManager", "");
 
-    // Get managers of selected department
     if (departmentId) {
       dispatch(getDepartmentManagersRequest(departmentId));
     }
   };
 
-  return (
-    <div className="min-h-screen bg-slate-50 p-6">
+  if (id && getProjectByIdLoading) {
+    return (
+      <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
+        <div className="text-slate-600 dark:text-slate-300 font-medium">
+          Loading project...
+        </div>
+      </div>
+    );
+  }
 
-      {/* =====================================================
-          HEADER
-      ===================================================== */}
+  const inputClass =
+    "w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none";
+
+  const selectClass =
+    "w-full px-4 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:ring-2 focus:ring-indigo-500 outline-none disabled:bg-slate-100 dark:disabled:bg-slate-800";
+
+  return (
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-6 text-slate-800 dark:text-slate-100">
 
       <div className="flex items-center justify-between mb-7">
-
         <div className="flex items-center gap-4">
-
           <button
             type="button"
             onClick={() => navigate("/admin/projects")}
-            className="
-              w-10 h-10 rounded-xl
-              bg-white border border-slate-200
-              flex items-center justify-center
-              text-slate-600
-              hover:bg-slate-100
-              transition
-            "
+            className="w-10 h-10 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <ArrowLeft size={19} />
           </button>
 
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">
-              Create Project
+            <h1 className="text-2xl font-bold text-slate-800 dark:text-white">
+              {id ? "Edit Project" : "Create Project"}
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
-              Create a new project and assign it to a department manager.
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+              {id
+                ? "Update project information and assignment."
+                : "Create a new project and assign it to a department manager."}
             </p>
           </div>
-
         </div>
-
       </div>
 
-      {/* =====================================================
-          MAIN CARD
-      ===================================================== */}
-
       <div className="max-w-6xl mx-auto">
-
         <form
           onSubmit={formik.handleSubmit}
-          className="
-            bg-white
-            border border-slate-200
-            rounded-2xl
-            shadow-sm
-            overflow-hidden
-          "
+          className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden"
         >
 
-          {/* =================================================
-              PROJECT INFORMATION
-          ================================================= */}
-
           <div className="p-7">
-
             <div className="flex items-center gap-3 mb-6">
-
-              <div
-                className="
-                  w-11 h-11 rounded-xl
-                  bg-indigo-50 text-indigo-600
-                  flex items-center justify-center
-                "
-              >
+              <div className="w-11 h-11 rounded-xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center">
                 <FolderKanban size={22} />
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-slate-800">
+                <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
                   Project Information
                 </h2>
 
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Enter the basic details of your project.
                 </p>
               </div>
-
             </div>
 
-            {/* =================================================
-                PROJECT NAME
-            ================================================= */}
-
             <div>
-
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Project Name
               </label>
 
@@ -263,15 +255,7 @@ const AddProject = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter project name"
-                className="
-                  w-full px-4 py-3
-                  rounded-xl
-                  border border-slate-300
-                  focus:ring-2 focus:ring-indigo-500
-                  focus:border-indigo-500
-                  outline-none
-                  transition
-                "
+                className={inputClass}
               />
 
               {formik.touched.name && formik.errors.name && (
@@ -279,16 +263,10 @@ const AddProject = () => {
                   {formik.errors.name}
                 </p>
               )}
-
             </div>
 
-            {/* =================================================
-                DESCRIPTION
-            ================================================= */}
-
             <div className="mt-5">
-
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Description
               </label>
 
@@ -299,16 +277,7 @@ const AddProject = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Describe the project..."
-                className="
-                  w-full px-4 py-3
-                  rounded-xl
-                  border border-slate-300
-                  focus:ring-2 focus:ring-indigo-500
-                  focus:border-indigo-500
-                  outline-none
-                  resize-none
-                  transition
-                "
+                className={`${inputClass} resize-none`}
               />
 
               {formik.touched.description &&
@@ -317,50 +286,30 @@ const AddProject = () => {
                     {formik.errors.description}
                   </p>
                 )}
-
             </div>
-
           </div>
 
-          {/* =================================================
-              PROJECT ASSIGNMENT
-          ================================================= */}
-
-          <div className="border-t border-slate-200 bg-slate-50/70 p-7">
-
+          <div className="border-t border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-800/40 p-7">
             <div className="flex items-center gap-3 mb-6">
-
-              <div
-                className="
-                  w-11 h-11 rounded-xl
-                  bg-emerald-50 text-emerald-600
-                  flex items-center justify-center
-                "
-              >
+              <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
                 <Users size={21} />
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold text-slate-800">
+                <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
                   Project Assignment
                 </h2>
 
-                <p className="text-sm text-slate-500">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   Select the department and manager responsible for this project.
                 </p>
               </div>
-
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
 
-              {/* =================================================
-                  DEPARTMENT
-              ================================================= */}
-
               <div>
-
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   <Building2 size={16} />
                   Department
                 </label>
@@ -371,20 +320,8 @@ const AddProject = () => {
                   onChange={handleDepartmentChange}
                   onBlur={formik.handleBlur}
                   disabled={getDepartmentsLoading}
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    bg-white
-                    focus:ring-2 focus:ring-indigo-500
-                    focus:border-indigo-500
-                    outline-none
-                    transition
-                    disabled:bg-slate-100
-                    disabled:text-slate-400
-                  "
+                  className={selectClass}
                 >
-
                   <option value="">
                     {getDepartmentsLoading
                       ? "Loading Departments..."
@@ -399,7 +336,6 @@ const AddProject = () => {
                       {department.name}
                     </option>
                   ))}
-
                 </select>
 
                 {formik.touched.department &&
@@ -408,20 +344,10 @@ const AddProject = () => {
                       {formik.errors.department}
                     </p>
                   )}
-
-                <p className="text-xs text-slate-500 mt-2">
-                  Select the department responsible for this project.
-                </p>
-
               </div>
 
-              {/* =================================================
-                  PROJECT MANAGER
-              ================================================= */}
-
               <div>
-
-                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 mb-2">
+                <label className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   <Users size={16} />
                   Project Manager
                 </label>
@@ -432,23 +358,10 @@ const AddProject = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   disabled={
-                    !formik.values.department ||
-                    managersLoading
+                    !formik.values.department || managersLoading
                   }
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    bg-white
-                    focus:ring-2 focus:ring-indigo-500
-                    focus:border-indigo-500
-                    outline-none
-                    transition
-                    disabled:bg-slate-100
-                    disabled:text-slate-400
-                  "
+                  className={selectClass}
                 >
-
                   <option value="">
                     {!formik.values.department
                       ? "Select Department First"
@@ -465,7 +378,6 @@ const AddProject = () => {
                       {manager.name}
                     </option>
                   ))}
-
                 </select>
 
                 {formik.touched.projectManager &&
@@ -474,44 +386,25 @@ const AddProject = () => {
                       {formik.errors.projectManager}
                     </p>
                   )}
-
-                <p className="text-xs text-slate-500 mt-2">
-                  Managers are loaded based on the selected department.
-                </p>
-
               </div>
-
             </div>
-
           </div>
 
-          {/* =================================================
-              PROJECT SETTINGS
-          ================================================= */}
-
-          <div className="p-7 border-t border-slate-200">
-
+          <div className="p-7 border-t border-slate-200 dark:border-slate-800">
             <div className="mb-6">
-
-              <h2 className="text-lg font-semibold text-slate-800">
+              <h2 className="text-lg font-semibold text-slate-800 dark:text-white">
                 Project Settings
               </h2>
 
-              <p className="text-sm text-slate-500 mt-1">
+              <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
                 Set project timeline, priority and current status.
               </p>
-
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
 
-              {/* =================================================
-                  START DATE
-              ================================================= */}
-
               <div>
-
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Start Date
                 </label>
 
@@ -521,13 +414,7 @@ const AddProject = () => {
                   value={formik.values.startDate}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    focus:ring-2 focus:ring-indigo-500
-                    outline-none
-                  "
+                  className={inputClass}
                 />
 
                 {formik.touched.startDate &&
@@ -536,16 +423,10 @@ const AddProject = () => {
                       {formik.errors.startDate}
                     </p>
                   )}
-
               </div>
 
-              {/* =================================================
-                  END DATE
-              ================================================= */}
-
               <div>
-
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   End Date
                 </label>
 
@@ -555,13 +436,7 @@ const AddProject = () => {
                   value={formik.values.endDate}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    focus:ring-2 focus:ring-indigo-500
-                    outline-none
-                  "
+                  className={inputClass}
                 />
 
                 {formik.touched.endDate &&
@@ -570,16 +445,10 @@ const AddProject = () => {
                       {formik.errors.endDate}
                     </p>
                   )}
-
               </div>
 
-              {/* =================================================
-                  PRIORITY
-              ================================================= */}
-
               <div>
-
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Priority
                 </label>
 
@@ -588,37 +457,17 @@ const AddProject = () => {
                   value={formik.values.priority}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    bg-white
-                    focus:ring-2 focus:ring-indigo-500
-                    outline-none
-                  "
+                  className={selectClass}
                 >
                   <option value="Low">Low</option>
                   <option value="Medium">Medium</option>
                   <option value="High">High</option>
                   <option value="Critical">Critical</option>
                 </select>
-
-                {formik.touched.priority &&
-                  formik.errors.priority && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {formik.errors.priority}
-                    </p>
-                  )}
-
               </div>
 
-              {/* =================================================
-                  STATUS
-              ================================================= */}
-
               <div>
-
-                <label className="block text-sm font-semibold text-slate-700 mb-2">
+                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                   Status
                 </label>
 
@@ -627,39 +476,19 @@ const AddProject = () => {
                   value={formik.values.status}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className="
-                    w-full px-4 py-3
-                    rounded-xl
-                    border border-slate-300
-                    bg-white
-                    focus:ring-2 focus:ring-indigo-500
-                    outline-none
-                  "
+                  className={selectClass}
                 >
                   <option value="Planning">Planning</option>
                   <option value="In Progress">In Progress</option>
                   <option value="On Hold">On Hold</option>
                   <option value="Completed">Completed</option>
+                  <option value="Cancelled">Cancelled</option>
                 </select>
-
-                {formik.touched.status &&
-                  formik.errors.status && (
-                    <p className="text-xs text-red-500 mt-1">
-                      {formik.errors.status}
-                    </p>
-                  )}
-
               </div>
-
             </div>
 
-            {/* =================================================
-                BUDGET
-            ================================================= */}
-
             <div className="mt-5 max-w-md">
-
-              <label className="block text-sm font-semibold text-slate-700 mb-2">
+              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
                 Project Budget
               </label>
 
@@ -670,13 +499,7 @@ const AddProject = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
                 placeholder="Enter project budget"
-                className="
-                  w-full px-4 py-3
-                  rounded-xl
-                  border border-slate-300
-                  focus:ring-2 focus:ring-indigo-500
-                  outline-none
-                "
+                className={inputClass}
               />
 
               {formik.touched.budget &&
@@ -685,82 +508,43 @@ const AddProject = () => {
                     {formik.errors.budget}
                   </p>
                 )}
-
             </div>
-
           </div>
 
-          {/* =================================================
-              API ERROR
-          ================================================= */}
-
-          {createError && (
-            <div className="mx-7 mb-5 p-3 rounded-xl bg-red-50 border border-red-200">
-              <p className="text-sm text-red-600">
-                {createError}
+          {apiError && (
+            <div className="mx-7 mb-5 p-3 rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-900">
+              <p className="text-sm text-red-600 dark:text-red-400">
+                {apiError}
               </p>
             </div>
           )}
 
-          {/* =================================================
-              FOOTER
-          ================================================= */}
-
-          <div
-            className="
-              px-7 py-5
-              border-t border-slate-200
-              bg-slate-50
-              flex items-center justify-end gap-3
-            "
-          >
-
+          <div className="px-7 py-5 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 flex items-center justify-end gap-3">
             <button
               type="button"
               onClick={() => navigate("/admin/projects")}
-              disabled={createLoading}
-              className="
-                px-6 py-3
-                rounded-xl
-                border border-slate-300
-                bg-white
-                text-slate-700
-                font-semibold
-                hover:bg-slate-100
-                transition
-                disabled:opacity-50
-              "
+              disabled={submitting}
+              className="px-6 py-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition disabled:opacity-50"
             >
               Cancel
             </button>
 
             <button
               type="submit"
-              disabled={createLoading}
-              className="
-                px-7 py-3
-                rounded-xl
-                bg-indigo-600
-                text-white
-                font-semibold
-                hover:bg-indigo-700
-                transition
-                shadow-sm
-                disabled:opacity-60
-                disabled:cursor-not-allowed
-              "
+              disabled={submitting}
+              className="px-7 py-3 rounded-xl bg-indigo-600 text-white font-semibold hover:bg-indigo-700 transition shadow-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {createLoading
-                ? "Creating..."
+              {submitting
+                ? id
+                  ? "Updating..."
+                  : "Creating..."
+                : id
+                ? "Update Project"
                 : "Create Project"}
             </button>
-
           </div>
-
         </form>
-
       </div>
-
     </div>
   );
 };

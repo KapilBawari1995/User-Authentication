@@ -1,5 +1,6 @@
 import Role from "../models/Role.js";
 
+import createNotification from "../utils/notificationHelper.js";
 
 export const createRole = async (req, res) => {
   try {
@@ -21,6 +22,16 @@ export const createRole = async (req, res) => {
       createdBy: req.user.id,
     });
 
+await createNotification({
+  title: "Role Created",
+  message: `Role "${role.name}" has been created.`,
+  type: "Role",
+  receiver: req.user.id,
+  sender: req.user.id,
+  referenceId: role._id,
+  referenceType: "Role",
+});
+    
     res.status(201).json({
       success: true,
       message: "Role created successfully.",
@@ -101,6 +112,18 @@ export const updateRole = async (req, res) => {
 
     await role.save();
 
+    await createNotification({
+  title: "Role Updated",
+  message: `Role "${role.name}" has been updated.`,
+  type: "Role",
+  receiver: req.user.id,
+  sender: req.user.id,
+  referenceId: role._id,
+  referenceType: "Role",
+});
+
+
+
     res.status(200).json({
       success: true,
       message: "Role updated successfully.",
@@ -134,6 +157,15 @@ export const deleteRole = async (req, res) => {
     }
 
     await role.deleteOne();
+    await createNotification({
+  title: "Role Deleted",
+  message: `Role "${role.name}" has been deleted.`,
+  type: "Role",
+  receiver: req.user.id,
+  sender: req.user.id,
+  referenceId: role._id,
+  referenceType: "Role",
+});
 
     res.status(200).json({
       success: true,

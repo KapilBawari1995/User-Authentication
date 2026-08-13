@@ -21,7 +21,7 @@ import Tasks from "./pages/admin/Tasks/Tasks";
 import AddTask from "./pages/admin/Tasks/AddTask";
 import Project from "./pages/admin/Project/Projects";
 import AddProject from "./pages/admin/Project/AddProject";
-import ProjectDetails from "./pages/admin/Project/ProjectDetails";
+import ProjectDetails from "./pages/admin/Project/ProjectDetails/ProjectDetails";
 import Calendar from "./pages/admin/Calendar";
 import Reports from "./pages/admin/Reports";
 import Notifications from "./pages/admin/Notifications/Notifications";
@@ -141,10 +141,12 @@ function AppContent() {
         <Route path="users/edit/:id" element={<AddUser />} />
 
         <Route path="tasks" element={<Tasks />} />
-      
 
-        <Route path="projects" element={<Project />} />  
+
+        <Route path="projects" element={<Project />} />
         <Route path="projects/add" element={<AddProject />} />
+        <Route path="projects/edit/:id" element={<AddProject />} />
+
 
 
         <Route
@@ -155,15 +157,15 @@ function AppContent() {
           path="projects/:projectId"
           element={<ProjectDetails />}
         />
-       <Route
-  path="/admin/projects/:projectId/tasks/create"
-  element={<AddTask />}
+        <Route
+          path="/admin/projects/:projectId/tasks/create"
+          element={<AddTask />}
 
-/>
-<Route
-  path="/admin/projects/:projectId/tasks/edit/:id"
-  element={<AddTask />}
-/>
+        />
+        <Route
+          path="/admin/projects/:projectId/tasks/edit/:id"
+          element={<AddTask />}
+        />
         <Route path="calendar" element={<Calendar />} />
         <Route path="reports" element={<Reports />} />
         <Route path="notifications" element={<Notifications />} />

@@ -33,7 +33,6 @@ import { useDispatch, useSelector } from "react-redux";
 
 import { getReportRequest } from "../../features/reports/reportSlice";
 
-
 // =====================================================
 // HELPERS
 // =====================================================
@@ -47,7 +46,6 @@ const getManagerName = (manager) => {
 
   return manager.name || manager.email || "Not Assigned";
 };
-
 
 // =====================================================
 // STATUS COLORS
@@ -67,7 +65,6 @@ const taskStatusColors = {
   Pending: "#f59e0b",
 };
 
-
 // =====================================================
 // COMPONENT
 // =====================================================
@@ -82,7 +79,6 @@ const Reports = () => {
   const [selectedProject, setSelectedProject] =
     useState("all");
 
-
   // =====================================================
   // API CALL
   // =====================================================
@@ -91,23 +87,9 @@ const Reports = () => {
     dispatch(getReportRequest());
   }, [dispatch]);
 
-
   // =====================================================
   // ACTUAL API RESPONSE
   // =====================================================
-
-  /*
-    API:
-
-    {
-      success: true,
-      data: {
-        summary: {},
-        projects: [],
-        managers: []
-      }
-    }
-  */
 
   const reportData = data?.data || {};
 
@@ -120,7 +102,6 @@ const Reports = () => {
   const managers = Array.isArray(reportData.managers)
     ? reportData.managers
     : [];
-
 
   // =====================================================
   // SUMMARY
@@ -153,7 +134,6 @@ const Reports = () => {
   const pendingTasks =
     summary.pendingTasks || 0;
 
-
   // =====================================================
   // PROJECT FILTER
   // =====================================================
@@ -164,7 +144,6 @@ const Reports = () => {
       name: project.projectName,
     }));
   }, [projects]);
-
 
   // =====================================================
   // FILTERED PROJECTS
@@ -178,7 +157,6 @@ const Reports = () => {
             String(project.projectId) ===
             String(selectedProject)
         );
-
 
   // =====================================================
   // PROJECT STATUS CHART
@@ -199,7 +177,6 @@ const Reports = () => {
     },
   ].filter((item) => item.value > 0);
 
-
   // =====================================================
   // TASK STATUS CHART
   // =====================================================
@@ -218,7 +195,6 @@ const Reports = () => {
       value: pendingTasks,
     },
   ].filter((item) => item.value > 0);
-
 
   // =====================================================
   // PROJECT TASK CHART
@@ -241,37 +217,33 @@ const Reports = () => {
     })
   );
 
-
   // =====================================================
   // LOADING
   // =====================================================
 
   if (loading) {
     return (
-      <div className="min-h-[500px] flex items-center justify-center">
+      <div className="min-h-[500px] flex items-center justify-center text-slate-800 dark:text-slate-100">
         <div className="text-center">
-
           <div
             className="
               w-12 h-12
               border-4
-              border-indigo-100
-              border-t-indigo-600
+              border-indigo-100 dark:border-indigo-500/20
+              border-t-indigo-600 dark:border-t-indigo-400
               rounded-full
               animate-spin
               mx-auto
             "
           />
 
-          <p className="mt-4 text-sm text-slate-500">
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">
             Loading reports...
           </p>
-
         </div>
       </div>
     );
   }
-
 
   // =====================================================
   // ERROR
@@ -279,18 +251,26 @@ const Reports = () => {
 
   if (error) {
     return (
-      <div className="bg-white border border-red-200 rounded-2xl p-8 text-center">
-
+      <div
+        className="
+          bg-white dark:bg-slate-900
+          border border-red-200 dark:border-red-500/20
+          rounded-2xl
+          p-8
+          text-center
+          text-slate-800 dark:text-slate-100
+        "
+      >
         <AlertCircle
           size={42}
           className="text-red-500 mx-auto"
         />
 
-        <h2 className="text-lg font-bold text-slate-800 mt-4">
+        <h2 className="text-lg font-bold text-slate-800 dark:text-white mt-4">
           Unable to load reports
         </h2>
 
-        <p className="text-sm text-red-500 mt-2">
+        <p className="text-sm text-red-500 dark:text-red-400 mt-2">
           {error}
         </p>
 
@@ -312,19 +292,16 @@ const Reports = () => {
         >
           Try Again
         </button>
-
       </div>
     );
   }
-
 
   // =====================================================
   // UI
   // =====================================================
 
   return (
-    <div className="space-y-6">
-
+    <div className="space-y-6 text-slate-800 dark:text-slate-100">
 
       {/* =====================================================
           HEADER
@@ -340,7 +317,6 @@ const Reports = () => {
           gap-4
         "
       >
-
         <div className="flex items-center gap-4">
 
           <div
@@ -352,7 +328,7 @@ const Reports = () => {
               to-violet-600
               text-white
               shadow-lg
-              shadow-indigo-200
+              shadow-indigo-200 dark:shadow-none
               flex
               items-center
               justify-center
@@ -363,18 +339,17 @@ const Reports = () => {
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               Reports & Analytics
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Monitor projects, managers and task performance.
             </p>
 
           </div>
 
         </div>
-
 
         {/* PROJECT FILTER */}
 
@@ -388,23 +363,21 @@ const Reports = () => {
             className="
               appearance-none
               min-w-[240px]
-              bg-white
-              border
-              border-slate-200
+              bg-white dark:bg-slate-900
+              border border-slate-200 dark:border-slate-700
               rounded-xl
               px-4
               py-3
               pr-10
               text-sm
               font-medium
-              text-slate-700
+              text-slate-700 dark:text-slate-200
               outline-none
               focus:border-indigo-500
               focus:ring-2
-              focus:ring-indigo-100
+              focus:ring-indigo-500/10
             "
           >
-
             <option value="all">
               All Projects
             </option>
@@ -417,7 +390,6 @@ const Reports = () => {
                 {project.name}
               </option>
             ))}
-
           </select>
 
           <ChevronDown
@@ -427,7 +399,7 @@ const Reports = () => {
               right-3
               top-1/2
               -translate-y-1/2
-              text-slate-400
+              text-slate-400 dark:text-slate-500
               pointer-events-none
             "
           />
@@ -435,7 +407,6 @@ const Reports = () => {
         </div>
 
       </div>
-
 
       {/* =====================================================
           SUMMARY CARDS
@@ -451,51 +422,39 @@ const Reports = () => {
         "
       >
 
-        {/* TOTAL PROJECTS */}
-
         <SummaryCard
           title="Total Projects"
           value={totalProjects}
           subtitle={`${completedProjects} completed`}
           icon={<FolderKanban size={23} />}
-          iconClass="bg-indigo-50 text-indigo-600"
+          iconClass="bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
         />
-
-
-        {/* IN PROGRESS PROJECTS */}
 
         <SummaryCard
           title="In Progress"
           value={inProgressProjects}
           subtitle={`${pendingProjects} pending`}
           icon={<Clock3 size={23} />}
-          iconClass="bg-blue-50 text-blue-600"
+          iconClass="bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
         />
-
-
-        {/* MANAGERS */}
 
         <SummaryCard
           title="Project Managers"
           value={totalManagers}
           subtitle="Managing projects"
           icon={<UserCheck size={23} />}
-          iconClass="bg-violet-50 text-violet-600"
+          iconClass="bg-violet-50 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400"
         />
-
-
-        {/* TASKS */}
 
         <SummaryCard
           title="Total Tasks"
           value={totalTasks}
           subtitle={`${completedTasks} completed`}
           icon={<ListTodo size={23} />}
-          iconClass="bg-emerald-50 text-emerald-600"
+          iconClass="bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
         />
 
       </div>
-
 
       {/* =====================================================
           SECONDARY TASK CARDS
@@ -514,25 +473,24 @@ const Reports = () => {
           title="Completed Tasks"
           value={completedTasks}
           icon={<CheckCircle2 size={20} />}
-          className="text-emerald-600 bg-emerald-50"
+          className="text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10"
         />
 
         <MiniCard
           title="In Progress Tasks"
           value={inProgressTasks}
           icon={<TrendingUp size={20} />}
-          className="text-blue-600 bg-blue-50"
+          className="text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10"
         />
 
         <MiniCard
           title="Pending Tasks"
           value={pendingTasks}
           icon={<CircleDot size={20} />}
-          className="text-amber-600 bg-amber-50"
+          className="text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-500/10"
         />
 
       </div>
-
 
       {/* =====================================================
           CHARTS
@@ -553,16 +511,13 @@ const Reports = () => {
           title="Project Status"
           subtitle="Current project distribution"
         >
-
           {projectStatusData.length > 0 ? (
-
             <div className="h-[300px]">
 
               <ResponsiveContainer
                 width="100%"
                 height="100%"
               >
-
                 <PieChart>
 
                   <Pie
@@ -575,7 +530,6 @@ const Reports = () => {
                     innerRadius={60}
                     paddingAngle={4}
                   >
-
                     {projectStatusData.map(
                       (item) => (
                         <Cell
@@ -588,7 +542,6 @@ const Reports = () => {
                         />
                       )
                     )}
-
                   </Pie>
 
                   <Tooltip />
@@ -596,17 +549,13 @@ const Reports = () => {
                   <Legend />
 
                 </PieChart>
-
               </ResponsiveContainer>
 
             </div>
-
           ) : (
             <EmptyChart />
           )}
-
         </ChartCard>
-
 
         {/* TASK STATUS */}
 
@@ -614,16 +563,13 @@ const Reports = () => {
           title="Task Status"
           subtitle="Overall task distribution"
         >
-
           {taskStatusData.length > 0 ? (
-
             <div className="h-[300px]">
 
               <ResponsiveContainer
                 width="100%"
                 height="100%"
               >
-
                 <PieChart>
 
                   <Pie
@@ -636,7 +582,6 @@ const Reports = () => {
                     innerRadius={60}
                     paddingAngle={4}
                   >
-
                     {taskStatusData.map(
                       (item) => (
                         <Cell
@@ -649,7 +594,6 @@ const Reports = () => {
                         />
                       )
                     )}
-
                   </Pie>
 
                   <Tooltip />
@@ -657,19 +601,15 @@ const Reports = () => {
                   <Legend />
 
                 </PieChart>
-
               </ResponsiveContainer>
 
             </div>
-
           ) : (
             <EmptyChart />
           )}
-
         </ChartCard>
 
       </div>
-
 
       {/* =====================================================
           PROJECT TASK CHART
@@ -678,18 +618,15 @@ const Reports = () => {
       <ChartCard
         title="Project Task Performance"
         subtitle="Completed, in-progress and pending tasks by project"
-        icon={<TrendingUp size={20} />}
+        icon={<TrendingUp size={20} className="text-indigo-500 dark:text-indigo-400" />}
       >
-
         {projectChartData.length > 0 ? (
-
           <div className="h-[380px]">
 
             <ResponsiveContainer
               width="100%"
               height="100%"
             >
-
               <BarChart
                 data={projectChartData}
                 margin={{
@@ -741,17 +678,13 @@ const Reports = () => {
                 />
 
               </BarChart>
-
             </ResponsiveContainer>
 
           </div>
-
         ) : (
           <EmptyChart />
         )}
-
       </ChartCard>
-
 
       {/* =====================================================
           MANAGER PERFORMANCE
@@ -759,34 +692,29 @@ const Reports = () => {
 
       <div
         className="
-          bg-white
+          bg-white dark:bg-slate-900
           rounded-2xl
-          border
-          border-slate-200
-          shadow-sm
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
           overflow-hidden
         "
       >
 
         <div
           className="
-            px-6
-            py-5
-            border-b
-            border-slate-200
-            flex
-            items-center
-            justify-between
+            px-6 py-5
+            border-b border-slate-200 dark:border-slate-700
+            flex items-center justify-between
           "
         >
 
           <div>
 
-            <h2 className="text-lg font-bold text-slate-800">
+            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
               Manager Performance
             </h2>
 
-            <p className="text-xs text-slate-400 mt-1">
+            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
               Project and task performance by manager
             </p>
 
@@ -794,11 +722,10 @@ const Reports = () => {
 
           <Users
             size={21}
-            className="text-violet-500"
+            className="text-violet-500 dark:text-violet-400"
           />
 
         </div>
-
 
         {managers.length > 0 ? (
 
@@ -810,9 +737,8 @@ const Reports = () => {
 
                 <tr
                   className="
-                    bg-slate-50
-                    border-b
-                    border-slate-200
+                    bg-slate-50 dark:bg-slate-800/70
+                    border-b border-slate-200 dark:border-slate-700
                   "
                 >
 
@@ -844,8 +770,7 @@ const Reports = () => {
 
               </thead>
 
-
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
                 {managers.map(
                   (manager, index) => {
@@ -860,14 +785,11 @@ const Reports = () => {
                           index
                         }
                         className="
-                          border-b
-                          border-slate-100
-                          hover:bg-slate-50
+                          border-b border-slate-100 dark:border-slate-800
+                          hover:bg-slate-50 dark:hover:bg-slate-800/60
                           transition
                         "
                       >
-
-                        {/* MANAGER */}
 
                         <td className="px-6 py-4">
 
@@ -877,10 +799,9 @@ const Reports = () => {
                               className="
                                 w-10 h-10
                                 rounded-xl
-                                bg-violet-50
-                                text-violet-600
-                                flex
-                                items-center
+                                bg-violet-50 dark:bg-violet-500/10
+                                text-violet-600 dark:text-violet-400
+                                flex items-center
                                 justify-center
                                 font-bold
                               "
@@ -895,12 +816,12 @@ const Reports = () => {
 
                             <div>
 
-                              <p className="font-semibold text-slate-800">
+                              <p className="font-semibold text-slate-800 dark:text-slate-100">
                                 {manager.managerName ||
                                   "Unknown Manager"}
                               </p>
 
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-slate-400 dark:text-slate-500">
                                 {manager.email || ""}
                               </p>
 
@@ -910,19 +831,11 @@ const Reports = () => {
 
                         </td>
 
-
-                        {/* PROJECTS */}
-
                         <td className="px-6 py-4 text-center">
-
-                          <span className="font-bold text-slate-700">
+                          <span className="font-bold text-slate-700 dark:text-slate-200">
                             {manager.totalProjects || 0}
                           </span>
-
                         </td>
-
-
-                        {/* COMPLETED PROJECTS */}
 
                         <td className="px-6 py-4 text-center">
 
@@ -934,33 +847,23 @@ const Reports = () => {
                               px-2.5
                               py-1
                               rounded-lg
-                              bg-emerald-50
-                              text-emerald-600
+                              bg-emerald-50 dark:bg-emerald-500/10
+                              text-emerald-600 dark:text-emerald-400
                               text-xs
                               font-bold
                             "
                           >
                             <CheckCircle2 size={13} />
-
                             {manager.completedProjects || 0}
-
                           </span>
 
                         </td>
 
-
-                        {/* TOTAL TASKS */}
-
                         <td className="px-6 py-4 text-center">
-
-                          <span className="font-bold text-slate-700">
+                          <span className="font-bold text-slate-700 dark:text-slate-200">
                             {manager.totalTasks || 0}
                           </span>
-
                         </td>
-
-
-                        {/* COMPLETED TASKS */}
 
                         <td className="px-6 py-4 text-center">
 
@@ -972,22 +875,17 @@ const Reports = () => {
                               px-2.5
                               py-1
                               rounded-lg
-                              bg-blue-50
-                              text-blue-600
+                              bg-blue-50 dark:bg-blue-500/10
+                              text-blue-600 dark:text-blue-400
                               text-xs
                               font-bold
                             "
                           >
                             <CheckCircle2 size={13} />
-
                             {manager.completedTasks || 0}
-
                           </span>
 
                         </td>
-
-
-                        {/* COMPLETION RATE */}
 
                         <td className="px-6 py-4">
 
@@ -995,7 +893,7 @@ const Reports = () => {
 
                             <div className="flex justify-between mb-1">
 
-                              <span className="text-xs font-bold text-slate-700">
+                              <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                                 {completionRate}%
                               </span>
 
@@ -1004,7 +902,7 @@ const Reports = () => {
                             <div
                               className="
                                 h-2
-                                bg-slate-100
+                                bg-slate-100 dark:bg-slate-800
                                 rounded-full
                                 overflow-hidden
                               "
@@ -1051,41 +949,36 @@ const Reports = () => {
 
       </div>
 
-
       {/* =====================================================
           PROJECT PERFORMANCE TABLE
       ===================================================== */}
 
       <div
         className="
-          bg-white
+          bg-white dark:bg-slate-900
           rounded-2xl
-          border
-          border-slate-200
-          shadow-sm
+          border border-slate-200 dark:border-slate-700
+          shadow-sm dark:shadow-none
           overflow-hidden
         "
       >
 
         <div
           className="
-            px-6
-            py-5
-            border-b
-            border-slate-200
+            px-6 py-5
+            border-b border-slate-200 dark:border-slate-700
           "
         >
 
-          <h2 className="text-lg font-bold text-slate-800">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white">
             Project Performance
           </h2>
 
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             Detailed project-wise report
           </p>
 
         </div>
-
 
         {filteredProjects.length > 0 ? (
 
@@ -1097,9 +990,8 @@ const Reports = () => {
 
                 <tr
                   className="
-                    bg-slate-50
-                    border-b
-                    border-slate-200
+                    bg-slate-50 dark:bg-slate-800/70
+                    border-b border-slate-200 dark:border-slate-700
                   "
                 >
 
@@ -1135,8 +1027,7 @@ const Reports = () => {
 
               </thead>
 
-
-              <tbody>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
 
                 {filteredProjects.map(
                   (project) => {
@@ -1148,9 +1039,8 @@ const Reports = () => {
                       <tr
                         key={project.projectId}
                         className="
-                          border-b
-                          border-slate-100
-                          hover:bg-slate-50
+                          border-b border-slate-100 dark:border-slate-800
+                          hover:bg-slate-50 dark:hover:bg-slate-800/60
                           transition
                         "
                       >
@@ -1165,10 +1055,9 @@ const Reports = () => {
                               className="
                                 w-10 h-10
                                 rounded-xl
-                                bg-indigo-50
-                                text-indigo-600
-                                flex
-                                items-center
+                                bg-indigo-50 dark:bg-indigo-500/10
+                                text-indigo-600 dark:text-indigo-400
+                                flex items-center
                                 justify-center
                               "
                             >
@@ -1179,22 +1068,26 @@ const Reports = () => {
 
                             <div>
 
-                              <p className="font-semibold text-slate-800">
+                              <p className="font-semibold text-slate-800 dark:text-slate-100">
                                 {project.projectName}
                               </p>
 
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-slate-400 dark:text-slate-500">
+
                                 {project.startDate
                                   ? new Date(
                                       project.startDate
                                     ).toLocaleDateString()
                                   : "-"}
+
                                 {" → "}
+
                                 {project.endDate
                                   ? new Date(
                                       project.endDate
                                     ).toLocaleDateString()
                                   : "-"}
+
                               </p>
 
                             </div>
@@ -1203,21 +1096,20 @@ const Reports = () => {
 
                         </td>
 
-
                         {/* MANAGER */}
 
                         <td className="px-6 py-4">
 
                           <div>
 
-                            <p className="text-sm font-semibold text-slate-700">
+                            <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
                               {getManagerName(
                                 project.manager
                               )}
                             </p>
 
                             {project.manager?.email && (
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-slate-400 dark:text-slate-500">
                                 {project.manager.email}
                               </p>
                             )}
@@ -1225,7 +1117,6 @@ const Reports = () => {
                           </div>
 
                         </td>
-
 
                         {/* STATUS */}
 
@@ -1242,14 +1133,14 @@ const Reports = () => {
                               ${
                                 project.status ===
                                 "Completed"
-                                  ? "bg-emerald-50 text-emerald-600"
+                                  ? "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
                                   : project.status ===
                                     "In Progress"
-                                  ? "bg-blue-50 text-blue-600"
+                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
                                   : project.status ===
                                     "On Hold"
-                                  ? "bg-amber-50 text-amber-600"
-                                  : "bg-slate-100 text-slate-600"
+                                  ? "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
                               }
                             `}
                           >
@@ -1257,7 +1148,6 @@ const Reports = () => {
                           </span>
 
                         </td>
-
 
                         {/* PRIORITY */}
 
@@ -1274,14 +1164,14 @@ const Reports = () => {
                               ${
                                 project.priority ===
                                 "Critical"
-                                  ? "bg-red-50 text-red-600"
+                                  ? "bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400"
                                   : project.priority ===
                                     "High"
-                                  ? "bg-orange-50 text-orange-600"
+                                  ? "bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400"
                                   : project.priority ===
                                     "Medium"
-                                  ? "bg-blue-50 text-blue-600"
-                                  : "bg-slate-100 text-slate-600"
+                                  ? "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
                               }
                             `}
                           >
@@ -1290,17 +1180,15 @@ const Reports = () => {
 
                         </td>
 
-
                         {/* TASKS */}
 
                         <td className="px-6 py-4 text-center">
 
-                          <span className="font-bold text-slate-700">
+                          <span className="font-bold text-slate-700 dark:text-slate-200">
                             {project.totalTasks || 0}
                           </span>
 
                         </td>
-
 
                         {/* COMPLETED */}
 
@@ -1314,8 +1202,8 @@ const Reports = () => {
                               px-2.5
                               py-1
                               rounded-lg
-                              bg-emerald-50
-                              text-emerald-600
+                              bg-emerald-50 dark:bg-emerald-500/10
+                              text-emerald-600 dark:text-emerald-400
                               text-xs
                               font-bold
                             "
@@ -1328,7 +1216,6 @@ const Reports = () => {
 
                         </td>
 
-
                         {/* PROGRESS */}
 
                         <td className="px-6 py-4">
@@ -1337,7 +1224,7 @@ const Reports = () => {
 
                             <div className="flex justify-between mb-1">
 
-                              <span className="text-xs font-bold text-slate-700">
+                              <span className="text-xs font-bold text-slate-700 dark:text-slate-200">
                                 {progress}%
                               </span>
 
@@ -1346,7 +1233,7 @@ const Reports = () => {
                             <div
                               className="
                                 h-2
-                                bg-slate-100
+                                bg-slate-100 dark:bg-slate-800
                                 rounded-full
                                 overflow-hidden
                               "
@@ -1397,7 +1284,6 @@ const Reports = () => {
   );
 };
 
-
 // =====================================================
 // SUMMARY CARD
 // =====================================================
@@ -1412,13 +1298,12 @@ const SummaryCard = ({
   return (
     <div
       className="
-        bg-white
+        bg-white dark:bg-slate-900
         rounded-2xl
-        border
-        border-slate-200
+        border border-slate-200 dark:border-slate-700
         p-5
-        shadow-sm
-        hover:shadow-md
+        shadow-sm dark:shadow-none
+        hover:shadow-md dark:hover:bg-slate-800
         transition
       "
     >
@@ -1427,15 +1312,15 @@ const SummaryCard = ({
 
         <div>
 
-          <p className="text-sm text-slate-500 font-medium">
+          <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
             {title}
           </p>
 
-          <h2 className="text-3xl font-bold text-slate-800 mt-2">
+          <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
             {value}
           </h2>
 
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {subtitle}
           </p>
 
@@ -1460,7 +1345,6 @@ const SummaryCard = ({
   );
 };
 
-
 // =====================================================
 // MINI CARD
 // =====================================================
@@ -1474,10 +1358,9 @@ const MiniCard = ({
   return (
     <div
       className="
-        bg-white
+        bg-white dark:bg-slate-900
         rounded-2xl
-        border
-        border-slate-200
+        border border-slate-200 dark:border-slate-700
         p-5
         flex
         items-center
@@ -1487,11 +1370,11 @@ const MiniCard = ({
 
       <div>
 
-        <p className="text-sm text-slate-500 font-medium">
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
           {title}
         </p>
 
-        <p className="text-2xl font-bold text-slate-800 mt-1">
+        <p className="text-2xl font-bold text-slate-800 dark:text-white mt-1">
           {value}
         </p>
 
@@ -1514,7 +1397,6 @@ const MiniCard = ({
   );
 };
 
-
 // =====================================================
 // CHART CARD
 // =====================================================
@@ -1528,11 +1410,10 @@ const ChartCard = ({
   return (
     <div
       className="
-        bg-white
+        bg-white dark:bg-slate-900
         rounded-2xl
-        border
-        border-slate-200
-        shadow-sm
+        border border-slate-200 dark:border-slate-700
+        shadow-sm dark:shadow-none
         p-6
       "
     >
@@ -1541,11 +1422,11 @@ const ChartCard = ({
 
         <div>
 
-          <h2 className="text-lg font-bold text-slate-800">
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white">
             {title}
           </h2>
 
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
             {subtitle}
           </p>
 
@@ -1560,7 +1441,6 @@ const ChartCard = ({
     </div>
   );
 };
-
 
 // =====================================================
 // TABLE HEAD
@@ -1577,7 +1457,7 @@ const TableHead = ({
         py-4
         text-xs
         font-bold
-        text-slate-500
+        text-slate-500 dark:text-slate-400
         uppercase
         ${
           center
@@ -1591,7 +1471,6 @@ const TableHead = ({
   );
 };
 
-
 // =====================================================
 // EMPTY CHART
 // =====================================================
@@ -1604,10 +1483,10 @@ const EmptyChart = () => {
 
         <BarChart3
           size={42}
-          className="mx-auto text-slate-300"
+          className="mx-auto text-slate-300 dark:text-slate-700"
         />
 
-        <p className="text-sm text-slate-400 mt-3">
+        <p className="text-sm text-slate-400 dark:text-slate-500 mt-3">
           No data available
         </p>
 
@@ -1616,7 +1495,6 @@ const EmptyChart = () => {
     </div>
   );
 };
-
 
 // =====================================================
 // EMPTY TABLE
@@ -1629,17 +1507,16 @@ const EmptyTable = ({
   return (
     <div className="py-14 text-center">
 
-      <div className="text-slate-300 flex justify-center">
+      <div className="text-slate-300 dark:text-slate-700 flex justify-center">
         {icon}
       </div>
 
-      <p className="text-sm text-slate-400 mt-3">
+      <p className="text-sm text-slate-400 dark:text-slate-500 mt-3">
         {text}
       </p>
 
     </div>
   );
 };
-
 
 export default Reports;

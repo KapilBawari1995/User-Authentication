@@ -35,6 +35,7 @@ export const API_ENDPOINTS = {
   GET_USER_BY_ID: "/users",
   UPDATE_USER: "/users",
   DELETE_USER: "/users",
+SETTINGS: "/settings",
 
   // Assign Role To User
   ASSIGN_ROLE_TO_USER: "/users",

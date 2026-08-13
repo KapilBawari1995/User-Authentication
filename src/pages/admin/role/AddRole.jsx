@@ -49,33 +49,35 @@ const AddRole = () => {
   });
 
   return (
-    <div className="min-h-screen bg-[#f8fafc] p-6">
+    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 p-6 text-slate-800 dark:text-slate-100">
 
       {/* ================================================= */}
       {/* HEADER */}
       {/* ================================================= */}
 
-      <div className="flex flex-col sm:flex-row sm:items-center
-      sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
 
         <div className="flex items-center gap-4">
 
           <div
-            className="w-14 h-14 rounded-2xl
-            bg-gradient-to-br from-indigo-500 to-violet-600
-            text-white shadow-lg shadow-indigo-200
-            flex items-center justify-center"
+            className="
+              w-14 h-14 rounded-2xl
+              bg-gradient-to-br from-indigo-500 to-violet-600
+              text-white
+              shadow-lg shadow-indigo-200 dark:shadow-none
+              flex items-center justify-center
+            "
           >
             <ShieldCheck size={27} />
           </div>
 
           <div>
 
-            <h1 className="text-3xl font-bold text-slate-800">
+            <h1 className="text-3xl font-bold text-slate-800 dark:text-white">
               Create New Role
             </h1>
 
-            <p className="text-sm text-slate-500 mt-1">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               Create a role that can be assigned to users.
             </p>
 
@@ -86,18 +88,22 @@ const AddRole = () => {
         <button
           type="button"
           onClick={() => navigate("/admin/roles")}
-          className="inline-flex items-center justify-center
-          gap-2 px-4 py-2.5 rounded-xl
-          border border-slate-200 bg-white
-          text-slate-600 font-medium
-          hover:bg-slate-50 transition"
+          className="
+            inline-flex items-center justify-center
+            gap-2 px-4 py-2.5 rounded-xl
+            border border-slate-200 dark:border-slate-700
+            bg-white dark:bg-slate-900
+            text-slate-600 dark:text-slate-300
+            font-medium
+            hover:bg-slate-50 dark:hover:bg-slate-800
+            transition
+          "
         >
           <ArrowLeft size={18} />
           Back to Roles
         </button>
 
       </div>
-
 
       {/* ================================================= */}
       {/* ERROR */}
@@ -106,15 +112,21 @@ const AddRole = () => {
       {createError && (
 
         <div
-          className="mb-6 flex items-start gap-3
-          bg-red-50 border border-red-200
-          rounded-xl p-4 text-red-600"
+          className="
+            mb-6 flex items-start gap-3
+            bg-red-50 dark:bg-red-500/10
+            border border-red-200 dark:border-red-500/20
+            rounded-xl p-4
+            text-red-600 dark:text-red-400
+          "
         >
 
           <div
-            className="w-7 h-7 rounded-full
-            bg-red-100 flex items-center
-            justify-center shrink-0"
+            className="
+              w-7 h-7 rounded-full
+              bg-red-100 dark:bg-red-500/20
+              flex items-center justify-center shrink-0
+            "
           >
             !
           </div>
@@ -135,7 +147,6 @@ const AddRole = () => {
 
       )}
 
-
       {/* ================================================= */}
       {/* MAIN CARD */}
       {/* ================================================= */}
@@ -143,36 +154,47 @@ const AddRole = () => {
       <div className="max-w-4xl">
 
         <div
-          className="bg-white rounded-2xl
-          border border-slate-200
-          shadow-sm overflow-hidden"
+          className="
+            bg-white dark:bg-slate-900
+            rounded-2xl
+            border border-slate-200 dark:border-slate-700
+            shadow-sm dark:shadow-none
+            overflow-hidden
+          "
         >
 
           {/* CARD HEADER */}
 
           <div
-            className="px-6 py-5
-            border-b border-slate-200
-            bg-gradient-to-r from-slate-50 to-white"
+            className="
+              px-6 py-5
+              border-b border-slate-200 dark:border-slate-700
+              bg-gradient-to-r
+              from-slate-50 to-white
+              dark:from-slate-800 dark:to-slate-900
+            "
           >
 
             <div className="flex items-center gap-3">
 
               <div
-                className="w-10 h-10 rounded-xl
-                bg-indigo-50 text-indigo-600
-                flex items-center justify-center"
+                className="
+                  w-10 h-10 rounded-xl
+                  bg-indigo-50 dark:bg-indigo-500/10
+                  text-indigo-600 dark:text-indigo-400
+                  flex items-center justify-center
+                "
               >
                 <FileText size={20} />
               </div>
 
               <div>
 
-                <h2 className="font-bold text-slate-800">
+                <h2 className="font-bold text-slate-800 dark:text-white">
                   Role Information
                 </h2>
 
-                <p className="text-xs text-slate-400 mt-1">
+                <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
                   Enter the basic details for this role.
                 </p>
 
@@ -181,7 +203,6 @@ const AddRole = () => {
             </div>
 
           </div>
-
 
           {/* FORM */}
 
@@ -192,17 +213,17 @@ const AddRole = () => {
 
             <div className="grid grid-cols-1 gap-6">
 
-
-              {/* ================================================= */}
               {/* ROLE NAME */}
-              {/* ================================================= */}
 
               <div>
 
                 <label
                   htmlFor="name"
-                  className="block text-sm
-                  font-semibold text-slate-700 mb-2"
+                  className="
+                    block text-sm
+                    font-semibold text-slate-700 dark:text-slate-300
+                    mb-2
+                  "
                 >
                   Role Name
                   <span className="text-red-500 ml-1">
@@ -219,21 +240,24 @@ const AddRole = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`w-full h-12 px-4
-                  border rounded-xl
-                  text-sm outline-none
-                  transition
-                  ${
-                    formik.touched.name &&
-                    formik.errors.name
-                      ? "border-red-300 bg-red-50/30 focus:ring-4 focus:ring-red-50"
-                      : "border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
-                  }`}
+                    border rounded-xl
+                    text-sm outline-none
+                    transition
+                    bg-slate-50 dark:bg-slate-800
+                    text-slate-800 dark:text-slate-100
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    ${
+                      formik.touched.name &&
+                      formik.errors.name
+                        ? "border-red-300 dark:border-red-500 bg-red-50/30 dark:bg-red-500/10 focus:ring-4 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10"
+                    }`}
                 />
 
                 {formik.touched.name &&
                   formik.errors.name && (
 
-                    <p className="text-red-500 text-xs mt-2">
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-2">
                       {formik.errors.name}
                     </p>
 
@@ -241,17 +265,17 @@ const AddRole = () => {
 
               </div>
 
-
-              {/* ================================================= */}
               {/* DESCRIPTION */}
-              {/* ================================================= */}
 
               <div>
 
                 <label
                   htmlFor="description"
-                  className="block text-sm
-                  font-semibold text-slate-700 mb-2"
+                  className="
+                    block text-sm
+                    font-semibold text-slate-700 dark:text-slate-300
+                    mb-2
+                  "
                 >
                   Description
                   <span className="text-red-500 ml-1">
@@ -268,15 +292,18 @@ const AddRole = () => {
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   className={`w-full px-4 py-3
-                  border rounded-xl
-                  text-sm outline-none
-                  resize-none transition
-                  ${
-                    formik.touched.description &&
-                    formik.errors.description
-                      ? "border-red-300 bg-red-50/30 focus:ring-4 focus:ring-red-50"
-                      : "border-slate-200 bg-slate-50 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-50"
-                  }`}
+                    border rounded-xl
+                    text-sm outline-none
+                    resize-none transition
+                    bg-slate-50 dark:bg-slate-800
+                    text-slate-800 dark:text-slate-100
+                    placeholder:text-slate-400 dark:placeholder:text-slate-500
+                    ${
+                      formik.touched.description &&
+                      formik.errors.description
+                        ? "border-red-300 dark:border-red-500 bg-red-50/30 dark:bg-red-500/10 focus:ring-4 focus:ring-red-500/10"
+                        : "border-slate-200 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-indigo-400 focus:ring-4 focus:ring-indigo-500/10"
+                    }`}
                 />
 
                 <div className="flex items-center justify-between mt-2">
@@ -284,15 +311,15 @@ const AddRole = () => {
                   <div>
 
                     {formik.touched.description &&
-                      formik.errors.description ? (
+                    formik.errors.description ? (
 
-                      <p className="text-red-500 text-xs">
+                      <p className="text-red-500 dark:text-red-400 text-xs">
                         {formik.errors.description}
                       </p>
 
                     ) : (
 
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-400 dark:text-slate-500">
                         Add a short explanation of this role.
                       </p>
 
@@ -300,7 +327,7 @@ const AddRole = () => {
 
                   </div>
 
-                  <span className="text-xs text-slate-400">
+                  <span className="text-xs text-slate-400 dark:text-slate-500">
                     {formik.values.description.length} characters
                   </span>
 
@@ -310,29 +337,29 @@ const AddRole = () => {
 
             </div>
 
-
-            {/* ================================================= */}
             {/* INFO BOX */}
-            {/* ================================================= */}
 
             <div
-              className="mt-7 p-4 rounded-xl
-              bg-indigo-50 border border-indigo-100
-              flex items-start gap-3"
+              className="
+                mt-7 p-4 rounded-xl
+                bg-indigo-50 dark:bg-indigo-500/10
+                border border-indigo-100 dark:border-indigo-500/20
+                flex items-start gap-3
+              "
             >
 
               <CheckCircle2
                 size={19}
-                className="text-indigo-600 mt-0.5 shrink-0"
+                className="text-indigo-600 dark:text-indigo-400 mt-0.5 shrink-0"
               />
 
               <div>
 
-                <p className="text-sm font-semibold text-indigo-800">
+                <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-300">
                   Permissions can be configured later
                 </p>
 
-                <p className="text-xs text-indigo-600 mt-1">
+                <p className="text-xs text-indigo-600 dark:text-indigo-400 mt-1">
                   After creating the role, you can assign
                   module permissions from Permission Management.
                 </p>
@@ -341,16 +368,15 @@ const AddRole = () => {
 
             </div>
 
-
-            {/* ================================================= */}
             {/* BUTTONS */}
-            {/* ================================================= */}
 
             <div
-              className="flex flex-col-reverse
-              sm:flex-row sm:justify-end
-              gap-3 mt-8 pt-6
-              border-t border-slate-100"
+              className="
+                flex flex-col-reverse
+                sm:flex-row sm:justify-end
+                gap-3 mt-8 pt-6
+                border-t border-slate-100 dark:border-slate-800
+              "
             >
 
               <button
@@ -359,42 +385,49 @@ const AddRole = () => {
                   navigate("/admin/roles")
                 }
                 disabled={createLoading}
-                className="px-5 py-3 rounded-xl
-                border border-slate-200
-                bg-white text-slate-600
-                font-semibold text-sm
-                hover:bg-slate-50
-                disabled:opacity-50
-                transition"
+                className="
+                  px-5 py-3 rounded-xl
+                  border border-slate-200 dark:border-slate-700
+                  bg-white dark:bg-slate-900
+                  text-slate-600 dark:text-slate-300
+                  font-semibold text-sm
+                  hover:bg-slate-50 dark:hover:bg-slate-800
+                  disabled:opacity-50
+                  transition
+                "
               >
                 Cancel
               </button>
 
-
               <button
                 type="submit"
                 disabled={createLoading}
-                className="inline-flex items-center
-                justify-center gap-2
-                px-6 py-3 rounded-xl
-                bg-indigo-600
-                hover:bg-indigo-700
-                text-white
-                font-semibold text-sm
-                shadow-md shadow-indigo-100
-                disabled:bg-slate-400
-                disabled:shadow-none
-                transition"
+                className="
+                  inline-flex items-center
+                  justify-center gap-2
+                  px-6 py-3 rounded-xl
+                  bg-indigo-600
+                  hover:bg-indigo-700
+                  text-white
+                  font-semibold text-sm
+                  shadow-md shadow-indigo-100
+                  dark:shadow-none
+                  disabled:bg-slate-400
+                  disabled:shadow-none
+                  transition
+                "
               >
 
                 {createLoading ? (
 
                   <>
                     <span
-                      className="w-4 h-4
-                      border-2 border-white
-                      border-t-transparent
-                      rounded-full animate-spin"
+                      className="
+                        w-4 h-4
+                        border-2 border-white
+                        border-t-transparent
+                        rounded-full animate-spin
+                      "
                     />
 
                     Creating Role...

@@ -18,19 +18,19 @@ import {
   UserCog,
 } from "lucide-react";
 
-import {
-  logoutRequest,
-} from "../../features/auth/authSlice";
+import { logoutRequest } from "../../features/auth/authSlice";
 
 const Sidebar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const {
-    permissions,
-    isSuperAdmin,
-  } = useSelector((state) => state.auth);
+  const { permissions, isSuperAdmin } = useSelector(
+    (state) => state.auth
+  );
 
+  // =====================================================
+  // LOGOUT
+  // =====================================================
 
   const handleLogout = () => {
     dispatch(
@@ -40,6 +40,9 @@ const Sidebar = () => {
     );
   };
 
+  // =====================================================
+  // MENU
+  // =====================================================
 
   const menu = [
     {
@@ -134,10 +137,12 @@ const Sidebar = () => {
     },
   ];
 
-  // ================= PERMISSION FILTER =================
+  // =====================================================
+  // PERMISSION FILTER
+  // =====================================================
 
   const filteredMenu = menu.filter((item) => {
-    // Super Admin ko sab menu
+    // Super Admin -> All menus
     if (isSuperAdmin) {
       return true;
     }
@@ -149,14 +154,54 @@ const Sidebar = () => {
     return permission?.view === true;
   });
 
+  // =====================================================
+  // UI
+  // =====================================================
+
   return (
-    <aside style={styles.sidebar}>
+    <aside
+      className="
+        fixed
+        top-[70px]
+        left-0
+        z-[90]
 
-      {/* ================= MENU ================= */}
+        w-[250px]
+        h-[calc(100vh-70px)]
 
-      <div style={styles.menuWrapper}>
-        <nav style={styles.menu}>
+        flex
+        flex-col
 
+        px-[14px]
+        py-[18px]
+
+        bg-white
+        dark:bg-slate-900
+
+        border-r
+        border-slate-200
+        dark:border-slate-800
+
+        transition-colors
+        duration-300
+      "
+    >
+      {/* ================================================= */}
+      {/* MENU */}
+      {/* ================================================= */}
+
+      <div
+        className="
+          flex-1
+          overflow-y-auto
+          overflow-x-hidden
+
+          scrollbar-thin
+          scrollbar-thumb-slate-300
+          dark:scrollbar-thumb-slate-700
+        "
+      >
+        <nav className="flex flex-col gap-[5px]">
           {filteredMenu.map((item) => {
             const Icon = item.icon;
 
@@ -164,26 +209,80 @@ const Sidebar = () => {
               <NavLink
                 key={item.path}
                 to={item.path}
-                style={({ isActive }) => ({
-                  ...styles.link,
+                className="
+                  group
+                  relative
 
-                  ...(isActive
-                    ? styles.activeLink
-                    : styles.inactiveLink),
-                })}
+                  flex
+                  items-center
+                  gap-[11px]
+
+                  min-h-[46px]
+                  px-[9px]
+                  py-2
+
+                  rounded-xl
+
+                  no-underline
+                  font-semibold
+
+                  transition-all
+                  duration-200
+
+                  hover:bg-slate-100
+                  dark:hover:bg-slate-800
+                "
               >
                 {({ isActive }) => (
                   <>
+                    {/* ===================================== */}
+                    {/* ACTIVE BACKGROUND */}
+                    {/* ===================================== */}
+
+                    <div
+                      className={`
+                        absolute
+                        inset-0
+                        rounded-xl
+                        transition-all
+                        duration-200
+
+                        ${
+                          isActive
+                            ? "bg-gradient-to-br from-indigo-600 to-indigo-500 shadow-[0_6px_15px_rgba(79,70,229,0.18)]"
+                            : "bg-transparent"
+                        }
+                      `}
+                    />
+
+                    {/* ===================================== */}
                     {/* ICON */}
+                    {/* ===================================== */}
 
                     <span
-                      style={{
-                        ...styles.iconBox,
+                      className={`
+                        relative
+                        z-10
 
-                        ...(isActive
-                          ? styles.activeIconBox
-                          : styles.inactiveIconBox),
-                      }}
+                        flex
+                        items-center
+                        justify-center
+
+                        w-[34px]
+                        h-[34px]
+                        min-w-[34px]
+
+                        rounded-[9px]
+
+                        transition-all
+                        duration-200
+
+                        ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+                        }
+                      `}
                     >
                       <Icon
                         size={19}
@@ -191,25 +290,52 @@ const Sidebar = () => {
                       />
                     </span>
 
+                    {/* ===================================== */}
                     {/* TEXT */}
+                    {/* ===================================== */}
 
                     <span
-                      style={{
-                        ...styles.linkText,
+                      className={`
+                        relative
+                        z-10
 
-                        color: isActive
-                          ? "#ffffff"
-                          : "#475569",
-                      }}
+                        flex-1
+
+                        text-[13px]
+                        font-semibold
+
+                        transition-colors
+                        duration-200
+
+                        ${
+                          isActive
+                            ? "text-white"
+                            : "text-slate-600 dark:text-slate-300"
+                        }
+                      `}
                     >
                       {item.name}
                     </span>
 
+                    {/* ===================================== */}
                     {/* ACTIVE INDICATOR */}
+                    {/* ===================================== */}
 
                     {isActive && (
                       <span
-                        style={styles.activeIndicator}
+                        className="
+                          relative
+                          z-10
+
+                          w-1
+                          h-[22px]
+
+                          rounded-full
+
+                          bg-white
+
+                          opacity-90
+                        "
                       />
                     )}
                   </>
@@ -217,148 +343,96 @@ const Sidebar = () => {
               </NavLink>
             );
           })}
-
         </nav>
       </div>
 
-      {/* ================= LOGOUT ================= */}
+      {/* ================================================= */}
+      {/* LOGOUT */}
+      {/* ================================================= */}
 
-      <div style={styles.bottomSection}>
+      <div
+        className="
+          mt-3
+          pt-[14px]
+
+          border-t
+          border-slate-100
+          dark:border-slate-800
+
+          transition-colors
+          duration-300
+        "
+      >
         <button
           type="button"
           onClick={handleLogout}
-          style={styles.logout}
+          className="
+            group
+
+            w-full
+
+            border
+            border-red-100
+            dark:border-red-900/50
+
+            bg-red-50
+            dark:bg-red-950/30
+
+            text-red-600
+            dark:text-red-400
+
+            px-[10px]
+            py-[9px]
+
+            rounded-[11px]
+
+            flex
+            items-center
+            gap-[11px]
+
+            cursor-pointer
+
+            font-semibold
+            text-[13px]
+
+            transition-all
+            duration-200
+
+            hover:bg-red-100
+            dark:hover:bg-red-950/50
+          "
         >
-          <span style={styles.logoutIcon}>
+          {/* LOGOUT ICON */}
+
+          <span
+            className="
+              w-[34px]
+              h-[34px]
+              min-w-[34px]
+
+              rounded-[9px]
+
+              bg-red-100
+              dark:bg-red-900/40
+
+              flex
+              items-center
+              justify-center
+
+              transition-colors
+              duration-200
+            "
+          >
             <LogOut size={18} />
           </span>
+
+          {/* TEXT */}
 
           <span>Logout</span>
         </button>
       </div>
-
     </aside>
   );
-};
-
-// ================= STYLES =================
-
-const styles = {
-  sidebar: {
-    width: "250px",
-    height: "calc(100vh - 70px)",
-    background: "#ffffff",
-    position: "fixed",
-    top: "70px",
-    left: 0,
-    display: "flex",
-    flexDirection: "column",
-    padding: "18px 14px",
-    borderRight: "1px solid #e2e8f0",
-    zIndex: 90,
-  },
-
-  menuWrapper: {
-    flex: 1,
-    overflowY: "auto",
-    overflowX: "hidden",
-  },
-
-  menu: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "5px",
-  },
-
-  link: {
-    position: "relative",
-    display: "flex",
-    alignItems: "center",
-    gap: "11px",
-    padding: "8px 9px",
-    minHeight: "46px",
-    textDecoration: "none",
-    borderRadius: "12px",
-    fontWeight: "600",
-    transition: "all 0.2s ease",
-  },
-
-  activeLink: {
-    background:
-      "linear-gradient(135deg, #4f46e5, #6366f1)",
-    boxShadow:
-      "0 6px 15px rgba(79,70,229,0.18)",
-  },
-
-  inactiveLink: {
-    background: "transparent",
-  },
-
-  iconBox: {
-    width: "34px",
-    height: "34px",
-    minWidth: "34px",
-    borderRadius: "9px",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    transition: "all 0.2s ease",
-  },
-
-  activeIconBox: {
-    background: "rgba(255,255,255,0.18)",
-    color: "#ffffff",
-  },
-
-  inactiveIconBox: {
-    background: "#f1f5f9",
-    color: "#64748b",
-  },
-
-  linkText: {
-    fontSize: "13px",
-    fontWeight: "600",
-    flex: 1,
-  },
-
-  activeIndicator: {
-    width: "4px",
-    height: "22px",
-    borderRadius: "999px",
-    background: "#ffffff",
-    opacity: 0.9,
-  },
-
-  bottomSection: {
-    borderTop: "1px solid #f1f5f9",
-    paddingTop: "14px",
-    marginTop: "12px",
-  },
-
-  logout: {
-    width: "100%",
-    border: "1px solid #fee2e2",
-    background: "#fff7f7",
-    color: "#dc2626",
-    padding: "9px 10px",
-    borderRadius: "11px",
-    display: "flex",
-    alignItems: "center",
-    gap: "11px",
-    cursor: "pointer",
-    fontWeight: "600",
-    fontSize: "13px",
-  },
-
-  logoutIcon: {
-    width: "34px",
-    height: "34px",
-    borderRadius: "9px",
-    background: "#fee2e2",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
 };
 
 export default Sidebar;

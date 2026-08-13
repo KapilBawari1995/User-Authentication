@@ -42,30 +42,36 @@ const userSchema = new mongoose.Schema(
       default: false,
     },
 
-    otp: {
-      type: String,
-      default: null,
-    },
-
-    otpExpiry: {
-      type: Date,
-      default: null,
-    },
-
     avatar: {
       type: String,
       default: "",
     },
-    mustChangePassword: {
-      type: Boolean,
-      default: true,
-    }, 
-    department: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Department",
-      default: null,
-    },
 
+    otp: String,
+    otpExpiry: Date,
+
+    // =====================================================
+    // USER SETTINGS
+    // =====================================================
+
+    settings: {
+      notifications: {
+        type: Boolean,
+        default: true,
+      },
+
+      theme: {
+        type: String,
+        enum: ["light", "dark"],
+        default: "light",
+      },
+
+      language: {
+        type: String,
+        enum: ["English", "Hindi"],
+        default: "English",
+      },
+    },
   },
   {
     timestamps: true,

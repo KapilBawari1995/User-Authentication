@@ -1,660 +1,457 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   Settings,
   Bell,
   Moon,
-  Globe,
-  Shield,
-  Save,
-  CheckCircle2,
-  Lock,
-  UserCog,
+  Sun,
+  Globe2,
+  Check,
 } from "lucide-react";
 
+import {
+  getSettingsRequest,
+  updateSettingsRequest,
+} from "../../features/settings/settingsSlice";
+
 const SettingsPage = () => {
-  const [notifications, setNotifications] = useState(true);
+  const dispatch = useDispatch();
+
+  const {
+    settings,
+    getSettingsLoading,
+    updateSettingsLoading,
+  } = useSelector((state) => state.settings);
+
   const [darkMode, setDarkMode] = useState(false);
+  const [language, setLanguage] = useState("English");
+
+  // =====================================================
+  // GET SETTINGS
+  // =====================================================
+
+  useEffect(() => {
+    dispatch(getSettingsRequest());
+  }, [dispatch]);
+
+  // =====================================================
+  // SET REDUX DATA INTO LOCAL STATE
+  // =====================================================
+
+  useEffect(() => {
+    if (settings) {
+    
+
+      setDarkMode(
+        settings.theme === "dark"
+      );
+
+      setLanguage(
+        settings.language ?? "English"
+      );
+    }
+  }, [settings]);
+
+  // =====================================================
+  // APPLY THEME
+  // =====================================================
+
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [darkMode]);
+
+  // =====================================================
+  // SAVE SETTINGS
+  // =====================================================
+
+  const handleSaveSettings = () => {
+    dispatch(
+      updateSettingsRequest({
+        notifications,
+        theme: darkMode ? "dark" : "light",
+        language,
+      })
+    );
+  };
 
   return (
-    <div>
+    <div
+      className="
+        min-h-screen
+        transition-colors
+        duration-300
+        dark:bg-slate-950
+      "
+    >
 
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
+      {/* ===================================================== */}
+      {/* YOUR EXISTING UI */}
+      {/* ===================================================== */}
 
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
+      <div className="max-w-5xl mx-auto">
 
-        <div className="flex items-center gap-4">
+        {/* HEADER */}
 
-          <div
-            className="
-              w-14 h-14 rounded-2xl
-              bg-gradient-to-br from-indigo-500 to-violet-600
-              text-white
-              shadow-lg shadow-indigo-200
-              flex items-center justify-center
-            "
-          >
-            <Settings size={27} />
-          </div>
+        <div className="mb-8 flex items-center justify-between">
 
-          <div>
-
-            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">
-              Settings
-            </h1>
-
-            <p className="text-sm text-slate-500 mt-1">
-              Manage your account preferences and application settings.
-            </p>
-
-          </div>
-
-        </div>
-
-        <button
-          className="
-            inline-flex items-center justify-center
-            gap-2
-            bg-indigo-600 hover:bg-indigo-700
-            text-white
-            px-5 py-3
-            rounded-xl
-            font-semibold
-            shadow-md shadow-indigo-100
-            transition-all duration-200
-          "
-        >
-          <Save size={18} />
-          Save Changes
-        </button>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* SUMMARY */}
-      {/* ================================================= */}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-7">
-
-        {/* ACCOUNT */}
-
-        <div
-          className="
-            bg-white
-            rounded-2xl
-            border border-slate-200
-            p-5
-            shadow-sm
-            hover:shadow-md
-            transition
-          "
-        >
-
-          <div className="flex justify-between items-center">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                Account Settings
-              </p>
-
-              <h2 className="text-2xl font-bold text-slate-800 mt-2">
-                Personal
-              </h2>
-
-              <p className="text-xs text-slate-400 mt-1">
-                Manage your preferences
-              </p>
-
-            </div>
+          <div className="flex items-center gap-4">
 
             <div
               className="
-                w-12 h-12 rounded-xl
+                w-12 h-12
+                rounded-2xl
                 bg-indigo-50
                 text-indigo-600
                 flex items-center justify-center
+                dark:bg-indigo-500/10
+                dark:text-indigo-400
               "
             >
-              <UserCog size={22} />
+              <Settings size={24} />
             </div>
-
-          </div>
-
-        </div>
-
-
-        {/* NOTIFICATIONS */}
-
-        <div
-          className="
-            bg-white
-            rounded-2xl
-            border border-slate-200
-            p-5
-            shadow-sm
-            hover:shadow-md
-            transition
-          "
-        >
-
-          <div className="flex justify-between items-center">
 
             <div>
 
-              <p className="text-sm font-medium text-slate-500">
-                Notifications
-              </p>
-
-              <h2
-                className={`text-2xl font-bold mt-2 ${
-                  notifications
-                    ? "text-emerald-600"
-                    : "text-slate-500"
-                }`}
+              <h1
+                className="
+                  text-2xl
+                  font-bold
+                  text-slate-800
+                  dark:text-white
+                "
               >
-                {notifications ? "Enabled" : "Disabled"}
-              </h2>
+                Settings
+              </h1>
 
-              <p className="text-xs text-slate-400 mt-1">
-                Task and project alerts
-              </p>
-
-            </div>
-
-            <div
-              className="
-                w-12 h-12 rounded-xl
-                bg-emerald-50
-                text-emerald-600
-                flex items-center justify-center
-              "
-            >
-              <Bell size={22} />
-            </div>
-
-          </div>
-
-        </div>
-
-
-        {/* SECURITY */}
-
-        <div
-          className="
-            bg-white
-            rounded-2xl
-            border border-slate-200
-            p-5
-            shadow-sm
-            hover:shadow-md
-            transition
-          "
-        >
-
-          <div className="flex justify-between items-center">
-
-            <div>
-
-              <p className="text-sm font-medium text-slate-500">
-                Security
-              </p>
-
-              <h2 className="text-2xl font-bold text-blue-600 mt-2">
-                Protected
-              </h2>
-
-              <p className="text-xs text-slate-400 mt-1">
-                Account security settings
-              </p>
-
-            </div>
-
-            <div
-              className="
-                w-12 h-12 rounded-xl
-                bg-blue-50
-                text-blue-600
-                flex items-center justify-center
-              "
-            >
-              <Shield size={22} />
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* GENERAL SETTINGS */}
-      {/* ================================================= */}
-
-      <div
-        className="
-          bg-white
-          rounded-2xl
-          border border-slate-200
-          shadow-sm
-          overflow-hidden
-          mb-6
-        "
-      >
-
-        <div
-          className="
-            px-6 py-5
-            border-b border-slate-200
-          "
-        >
-
-          <div className="flex items-center gap-3">
-
-            <div
-              className="
-                w-10 h-10
-                rounded-xl
-                bg-indigo-50
-                text-indigo-600
-                flex items-center justify-center
-              "
-            >
-              <Settings size={19} />
-            </div>
-
-            <div>
-
-              <h2 className="font-bold text-slate-800">
-                General Settings
-              </h2>
-
-              <p className="text-xs text-slate-400 mt-1">
-                Manage general application preferences
+              <p
+                className="
+                  text-sm
+                  text-slate-500
+                  dark:text-slate-400
+                  mt-1
+                "
+              >
+                Manage your application preferences.
               </p>
 
             </div>
 
           </div>
 
-        </div>
-
-
-        {/* NOTIFICATIONS */}
-
-        <div
-          className="
-            px-6 py-5
-            border-b border-slate-100
-            flex flex-col sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-4
-            hover:bg-slate-50/60
-            transition
-          "
-        >
-
-          <div className="flex items-center gap-4">
-
-            <div
-              className="
-                w-11 h-11
-                rounded-xl
-                bg-emerald-50
-                text-emerald-600
-                flex items-center justify-center
-              "
-            >
-              <Bell size={20} />
-            </div>
-
-            <div>
-
-              <h4 className="font-semibold text-slate-800">
-                Notifications
-              </h4>
-
-              <p className="text-sm text-slate-400 mt-1">
-                Receive task and project notifications.
-              </p>
-
-            </div>
-
-          </div>
-
+          {/* SAVE */}
 
           <button
             type="button"
-            onClick={() => setNotifications(!notifications)}
-            className={`
-              relative
-              w-12 h-6
-              rounded-full
-              transition
-              ${
-                notifications
-                  ? "bg-indigo-600"
-                  : "bg-slate-300"
-              }
-            `}
-          >
-
-            <span
-              className={`
-                absolute
-                top-1
-                w-4 h-4
-                rounded-full
-                bg-white
-                shadow
-                transition
-                ${
-                  notifications
-                    ? "left-7"
-                    : "left-1"
-                }
-              `}
-            />
-
-          </button>
-
-        </div>
-
-
-        {/* DARK MODE */}
-
-        <div
-          className="
-            px-6 py-5
-            flex flex-col sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-4
-            hover:bg-slate-50/60
-            transition
-          "
-        >
-
-          <div className="flex items-center gap-4">
-
-            <div
-              className="
-                w-11 h-11
-                rounded-xl
-                bg-slate-100
-                text-slate-600
-                flex items-center justify-center
-              "
-            >
-              <Moon size={20} />
-            </div>
-
-            <div>
-
-              <h4 className="font-semibold text-slate-800">
-                Dark Mode
-              </h4>
-
-              <p className="text-sm text-slate-400 mt-1">
-                Enable dark theme for the application.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <button
-            type="button"
-            onClick={() => setDarkMode(!darkMode)}
-            className={`
-              relative
-              w-12 h-6
-              rounded-full
-              transition
-              ${
-                darkMode
-                  ? "bg-indigo-600"
-                  : "bg-slate-300"
-              }
-            `}
-          >
-
-            <span
-              className={`
-                absolute
-                top-1
-                w-4 h-4
-                rounded-full
-                bg-white
-                shadow
-                transition
-                ${
-                  darkMode
-                    ? "left-7"
-                    : "left-1"
-                }
-              `}
-            />
-
-          </button>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* LANGUAGE */}
-      {/* ================================================= */}
-
-      <div
-        className="
-          bg-white
-          rounded-2xl
-          border border-slate-200
-          shadow-sm
-          overflow-hidden
-          mb-6
-        "
-      >
-
-        <div className="px-6 py-5 border-b border-slate-200">
-
-          <div className="flex items-center gap-3">
-
-            <div
-              className="
-                w-10 h-10
-                rounded-xl
-                bg-blue-50
-                text-blue-600
-                flex items-center justify-center
-              "
-            >
-              <Globe size={19} />
-            </div>
-
-            <div>
-
-              <h2 className="font-bold text-slate-800">
-                Language
-              </h2>
-
-              <p className="text-xs text-slate-400 mt-1">
-                Select your preferred application language.
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            px-6 py-5
-            flex flex-col sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-4
-          "
-        >
-
-          <div>
-
-            <h4 className="font-semibold text-slate-800">
-              Application Language
-            </h4>
-
-            <p className="text-sm text-slate-400 mt-1">
-              Choose the language used throughout the application.
-            </p>
-
-          </div>
-
-
-          <select
+            onClick={handleSaveSettings}
+            disabled={updateSettingsLoading}
             className="
-              h-11
-              min-w-[180px]
-              px-4
-              border border-slate-200
-              rounded-xl
-              bg-slate-50
-              text-sm
-              text-slate-700
-              outline-none
-              focus:bg-white
-              focus:border-indigo-400
-              focus:ring-4
-              focus:ring-indigo-50
-              transition
-            "
-          >
-
-            <option>English</option>
-            <option>Hindi</option>
-
-          </select>
-
-        </div>
-
-      </div>
-
-
-      {/* ================================================= */}
-      {/* PRIVACY & SECURITY */}
-      {/* ================================================= */}
-
-      <div
-        className="
-          bg-white
-          rounded-2xl
-          border border-slate-200
-          shadow-sm
-          overflow-hidden
-        "
-      >
-
-        <div className="px-6 py-5 border-b border-slate-200">
-
-          <div className="flex items-center gap-3">
-
-            <div
-              className="
-                w-10 h-10
-                rounded-xl
-                bg-violet-50
-                text-violet-600
-                flex items-center justify-center
-              "
-            >
-              <Shield size={19} />
-            </div>
-
-            <div>
-
-              <h2 className="font-bold text-slate-800">
-                Privacy & Security
-              </h2>
-
-              <p className="text-xs text-slate-400 mt-1">
-                Keep your account secure and protected.
-              </p>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-        <div
-          className="
-            px-6 py-5
-            flex flex-col sm:flex-row
-            sm:items-center
-            sm:justify-between
-            gap-4
-          "
-        >
-
-          <div className="flex items-center gap-4">
-
-            <div
-              className="
-                w-11 h-11
-                rounded-xl
-                bg-violet-50
-                text-violet-600
-                flex items-center justify-center
-              "
-            >
-              <Lock size={20} />
-            </div>
-
-            <div>
-
-              <h4 className="font-semibold text-slate-800">
-                Two-Factor Authentication
-              </h4>
-
-              <p className="text-sm text-slate-400 mt-1">
-                Improve your account security with two-factor authentication.
-              </p>
-
-            </div>
-
-          </div>
-
-
-          <button
-            className="
-              inline-flex
-              items-center
-              justify-center
-              gap-2
               px-5
               py-2.5
               rounded-xl
-              bg-indigo-50
-              text-indigo-600
-              border border-indigo-100
+              bg-indigo-600
+              hover:bg-indigo-700
+              text-white
               text-sm
               font-semibold
-              hover:bg-indigo-100
+              disabled:opacity-60
+            "
+          >
+            {updateSettingsLoading
+              ? "Saving..."
+              : "Save Changes"}
+          </button>
+
+        </div>
+
+
+        {/* SETTINGS CARD */}
+
+        <div
+          className="
+            bg-white
+            dark:bg-slate-900
+            border
+            border-slate-200
+            dark:border-slate-800
+            rounded-2xl
+            shadow-sm
+            overflow-hidden
+          "
+        >
+
+          {/* GENERAL */}
+
+          <div
+            className="
+              px-6
+              py-5
+              border-b
+              border-slate-200
+              dark:border-slate-800
+            "
+          >
+
+            <div className="flex items-center gap-3">
+
+              <div
+                className="
+                  w-10
+                  h-10
+                  rounded-xl
+                  bg-indigo-50
+                  text-indigo-600
+                  flex
+                  items-center
+                  justify-center
+                  dark:bg-indigo-500/10
+                  dark:text-indigo-400
+                "
+              >
+                <Settings size={19} />
+              </div>
+
+              <div>
+
+                <h2
+                  className="
+                    text-base
+                    font-bold
+                    text-slate-800
+                    dark:text-white
+                  "
+                >
+                  General
+                </h2>
+
+                <p
+                  className="
+                    text-xs
+                    text-slate-400
+                    mt-1
+                  "
+                >
+                  Customize your application preferences.
+                </p>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+   
+
+          {/* THEME */}
+
+          <div
+            className="
+              px-6
+              py-5
+              border-b
+              border-slate-100
+              dark:border-slate-800
+              flex
+              items-center
+              justify-between
+              gap-4
+              hover:bg-slate-50
+              dark:hover:bg-slate-800/50
               transition
             "
           >
-            <Shield size={16} />
-            Enable
-          </button>
+
+            <div className="flex items-center gap-4">
+
+              <div
+                className={`
+                  w-11
+                  h-11
+                  rounded-xl
+                  flex
+                  items-center
+                  justify-center
+                  ${
+                    darkMode
+                      ? "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400"
+                      : "bg-amber-50 text-amber-600"
+                  }
+                `}
+              >
+                {darkMode ? (
+                  <Moon size={20} />
+                ) : (
+                  <Sun size={20} />
+                )}
+              </div>
+
+              <div>
+
+                <h3
+                  className="
+                    text-sm
+                    font-semibold
+                    text-slate-800
+                    dark:text-white
+                  "
+                >
+                  Appearance
+                </h3>
+
+                <p
+                  className="
+                    text-xs
+                    text-slate-400
+                    mt-1
+                  "
+                >
+                  Choose between light and dark theme.
+                </p>
+
+              </div>
+
+            </div>
+
+            <button
+              type="button"
+              onClick={() =>
+                setDarkMode(!darkMode)
+              }
+              className={`
+                relative
+                w-12
+                h-6
+                rounded-full
+                transition-all
+                shrink-0
+                ${
+                  darkMode
+                    ? "bg-indigo-600"
+                    : "bg-slate-300"
+                }
+              `}
+            >
+
+              <span
+                className={`
+                  absolute
+                  top-1
+                  w-4
+                  h-4
+                  rounded-full
+                  bg-white
+                  shadow-sm
+                  transition-all
+                  ${
+                    darkMode
+                      ? "left-7"
+                      : "left-1"
+                  }
+                `}
+              />
+
+            </button>
+
+          </div>
+
+
+          {/* LANGUAGE */}
+
+          <div
+            className="
+              px-6
+              py-5
+              flex
+              items-center
+              justify-between
+              gap-4
+              hover:bg-slate-50
+              dark:hover:bg-slate-800/50
+              transition
+            "
+          >
+
+            <div className="flex items-center gap-4">
+
+              <div
+                className="
+                  w-11
+                  h-11
+                  rounded-xl
+                  bg-blue-50
+                  text-blue-600
+                  flex
+                  items-center
+                  justify-center
+                  dark:bg-blue-500/10
+                  dark:text-blue-400
+                "
+              >
+                <Globe2 size={20} />
+              </div>
+
+              <div>
+
+                <h3
+                  className="
+                    text-sm
+                    font-semibold
+                    text-slate-800
+                    dark:text-white
+                  "
+                >
+                  Language
+                </h3>
+
+                <p
+                  className="
+                    text-xs
+                    text-slate-400
+                    mt-1
+                  "
+                >
+                  Select your preferred application language.
+                </p>
+
+              </div>
+
+            </div>
+
+            <select
+              value={language}
+              onChange={(e) =>
+                setLanguage(e.target.value)
+              }
+              className="
+                w-44
+                h-10
+                px-4
+                rounded-xl
+                border
+                border-slate-200
+                dark:border-slate-700
+                bg-slate-50
+                dark:bg-slate-800
+                text-slate-700
+                dark:text-slate-200
+                text-sm
+                outline-none
+              "
+            >
+
+              <option value="English">
+                English
+              </option>
+
+            
+
+            </select>
+
+          </div>
 
         </div>
 
