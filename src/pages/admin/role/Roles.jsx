@@ -1,833 +1,1257 @@
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useMemo, useState } from "react";
+
 import {
-  ShieldCheck,
-  Plus,
   Search,
-  Users,
-  Settings,
+  Plus,
+  MoreVertical,
+  Eye,
   Edit,
   Trash2,
-  Eye,
-  MoreHorizontal,
-  Lock,
-  CheckCircle2,
+  ShieldCheck,
+  Users,
+  RefreshCw,
 } from "lucide-react";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
+import usePermissions from "../../../hooks/usePermissions";
 
 import {
   getRolesRequest,
+  getRoleByIdRequest,
+  deleteRoleRequest,
+  clearRoleState,
 } from "../../../features/role/roleSlice";
+
+import RoleViewModal from "./ViewRoleModal";
 
 const Roles = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // =========================================================
+  // STATE
+  // =========================================================
+
   const [search, setSearch] = useState("");
-  const [typeFilter, setTypeFilter] = useState("All");
+  const [deleteId, setDeleteId] = useState(null);
+  const [openMenu, setOpenMenu] = useState(null);
+  const [viewRole, setViewRole] = useState(false);
+
+  // =========================================================
+  // REDUX
+  // =========================================================
+
+  const roleState = useSelector(
+    (state) => state.role || {}
+  );
 
   const {
-    roles,
-    loading,
-    error,
-  } = useSelector((state) => state.role);
+    roles = [],
+    totalCount = 0,
+
+    getRolesLoading = false,
+    getRolesError = null,
+
+    role = null,
+    getRoleLoading = false,
+
+    deleteLoading = false,
+    deleteSuccess = false,
+    deleteError = null,
+  } = roleState;
+
+  // =========================================================
+  // PERMISSIONS
+  // =========================================================
+
+  const {
+    canView,
+    canCreate,
+    canEdit,
+    canDelete,
+  } = usePermissions("Roles");
+
+  // =========================================================
+  // GET ROLES
+  // =========================================================
+
+  const fetchRoles = () => {
+    dispatch(getRolesRequest());
+  };
 
   useEffect(() => {
-    dispatch(getRolesRequest());
+    fetchRoles();
   }, [dispatch]);
 
-  // ================= FILTER =================
+  // =========================================================
+  // DELETE SUCCESS
+  // =========================================================
 
-  const filteredRoles = roles?.filter((role) => {
-    const searchText = search.toLowerCase();
+  useEffect(() => {
+    if (!deleteSuccess) return;
 
-    const matchesSearch =
-      role.name?.toLowerCase().includes(searchText) ||
-      role.description?.toLowerCase().includes(searchText);
+    setDeleteId(null);
 
-    const matchesType =
-      typeFilter === "All" ||
-      (typeFilter === "System"
-        ? role.isSystem
-        : !role.isSystem);
+    dispatch(clearRoleState());
 
-    return matchesSearch && matchesType;
-  });
+    fetchRoles();
+  }, [deleteSuccess]);
 
-  // ================= COUNTS =================
+  // =========================================================
+  // SEARCH FILTER
+  // =========================================================
 
-  const totalRoles = roles?.length || 0;
+  const filteredRoles = useMemo(() => {
+    const value = search.trim().toLowerCase();
 
-  const systemRoles =
-    roles?.filter((role) => role.isSystem).length || 0;
+    if (!value) {
+      return roles;
+    }
 
-  const customRoles =
-    roles?.filter((role) => !role.isSystem).length || 0;
+    return roles.filter((roleItem) => {
+      const name =
+        roleItem?.name?.toLowerCase() || "";
 
-  // ================= PERMISSION COUNT =================
+      const description =
+        roleItem?.description?.toLowerCase() || "";
 
-  const getPermissionCount = (role) => {
-    return (
-      role.permissions?.filter(
-        (permission) =>
-          permission.view ||
-          permission.create ||
-          permission.edit ||
-          permission.delete
-      ).length || 0
+      return (
+        name.includes(value) ||
+        description.includes(value)
+      );
+    });
+  }, [roles, search]);
+
+  // =========================================================
+  // ROLE ICON
+  // =========================================================
+
+  const getRoleIcon = (index) => {
+    const icons = [
+      "bg-indigo-50 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400",
+      "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
+      "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
+      "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400",
+      "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400",
+    ];
+
+    return icons[index % icons.length];
+  };
+
+  // =========================================================
+  // EDIT
+  // =========================================================
+
+  const handleEdit = (id) => {
+    if (!id) return;
+
+    setOpenMenu(null);
+
+    navigate(`/admin/roles/edit/${id}`);
+  };
+
+  // =========================================================
+  // VIEW
+  // =========================================================
+
+  const handleView = (id) => {
+    if (!id) return;
+
+    setOpenMenu(null);
+
+    // First open modal
+    setViewRole(true);
+
+    // Then API call
+    dispatch(getRoleByIdRequest(id));
+  };
+
+  // =========================================================
+  // ADD ROLE
+  // =========================================================
+
+  const handleAddRole = () => {
+    navigate("/admin/roles/addrole");
+  };
+
+  // =========================================================
+  // DELETE
+  // =========================================================
+
+  const handleDelete = (id) => {
+    if (!id) return;
+
+    setOpenMenu(null);
+    setDeleteId(id);
+
+    /*
+      Abhi simple browser confirm use kar rahe hain.
+      Baad mein isko separate DeleteRoleModal
+      se replace kar sakte hain.
+    */
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this role?"
+    );
+
+    if (!confirmed) {
+      setDeleteId(null);
+      return;
+    }
+
+    dispatch(
+      deleteRoleRequest(id)
     );
   };
 
+  // =========================================================
+  // CLOSE VIEW MODAL
+  // =========================================================
+
+  const handleCloseView = () => {
+    setViewRole(false);
+
+    dispatch(clearRoleState());
+  };
+
+  // =========================================================
+  // RENDER
+  // =========================================================
+
   return (
-    <div className="min-h-screen bg-[#f8fafc] dark:bg-slate-950 p-6 text-slate-800 dark:text-slate-100">
+    <div
+      className="
+        min-h-screen
+        bg-[#f8fafc]
+        dark:bg-slate-950
+        p-4 sm:p-6
+        text-slate-800
+        dark:text-slate-100
+      "
+    >
+      {/* =====================================================
+          HEADER
+      ===================================================== */}
 
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
-
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5 mb-8">
-
+      <div
+        className="
+          flex flex-col
+          lg:flex-row
+          lg:items-center
+          lg:justify-between
+          gap-5
+          mb-7
+        "
+      >
         <div className="flex items-center gap-4">
-
           <div
             className="
-              w-14 h-14 rounded-2xl
-              bg-gradient-to-br from-indigo-500 to-violet-600
+              w-14 h-14
+              rounded-2xl
+              bg-gradient-to-br
+              from-indigo-500
+              to-violet-600
               text-white
-              shadow-lg shadow-indigo-200 dark:shadow-none
-              flex items-center justify-center
+              shadow-lg
+              shadow-indigo-200
+              dark:shadow-none
+              flex items-center
+              justify-center
+              shrink-0
             "
           >
-            <ShieldCheck size={27} />
+            <ShieldCheck size={28} />
           </div>
 
           <div>
-
-            <h1 className="text-3xl font-bold text-slate-800 dark:text-white tracking-tight">
-              Roles & Permissions
+            <h1
+              className="
+                text-2xl sm:text-3xl
+                font-bold
+                text-slate-800
+                dark:text-white
+              "
+            >
+              Roles
             </h1>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-              Manage user roles and control access permissions.
+            <p
+              className="
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+                mt-1
+              "
+            >
+              Manage user roles and access levels.
             </p>
-
           </div>
-
         </div>
 
-        <button
-          onClick={() =>
-            navigate("/admin/roles/addrole")
-          }
-          className="
-            inline-flex items-center justify-center
-            gap-2 bg-indigo-600 hover:bg-indigo-700
-            text-white px-5 py-3 rounded-xl
-            font-semibold shadow-md shadow-indigo-100 dark:shadow-none
-            transition-all duration-200
-          "
-        >
-          <Plus size={19} />
-          Add Role
-        </button>
+        {/* ADD ROLE */}
 
+        {canCreate && (
+          <button
+            type="button"
+            onClick={handleAddRole}
+            className="
+              inline-flex
+              items-center
+              justify-center
+              gap-2
+              px-5 py-3
+              rounded-xl
+              bg-indigo-600
+              hover:bg-indigo-700
+              text-white
+              font-semibold
+              text-sm
+              shadow-md
+              shadow-indigo-100
+              dark:shadow-none
+              transition
+            "
+          >
+            <Plus size={19} />
+            Add Role
+          </button>
+        )}
       </div>
 
-      {/* ================================================= */}
-      {/* SUMMARY */}
-      {/* ================================================= */}
+      {/* =====================================================
+          SUMMARY CARDS
+      ===================================================== */}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5 mb-7">
-
+      <div
+        className="
+          grid
+          grid-cols-1
+          sm:grid-cols-2
+          lg:grid-cols-3
+          gap-4
+          mb-6
+        "
+      >
         {/* TOTAL */}
 
         <div
           className="
-            bg-white dark:bg-slate-900
-            rounded-2xl border border-slate-200 dark:border-slate-700
-            p-5 shadow-sm dark:shadow-none
-            hover:shadow-md dark:hover:bg-slate-800
-            transition
+            bg-white
+            dark:bg-slate-900
+            border
+            border-slate-200
+            dark:border-slate-800
+            rounded-2xl
+            p-5
+            shadow-sm
+            dark:shadow-none
           "
         >
-
-          <div className="flex justify-between items-center">
-
+          <div className="flex items-center justify-between">
             <div>
-
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              <p
+                className="
+                  text-sm
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
                 Total Roles
               </p>
 
-              <h2 className="text-3xl font-bold text-slate-800 dark:text-white mt-2">
-                {totalRoles}
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mt-1
+                  text-slate-800
+                  dark:text-white
+                "
+              >
+                {totalCount || roles.length}
               </h2>
-
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                All available roles
-              </p>
-
             </div>
 
             <div
               className="
-                w-12 h-12 rounded-xl
-                bg-indigo-50 dark:bg-indigo-500/10
-                text-indigo-600 dark:text-indigo-400
-                flex items-center justify-center
+                w-11 h-11
+                rounded-xl
+                bg-indigo-50
+                dark:bg-indigo-500/10
+                text-indigo-600
+                dark:text-indigo-400
+                flex items-center
+                justify-center
               "
             >
-              <ShieldCheck size={23} />
+              <ShieldCheck size={21} />
             </div>
-
           </div>
-
         </div>
 
-        {/* SYSTEM */}
+        {/* VISIBLE */}
 
         <div
           className="
-            bg-white dark:bg-slate-900
-            rounded-2xl border border-slate-200 dark:border-slate-700
-            p-5 shadow-sm dark:shadow-none
-            hover:shadow-md dark:hover:bg-slate-800
-            transition
+            bg-white
+            dark:bg-slate-900
+            border
+            border-slate-200
+            dark:border-slate-800
+            rounded-2xl
+            p-5
+            shadow-sm
+            dark:shadow-none
           "
         >
-
-          <div className="flex justify-between items-center">
-
+          <div className="flex items-center justify-between">
             <div>
-
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                System Roles
+              <p
+                className="
+                  text-sm
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
+                Visible Roles
               </p>
 
-              <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
-                {systemRoles}
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mt-1
+                  text-slate-800
+                  dark:text-white
+                "
+              >
+                {filteredRoles.length}
               </h2>
-
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                Protected system roles
-              </p>
-
             </div>
 
             <div
               className="
-                w-12 h-12 rounded-xl
-                bg-blue-50 dark:bg-blue-500/10
-                text-blue-600 dark:text-blue-400
-                flex items-center justify-center
+                w-11 h-11
+                rounded-xl
+                bg-emerald-50
+                dark:bg-emerald-500/10
+                text-emerald-600
+                dark:text-emerald-400
+                flex items-center
+                justify-center
               "
             >
-              <Lock size={21} />
+              <Users size={21} />
             </div>
-
           </div>
-
         </div>
 
-        {/* CUSTOM */}
+        {/* SEARCH */}
 
         <div
           className="
-            bg-white dark:bg-slate-900
-            rounded-2xl border border-slate-200 dark:border-slate-700
-            p-5 shadow-sm dark:shadow-none
-            hover:shadow-md dark:hover:bg-slate-800
-            transition
+            bg-white
+            dark:bg-slate-900
+            border
+            border-slate-200
+            dark:border-slate-800
+            rounded-2xl
+            p-5
+            shadow-sm
+            dark:shadow-none
           "
         >
-
-          <div className="flex justify-between items-center">
-
+          <div className="flex items-center justify-between">
             <div>
-
-              <p className="text-sm font-medium text-slate-500 dark:text-slate-400">
-                Custom Roles
+              <p
+                className="
+                  text-sm
+                  text-slate-500
+                  dark:text-slate-400
+                "
+              >
+                Search Result
               </p>
 
-              <h2 className="text-3xl font-bold text-emerald-600 dark:text-emerald-400 mt-2">
-                {customRoles}
+              <h2
+                className="
+                  text-2xl
+                  font-bold
+                  mt-1
+                  text-slate-800
+                  dark:text-white
+                "
+              >
+                {search
+                  ? filteredRoles.length
+                  : "All"}
               </h2>
-
-              <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-                Roles created by admin
-              </p>
-
             </div>
 
             <div
               className="
-                w-12 h-12 rounded-xl
-                bg-emerald-50 dark:bg-emerald-500/10
-                text-emerald-600 dark:text-emerald-400
-                flex items-center justify-center
+                w-11 h-11
+                rounded-xl
+                bg-violet-50
+                dark:bg-violet-500/10
+                text-violet-600
+                dark:text-violet-400
+                flex items-center
+                justify-center
               "
             >
-              <Users size={22} />
+              <Search size={21} />
             </div>
-
           </div>
-
         </div>
-
       </div>
 
-      {/* ================================================= */}
-      {/* SEARCH / FILTER */}
-      {/* ================================================= */}
+      {/* =====================================================
+          SEARCH
+      ===================================================== */}
 
       <div
         className="
-          bg-white dark:bg-slate-900
-          border border-slate-200 dark:border-slate-700
-          rounded-2xl p-4 mb-6
-          shadow-sm dark:shadow-none
+          bg-white
+          dark:bg-slate-900
+          border
+          border-slate-200
+          dark:border-slate-800
+          rounded-2xl
+          p-4
+          mb-6
+          shadow-sm
+          dark:shadow-none
         "
       >
-
-        <div className="flex flex-col md:flex-row gap-4">
-
-          {/* SEARCH */}
-
+        <div
+          className="
+            flex flex-col
+            sm:flex-row
+            gap-3
+          "
+        >
           <div className="relative flex-1">
-
             <Search
               size={19}
               className="
-                absolute left-4 top-1/2
+                absolute
+                left-4
+                top-1/2
                 -translate-y-1/2
-                text-slate-400 dark:text-slate-500
+                text-slate-400
               "
             />
 
             <input
               type="text"
-              placeholder="Search roles..."
               value={search}
               onChange={(e) =>
                 setSearch(e.target.value)
               }
+              placeholder="Search roles..."
               className="
-                w-full h-12
-                pl-11 pr-4
-                border border-slate-200 dark:border-slate-700
+                w-full
+                h-11
+                pl-11
+                pr-4
                 rounded-xl
-                bg-slate-50 dark:bg-slate-800
-                text-slate-700 dark:text-slate-200
-                placeholder:text-slate-400 dark:placeholder:text-slate-500
-                text-sm outline-none
-                focus:bg-white dark:focus:bg-slate-900
+                border
+                border-slate-200
+                dark:border-slate-700
+                bg-slate-50
+                dark:bg-slate-800
+                text-sm
+                text-slate-800
+                dark:text-slate-100
+                placeholder:text-slate-400
+                outline-none
                 focus:border-indigo-400
-                focus:ring-4 focus:ring-indigo-500/10
+                focus:ring-4
+                focus:ring-indigo-500/10
                 transition
               "
             />
-
           </div>
 
-          {/* FILTER */}
+          {/* REFRESH */}
 
-          <select
-            value={typeFilter}
-            onChange={(e) =>
-              setTypeFilter(e.target.value)
-            }
+          <button
+            type="button"
+            onClick={fetchRoles}
+            disabled={getRolesLoading}
             className="
-              h-12 min-w-[180px]
+              h-11
               px-4
-              border border-slate-200 dark:border-slate-700
               rounded-xl
-              bg-slate-50 dark:bg-slate-800
-              text-sm text-slate-700 dark:text-slate-200
-              outline-none
-              focus:bg-white dark:focus:bg-slate-900
-              focus:border-indigo-400
-              focus:ring-4 focus:ring-indigo-500/10
+              border
+              border-slate-200
+              dark:border-slate-700
+              bg-white
+              dark:bg-slate-800
+              text-slate-600
+              dark:text-slate-300
+              inline-flex
+              items-center
+              justify-center
+              gap-2
+              text-sm
+              font-medium
+              hover:bg-slate-50
+              dark:hover:bg-slate-700
+              disabled:opacity-50
+              transition
             "
           >
+            <RefreshCw
+              size={17}
+              className={
+                getRolesLoading
+                  ? "animate-spin"
+                  : ""
+              }
+            />
 
-            <option value="All">
-              All Roles
-            </option>
-
-            <option value="System">
-              System Roles
-            </option>
-
-            <option value="Custom">
-              Custom Roles
-            </option>
-
-          </select>
-
+            Refresh
+          </button>
         </div>
-
       </div>
 
-      {/* ================================================= */}
-      {/* ERROR */}
-      {/* ================================================= */}
+      {/* =====================================================
+          ERRORS
+      ===================================================== */}
 
-      {error && (
-
+      {getRolesError && (
         <div
           className="
-            mb-6 p-4 rounded-xl
-            bg-red-50 dark:bg-red-500/10
-            border border-red-200 dark:border-red-500/20
-            text-red-600 dark:text-red-400 text-sm
+            mb-6
+            p-4
+            rounded-xl
+            border
+            border-red-200
+            dark:border-red-500/20
+            bg-red-50
+            dark:bg-red-500/10
+            text-red-600
+            dark:text-red-400
+            text-sm
           "
         >
-          {error}
+          {getRolesError}
         </div>
-
       )}
 
-      {/* ================================================= */}
-      {/* TABLE */}
-      {/* ================================================= */}
+      {deleteError && (
+        <div
+          className="
+            mb-6
+            p-4
+            rounded-xl
+            border
+            border-red-200
+            dark:border-red-500/20
+            bg-red-50
+            dark:bg-red-500/10
+            text-red-600
+            dark:text-red-400
+            text-sm
+          "
+        >
+          {deleteError}
+        </div>
+      )}
+
+      {/* =====================================================
+          TABLE
+      ===================================================== */}
 
       <div
         className="
-          bg-white dark:bg-slate-900
+          bg-white
+          dark:bg-slate-900
+          border
+          border-slate-200
+          dark:border-slate-800
           rounded-2xl
-          border border-slate-200 dark:border-slate-700
-          shadow-sm dark:shadow-none
+          shadow-sm
+          dark:shadow-none
           overflow-hidden
         "
       >
-
         {/* TABLE HEADER */}
 
         <div
           className="
-            px-6 py-5
-            border-b border-slate-200 dark:border-slate-700
-            flex items-center justify-between
+            px-5 py-4
+            border-b
+            border-slate-200
+            dark:border-slate-800
+            flex
+            items-center
+            justify-between
           "
         >
-
           <div>
-
-            <h2 className="font-bold text-slate-800 dark:text-white">
+            <h2
+              className="
+                font-bold
+                text-slate-800
+                dark:text-white
+              "
+            >
               All Roles
             </h2>
 
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              {filteredRoles?.length || 0} roles available
+            <p
+              className="
+                text-xs
+                text-slate-400
+                mt-1
+              "
+            >
+              Manage role information and actions.
             </p>
-
           </div>
 
-          <div
+          <span
             className="
-              flex items-center gap-2
-              text-xs text-slate-400 dark:text-slate-500
+              px-3 py-1.5
+              rounded-lg
+              bg-slate-100
+              dark:bg-slate-800
+              text-xs
+              font-semibold
+              text-slate-600
+              dark:text-slate-300
             "
           >
-            <CheckCircle2 size={15} />
-            Access controlled
-          </div>
-
+            {filteredRoles.length} Roles
+          </span>
         </div>
 
-        <div className="overflow-x-auto">
+        {/* LOADING */}
 
-          <table className="w-full">
+        {getRolesLoading ? (
+          <div
+            className="
+              min-h-[300px]
+              flex flex-col
+              items-center
+              justify-center
+              gap-3
+            "
+          >
+            <div
+              className="
+                w-10 h-10
+                border-4
+                border-indigo-100
+                dark:border-slate-700
+                border-t-indigo-600
+                rounded-full
+                animate-spin
+              "
+            />
 
-            <thead>
+            <p
+              className="
+                text-sm
+                text-slate-500
+                dark:text-slate-400
+              "
+            >
+              Loading roles...
+            </p>
+          </div>
+        ) : filteredRoles.length === 0 ? (
+          <div
+            className="
+              min-h-[300px]
+              flex flex-col
+              items-center
+              justify-center
+              text-center
+              px-5
+            "
+          >
+            <div
+              className="
+                w-16 h-16
+                rounded-2xl
+                bg-slate-100
+                dark:bg-slate-800
+                text-slate-400
+                flex items-center
+                justify-center
+                mb-4
+              "
+            >
+              <ShieldCheck size={30} />
+            </div>
 
-              <tr className="bg-slate-50 dark:bg-slate-800/70">
+            <h3
+              className="
+                text-base
+                font-semibold
+                text-slate-700
+                dark:text-slate-200
+              "
+            >
+              {search
+                ? "No roles found"
+                : "No roles available"}
+            </h3>
 
-                <th
+            <p
+              className="
+                text-sm
+                text-slate-400
+                mt-1
+                max-w-sm
+              "
+            >
+              {search
+                ? "Try changing your search keyword."
+                : "Create your first role to get started."}
+            </p>
+
+            {!search && canCreate && (
+              <button
+                type="button"
+                onClick={handleAddRole}
+                className="
+                  mt-5
+                  inline-flex
+                  items-center
+                  gap-2
+                  px-4 py-2.5
+                  rounded-xl
+                  bg-indigo-600
+                  hover:bg-indigo-700
+                  text-white
+                  text-sm
+                  font-semibold
+                  transition
+                "
+              >
+                <Plus size={17} />
+                Add Role
+              </button>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[800px]">
+              <thead>
+                <tr
                   className="
-                    px-6 py-4 text-left
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
+                    bg-slate-50
+                    dark:bg-slate-800/50
+                    border-b
+                    border-slate-200
+                    dark:border-slate-800
                   "
                 >
-                  #
-                </th>
-
-                <th
-                  className="
-                    px-6 py-4 text-left
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
-                  "
-                >
-                  Role
-                </th>
-
-                <th
-                  className="
-                    px-6 py-4 text-left
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
-                  "
-                >
-                  Description
-                </th>
-
-                <th
-                  className="
-                    px-6 py-4 text-left
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
-                  "
-                >
-                  Type
-                </th>
-
-                <th
-                  className="
-                    px-6 py-4 text-left
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
-                  "
-                >
-                  Permissions
-                </th>
-
-                <th
-                  className="
-                    px-6 py-4 text-right
-                    text-[11px] font-bold uppercase
-                    tracking-wider text-slate-400 dark:text-slate-500
-                  "
-                >
-                  Actions
-                </th>
-
-              </tr>
-
-            </thead>
-
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-
-              {/* LOADING */}
-
-              {loading ? (
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="py-16 text-center"
-                  >
-
-                    <div
-                      className="
-                        w-8 h-8 mx-auto
-                        border-[3px]
-                        border-indigo-600 dark:border-indigo-400
-                        border-t-transparent
-                        rounded-full animate-spin
-                      "
-                    />
-
-                    <p className="text-sm text-slate-500 dark:text-slate-400 mt-4">
-                      Loading roles...
-                    </p>
-
-                  </td>
-
-                </tr>
-
-              ) : filteredRoles?.length > 0 ? (
-
-                filteredRoles.map((role, index) => (
-
-                  <tr
-                    key={role._id}
+                  <th
                     className="
-                      group
-                      hover:bg-slate-50/80 dark:hover:bg-slate-800/60
-                      transition-colors
+                      px-5 py-4
+                      text-left
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wide
+                      text-slate-500
+                      dark:text-slate-400
                     "
                   >
+                    Role
+                  </th>
 
-                    {/* NUMBER */}
-
-                    <td className="px-6 py-5">
-
-                      <span className="text-sm text-slate-400 dark:text-slate-500">
-                        {String(index + 1).padStart(2, "0")}
-                      </span>
-
-                    </td>
-
-                    {/* ROLE */}
-
-                    <td className="px-6 py-5">
-
-                      <div className="flex items-center gap-3">
-
-                        <div
-                          className="
-                            w-11 h-11 rounded-xl
-                            bg-gradient-to-br
-                            from-indigo-50 to-violet-50
-                            dark:from-indigo-500/10 dark:to-violet-500/10
-                            text-indigo-600 dark:text-indigo-400
-                            flex items-center justify-center
-                            border border-indigo-100 dark:border-indigo-500/20
-                          "
-                        >
-                          <ShieldCheck size={20} />
-                        </div>
-
-                        <div>
-
-                          <p className="font-semibold text-slate-800 dark:text-slate-100">
-                            {role.name}
-                          </p>
-
-                          {role.isDefault && (
-
-                            <span
-                              className="
-                                text-[11px]
-                                font-medium
-                                text-indigo-500 dark:text-indigo-400
-                              "
-                            >
-                              Default Role
-                            </span>
-
-                          )}
-
-                        </div>
-
-                      </div>
-
-                    </td>
-
-                    {/* DESCRIPTION */}
-
-                    <td className="px-6 py-5 max-w-sm">
-
-                      <p
-                        className="
-                          text-sm
-                          text-slate-500 dark:text-slate-400
-                          line-clamp-2
-                        "
-                      >
-                        {role.description || "No description provided"}
-                      </p>
-
-                    </td>
-
-                    {/* TYPE */}
-
-                    <td className="px-6 py-5">
-
-                      {role.isSystem ? (
-
-                        <span
-                          className="
-                            inline-flex items-center
-                            gap-1.5 px-3 py-1.5
-                            rounded-full
-                            bg-blue-50 dark:bg-blue-500/10
-                            text-blue-700 dark:text-blue-400
-                            border border-blue-100 dark:border-blue-500/20
-                            text-xs font-semibold
-                          "
-                        >
-                          <Lock size={12} />
-                          System
-                        </span>
-
-                      ) : (
-
-                        <span
-                          className="
-                            inline-flex items-center
-                            gap-1.5 px-3 py-1.5
-                            rounded-full
-                            bg-emerald-50 dark:bg-emerald-500/10
-                            text-emerald-700 dark:text-emerald-400
-                            border border-emerald-100 dark:border-emerald-500/20
-                            text-xs font-semibold
-                          "
-                        >
-                          <Users size={12} />
-                          Custom
-                        </span>
-
-                      )}
-
-                    </td>
-
-                    {/* PERMISSIONS */}
-
-                    <td className="px-6 py-5">
-
-                      <div className="flex items-center gap-2">
-
-                        <div
-                          className="
-                            w-8 h-8 rounded-lg
-                            bg-violet-50 dark:bg-violet-500/10
-                            text-violet-600 dark:text-violet-400
-                            flex items-center justify-center
-                          "
-                        >
-                          <Settings size={15} />
-                        </div>
-
-                        <div>
-
-                          <p className="text-sm font-semibold text-slate-700 dark:text-slate-200">
-                            {getPermissionCount(role)}
-                          </p>
-
-                          <p className="text-[11px] text-slate-400 dark:text-slate-500">
-                            Modules
-                          </p>
-
-                        </div>
-
-                      </div>
-
-                    </td>
-
-                    {/* ACTIONS */}
-
-                    <td className="px-6 py-5">
-
-                      <div
-                        className="
-                          flex items-center
-                          justify-end gap-2
-                        "
-                      >
-
-                        <button
-                          title="View Role"
-                          className="
-                            w-9 h-9 rounded-lg
-                            border border-slate-200 dark:border-slate-700
-                            bg-white dark:bg-slate-800
-                            text-slate-500 dark:text-slate-400
-                            flex items-center justify-center
-                            hover:text-indigo-600 dark:hover:text-indigo-400
-                            hover:border-indigo-200 dark:hover:border-indigo-500/30
-                            hover:bg-indigo-50 dark:hover:bg-indigo-500/10
-                            transition
-                          "
-                        >
-                          <Eye size={16} />
-                        </button>
-
-                        <button
-                          title="Edit Role"
-                          className="
-                            w-9 h-9 rounded-lg
-                            border border-slate-200 dark:border-slate-700
-                            bg-white dark:bg-slate-800
-                            text-slate-500 dark:text-slate-400
-                            flex items-center justify-center
-                            hover:text-indigo-600 dark:hover:text-indigo-400
-                            hover:border-indigo-200 dark:hover:border-indigo-500/30
-                            hover:bg-indigo-50 dark:hover:bg-indigo-500/10
-                            transition
-                          "
-                        >
-                          <Edit size={16} />
-                        </button>
-
-                        <button
-                          title="Delete Role"
-                          className="
-                            w-9 h-9 rounded-lg
-                            border border-slate-200 dark:border-slate-700
-                            bg-white dark:bg-slate-800
-                            text-slate-500 dark:text-slate-400
-                            flex items-center justify-center
-                            hover:text-red-600 dark:hover:text-red-400
-                            hover:border-red-200 dark:hover:border-red-500/30
-                            hover:bg-red-50 dark:hover:bg-red-500/10
-                            transition
-                          "
-                        >
-                          <Trash2 size={16} />
-                        </button>
-
-                        <button
-                          title="More"
-                          className="
-                            w-9 h-9 rounded-lg
-                            border border-slate-200 dark:border-slate-700
-                            bg-white dark:bg-slate-800
-                            text-slate-500 dark:text-slate-400
-                            flex items-center justify-center
-                            hover:bg-slate-100 dark:hover:bg-slate-700
-                            transition
-                          "
-                        >
-                          <MoreHorizontal size={16} />
-                        </button>
-
-                      </div>
-
-                    </td>
-
-                  </tr>
-
-                ))
-
-              ) : (
-
-                /* EMPTY */
-
-                <tr>
-
-                  <td
-                    colSpan="6"
-                    className="py-16 text-center"
+                  <th
+                    className="
+                      px-5 py-4
+                      text-left
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wide
+                      text-slate-500
+                      dark:text-slate-400
+                    "
                   >
+                    Description
+                  </th>
 
-                    <div
+                  <th
+                    className="
+                      px-5 py-4
+                      text-center
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wide
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    Type
+                  </th>
+
+                  <th
+                    className="
+                      px-5 py-4
+                      text-center
+                      text-xs
+                      font-bold
+                      uppercase
+                      tracking-wide
+                      text-slate-500
+                      dark:text-slate-400
+                    "
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {filteredRoles.map(
+                  (roleItem, index) => (
+                    <tr
+                      key={
+                        roleItem?._id || index
+                      }
                       className="
-                        w-14 h-14 mx-auto
-                        rounded-2xl
-                        bg-slate-100 dark:bg-slate-800
-                        text-slate-400 dark:text-slate-500
-                        flex items-center justify-center mb-4
+                        border-b
+                        border-slate-100
+                        dark:border-slate-800
+                        last:border-b-0
+                        hover:bg-slate-50
+                        dark:hover:bg-slate-800/40
+                        transition
                       "
                     >
-                      <ShieldCheck size={26} />
-                    </div>
+                      {/* ROLE */}
 
-                    <h3 className="font-semibold text-slate-700 dark:text-slate-200">
-                      No roles found
-                    </h3>
+                      <td className="px-5 py-4">
+                        <div
+                          className="
+                            flex
+                            items-center
+                            gap-3
+                          "
+                        >
+                          <div
+                            className={`
+                              w-11 h-11
+                              rounded-xl
+                              flex
+                              items-center
+                              justify-center
+                              shrink-0
+                              ${getRoleIcon(index)}
+                            `}
+                          >
+                            <ShieldCheck
+                              size={20}
+                            />
+                          </div>
 
-                    <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-                      Try changing your search or filter.
-                    </p>
+                          <div>
+                            <p
+                              className="
+                                font-semibold
+                                text-sm
+                                text-slate-800
+                                dark:text-white
+                              "
+                            >
+                              {roleItem?.name ||
+                                "Unnamed Role"}
+                            </p>
 
-                  </td>
+                            <p
+                              className="
+                                text-xs
+                                text-slate-400
+                                mt-0.5
+                              "
+                            >
+                              ID:{" "}
+                              {roleItem?._id?.slice(
+                                -8
+                              ) || "-"}
+                            </p>
+                          </div>
+                        </div>
+                      </td>
 
-                </tr>
+                      {/* DESCRIPTION */}
 
-              )}
+                      <td className="px-5 py-4">
+                        <p
+                          className="
+                            text-sm
+                            text-slate-600
+                            dark:text-slate-300
+                            max-w-md
+                            truncate
+                          "
+                          title={
+                            roleItem?.description ||
+                            ""
+                          }
+                        >
+                          {roleItem?.description ||
+                            "No description available"}
+                        </p>
+                      </td>
 
-            </tbody>
+                      {/* TYPE */}
 
-          </table>
+                      <td className="px-5 py-4 text-center">
+                        {roleItem?.isSystem ? (
+                          <span
+                            className="
+                              inline-flex
+                              items-center
+                              px-3 py-1.5
+                              rounded-lg
+                              bg-violet-50
+                              dark:bg-violet-500/10
+                              text-violet-600
+                              dark:text-violet-400
+                              text-xs
+                              font-semibold
+                            "
+                          >
+                            System
+                          </span>
+                        ) : (
+                          <span
+                            className="
+                              inline-flex
+                              items-center
+                              px-3 py-1.5
+                              rounded-lg
+                              bg-emerald-50
+                              dark:bg-emerald-500/10
+                              text-emerald-600
+                              dark:text-emerald-400
+                              text-xs
+                              font-semibold
+                            "
+                          >
+                            Custom
+                          </span>
+                        )}
+                      </td>
 
-        </div>
+                      {/* ACTION */}
 
+                      <td className="px-5 py-4 text-center">
+                        <div className="relative flex items-center justify-center">
+                          {/* 3 DOT */}
+
+                          <button
+                            type="button"
+                            title="Actions"
+                            onClick={(e) => {
+                              e.stopPropagation();
+
+                              setOpenMenu(
+                                openMenu ===
+                                  roleItem?._id
+                                  ? null
+                                  : roleItem?._id
+                              );
+                            }}
+                            className="
+                              w-9 h-9
+                              inline-flex
+                              items-center
+                              justify-center
+                              rounded-lg
+                              text-slate-500
+                              dark:text-slate-400
+                              hover:bg-slate-100
+                              dark:hover:bg-slate-800
+                              hover:text-slate-700
+                              dark:hover:text-slate-200
+                              transition
+                            "
+                          >
+                            <MoreVertical size={19} />
+                          </button>
+
+                          {/* DROPDOWN */}
+
+                          {openMenu ===
+                            roleItem?._id && (
+                            <div
+                              onClick={(e) =>
+                                e.stopPropagation()
+                              }
+                              className="
+                                absolute
+                                right-8
+                                top-11
+                                w-44
+                                bg-white
+                                dark:bg-slate-900
+                                border
+                                border-slate-200
+                                dark:border-slate-700
+                                rounded-xl
+                                shadow-xl
+                                z-50
+                                overflow-hidden
+                              "
+                            >
+                              {/* VIEW */}
+
+                              {canView && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleView(
+                                      roleItem?._id
+                                    )
+                                  }
+                                  className="
+                                    flex
+                                    items-center
+                                    gap-3
+                                    w-full
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-600
+                                    dark:text-slate-300
+                                    hover:bg-slate-50
+                                    dark:hover:bg-slate-800
+                                    transition
+                                  "
+                                >
+                                  <Eye
+                                    size={16}
+                                    className="
+                                      text-blue-500
+                                      dark:text-blue-400
+                                    "
+                                  />
+
+                                  View Role
+                                </button>
+                              )}
+
+                              {/* EDIT */}
+
+                              {canEdit && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleEdit(
+                                      roleItem?._id
+                                    )
+                                  }
+                                  className="
+                                    flex
+                                    items-center
+                                    gap-3
+                                    w-full
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-slate-600
+                                    dark:text-slate-300
+                                    hover:bg-slate-50
+                                    dark:hover:bg-slate-800
+                                    transition
+                                  "
+                                >
+                                  <Edit
+                                    size={16}
+                                    className="
+                                      text-amber-500
+                                      dark:text-amber-400
+                                    "
+                                  />
+
+                                  Edit Role
+                                </button>
+                              )}
+
+                              {/* DELETE */}
+
+                              {canDelete && (
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    handleDelete(
+                                      roleItem?._id
+                                    )
+                                  }
+                                  disabled={
+                                    deleteLoading &&
+                                    deleteId ===
+                                      roleItem?._id
+                                  }
+                                  className="
+                                    flex
+                                    items-center
+                                    gap-3
+                                    w-full
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    text-red-600
+                                    dark:text-red-400
+                                    hover:bg-red-50
+                                    dark:hover:bg-red-500/10
+                                    transition
+                                    disabled:opacity-50
+                                  "
+                                >
+                                  {deleteLoading &&
+                                  deleteId ===
+                                    roleItem?._id ? (
+                                    <RefreshCw
+                                      size={16}
+                                      className="animate-spin"
+                                    />
+                                  ) : (
+                                    <Trash2 size={16} />
+                                  )}
+
+                                  Delete Role
+                                </button>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
+      {/* =====================================================
+          VIEW ROLE MODAL
+      ===================================================== */}
+
+      <RoleViewModal
+        open={viewRole}
+        role={role}
+        loading={getRoleLoading}
+        onClose={handleCloseView}
+      />
     </div>
   );
 };

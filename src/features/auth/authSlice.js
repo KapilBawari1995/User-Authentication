@@ -1,9 +1,13 @@
+
 import { createSlice } from "@reduxjs/toolkit";
 
 // ================= INITIAL DATA =================
 
-const user = JSON.parse(localStorage.getItem("user"));
-const token = localStorage.getItem("token");
+const storedUser = JSON.parse(
+  localStorage.getItem("user")
+);
+
+const storedToken = localStorage.getItem("token");
 
 // ================= AUTH SLICE =================
 
@@ -11,57 +15,85 @@ const authSlice = createSlice({
   name: "auth",
 
   initialState: {
-    user: user || null,
-    token: token || null,
+    // =====================================================
+    // USER / AUTH
+    // =====================================================
 
-    role: user?.role || null,
-    permissions: user?.role?.permissions || [],
-    isSuperAdmin: user?.isSuperAdmin || false,
+    user: storedUser || null,
+    token: storedToken || null,
 
-    // ================= SIGNUP =================
+    // =====================================================
+    // ROLE / PERMISSIONS
+    // =====================================================
+
+    role: storedUser?.role || null,
+
+    permissions:
+      storedUser?.role?.permissions || [],
+
+    isSuperAdmin:
+      Boolean(storedUser?.isSuperAdmin),
+
+    // =====================================================
+    // SIGNUP
+    // =====================================================
 
     signupLoading: false,
     signupSuccess: false,
     signupError: null,
 
-    // ================= VERIFY OTP =================
+    // =====================================================
+    // VERIFY OTP
+    // =====================================================
 
     verifyLoading: false,
     verifySuccess: false,
     verifyError: null,
 
-    // ================= LOGIN =================
+    // =====================================================
+    // LOGIN
+    // =====================================================
 
     loginLoading: false,
     loginSuccess: false,
     loginError: null,
 
-    // ================= FORGOT PASSWORD =================
+    // =====================================================
+    // FORGOT PASSWORD
+    // =====================================================
 
     forgotLoading: false,
     forgotSuccess: false,
     forgotError: null,
 
-    // ================= VERIFY FORGOT OTP =================
+    // =====================================================
+    // VERIFY FORGOT PASSWORD OTP
+    // =====================================================
 
     verifyForgotOtpLoading: false,
     verifyForgotOtpSuccess: false,
     verifyForgotOtpError: null,
 
-    // ================= CHANGE PASSWORD =================
+    // =====================================================
+    // CHANGE PASSWORD
+    // =====================================================
 
     changePassLoading: false,
     changePassOtpSent: false,
     changePassSuccess: false,
     changePassError: null,
 
-    // ================= CREATE PASSWORD =================
+    // =====================================================
+    // CREATE NEW PASSWORD
+    // =====================================================
 
     createPasswordLoading: false,
     createPasswordSuccess: false,
     createPasswordError: null,
 
-    // ================= LOGOUT =================
+    // =====================================================
+    // LOGOUT
+    // =====================================================
 
     logoutLoading: false,
     logoutSuccess: false,
@@ -82,10 +114,12 @@ const authSlice = createSlice({
     signupSuccess: (state) => {
       state.signupLoading = false;
       state.signupSuccess = true;
+      state.signupError = null;
     },
 
     signupFailure: (state, action) => {
       state.signupLoading = false;
+      state.signupSuccess = false;
       state.signupError = action.payload;
     },
 
@@ -107,21 +141,53 @@ const authSlice = createSlice({
     verifyOtpSuccess: (state, action) => {
       state.verifyLoading = false;
       state.verifySuccess = true;
+      state.verifyError = null;
 
-      state.token = action.payload.token;
-      state.user = action.payload.user;
+      // ================= USER =================
 
-      state.role = action.payload.user?.role || null;
+      state.token =
+        action.payload?.token || null;
+
+      state.user =
+        action.payload?.user || null;
+
+      // ================= ROLE =================
+
+      state.role =
+        action.payload?.user?.role || null;
+
+      // ================= PERMISSIONS =================
 
       state.permissions =
-        action.payload.user?.role?.permissions || [];
+        action.payload?.user?.role?.permissions || [];
+
+      // ================= SUPER ADMIN =================
 
       state.isSuperAdmin =
-        action.payload.user?.isSuperAdmin || false;
+        Boolean(
+          action.payload?.user?.isSuperAdmin
+        );
+
+      // ================= LOCAL STORAGE =================
+
+      if (action.payload?.token) {
+        localStorage.setItem(
+          "token",
+          action.payload.token
+        );
+      }
+
+      if (action.payload?.user) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify(action.payload.user)
+        );
+      }
     },
 
     verifyOtpFailure: (state, action) => {
       state.verifyLoading = false;
+      state.verifySuccess = false;
       state.verifyError = action.payload;
     },
 
@@ -143,32 +209,55 @@ const authSlice = createSlice({
     loginSuccess: (state, action) => {
       state.loginLoading = false;
       state.loginSuccess = true;
+      state.loginError = null;
 
-      state.token = action.payload.token;
-      state.user = action.payload.user;
+      // ================= TOKEN =================
+
+      state.token =
+        action.payload?.token || null;
+
+      // ================= USER =================
+
+      state.user =
+        action.payload?.user || null;
+
+      // ================= ROLE =================
 
       state.role =
-        action.payload.user?.role || null;
+        action.payload?.user?.role || null;
+
+      // ================= PERMISSIONS =================
 
       state.permissions =
-        action.payload.user?.role?.permissions || [];
+        action.payload?.user?.role?.permissions || [];
+
+      // ================= SUPER ADMIN =================
 
       state.isSuperAdmin =
-        action.payload.user?.isSuperAdmin || false;
+        Boolean(
+          action.payload?.user?.isSuperAdmin
+        );
 
-      localStorage.setItem(
-        "token",
-        action.payload.token
-      );
+      // ================= LOCAL STORAGE =================
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(action.payload.user)
-      );
+      if (action.payload?.token) {
+        localStorage.setItem(
+          "token",
+          action.payload.token
+        );
+      }
+
+      if (action.payload?.user) {
+        localStorage.setItem(
+          "user",
+          JSON.stringify(action.payload.user)
+        );
+      }
     },
 
     loginFailure: (state, action) => {
       state.loginLoading = false;
+      state.loginSuccess = false;
       state.loginError = action.payload;
     },
 
@@ -190,10 +279,12 @@ const authSlice = createSlice({
     forgotPasswordSuccess: (state) => {
       state.forgotLoading = false;
       state.forgotSuccess = true;
+      state.forgotError = null;
     },
 
     forgotPasswordFailure: (state, action) => {
       state.forgotLoading = false;
+      state.forgotSuccess = false;
       state.forgotError = action.payload;
     },
 
@@ -210,21 +301,29 @@ const authSlice = createSlice({
     verifyForgotPasswordOtpSuccess: (state) => {
       state.verifyForgotOtpLoading = false;
       state.verifyForgotOtpSuccess = true;
+      state.verifyForgotOtpError = null;
     },
 
-    verifyForgotPasswordOtpFailure: (state, action) => {
+    verifyForgotPasswordOtpFailure: (
+      state,
+      action
+    ) => {
       state.verifyForgotOtpLoading = false;
-      state.verifyForgotOtpError = action.payload;
+      state.verifyForgotOtpSuccess = false;
+      state.verifyForgotOtpError =
+        action.payload;
     },
 
-    clearVerifyForgotPasswordOtpState: (state) => {
+    clearVerifyForgotPasswordOtpState: (
+      state
+    ) => {
       state.verifyForgotOtpLoading = false;
       state.verifyForgotOtpSuccess = false;
       state.verifyForgotOtpError = null;
     },
 
     // =====================================================
-    // CHANGE PASSWORD
+    // SEND CHANGE PASSWORD OTP
     // =====================================================
 
     sendChangePasswordOtpRequest: (state) => {
@@ -236,24 +335,40 @@ const authSlice = createSlice({
     sendChangePasswordOtpSuccess: (state) => {
       state.changePassLoading = false;
       state.changePassOtpSent = true;
+      state.changePassError = null;
     },
 
-    sendChangePasswordOtpFailure: (state, action) => {
+    sendChangePasswordOtpFailure: (
+      state,
+      action
+    ) => {
       state.changePassLoading = false;
-      state.changePassError = action.payload;
+      state.changePassOtpSent = false;
+      state.changePassError =
+        action.payload;
     },
 
-    verifyAndChangePasswordRequest: (state) => {
+    // =====================================================
+    // VERIFY AND CHANGE PASSWORD
+    // =====================================================
+
+    verifyAndChangePasswordRequest: (
+      state
+    ) => {
       state.changePassLoading = true;
       state.changePassSuccess = false;
       state.changePassError = null;
     },
 
-    verifyAndChangePasswordSuccess: (state) => {
+    verifyAndChangePasswordSuccess: (
+      state
+    ) => {
       state.changePassLoading = false;
       state.changePassSuccess = true;
       state.changePassOtpSent = false;
+      state.changePassError = null;
 
+      // Update current user
       if (state.user) {
         state.user.mustChangePassword = false;
 
@@ -264,9 +379,14 @@ const authSlice = createSlice({
       }
     },
 
-    verifyAndChangePasswordFailure: (state, action) => {
+    verifyAndChangePasswordFailure: (
+      state,
+      action
+    ) => {
       state.changePassLoading = false;
-      state.changePassError = action.payload;
+      state.changePassSuccess = false;
+      state.changePassError =
+        action.payload;
     },
 
     clearChangePasswordState: (state) => {
@@ -288,11 +408,17 @@ const authSlice = createSlice({
     createNewPasswordSuccess: (state) => {
       state.createPasswordLoading = false;
       state.createPasswordSuccess = true;
+      state.createPasswordError = null;
     },
 
-    createNewPasswordFailure: (state, action) => {
+    createNewPasswordFailure: (
+      state,
+      action
+    ) => {
       state.createPasswordLoading = false;
-      state.createPasswordError = action.payload;
+      state.createPasswordSuccess = false;
+      state.createPasswordError =
+        action.payload;
     },
 
     clearCreateNewPasswordState: (state) => {
@@ -316,11 +442,27 @@ const authSlice = createSlice({
       state.logoutSuccess = true;
       state.logoutError = null;
 
+      // ================= CLEAR USER =================
+
       state.user = null;
+
+      // ================= CLEAR TOKEN =================
+
       state.token = null;
+
+      // ================= CLEAR ROLE =================
+
       state.role = null;
+
+      // ================= CLEAR PERMISSIONS =================
+
       state.permissions = [];
+
+      // ================= CLEAR SUPER ADMIN =================
+
       state.isSuperAdmin = false;
+
+      // ================= LOCAL STORAGE =================
 
       localStorage.removeItem("token");
       localStorage.removeItem("user");
@@ -339,39 +481,47 @@ const authSlice = createSlice({
   },
 });
 
-// ================= EXPORT ACTIONS =================
+// =====================================================
+// EXPORT ACTIONS
+// =====================================================
 
 export const {
-  // Signup
+  // ================= SIGNUP =================
+
   signupRequest,
   signupSuccess,
   signupFailure,
   clearSignupState,
 
-  // Verify OTP
+  // ================= VERIFY OTP =================
+
   verifyOtpRequest,
   verifyOtpSuccess,
   verifyOtpFailure,
   clearVerifyState,
 
-  // Login
+  // ================= LOGIN =================
+
   loginRequest,
   loginSuccess,
   loginFailure,
   clearLoginState,
 
-  // Forgot Password
+  // ================= FORGOT PASSWORD =================
+
   forgotPasswordRequest,
   forgotPasswordSuccess,
   forgotPasswordFailure,
 
-  // Verify Forgot Password OTP
+  // ================= VERIFY FORGOT PASSWORD OTP =================
+
   verifyForgotPasswordOtpRequest,
   verifyForgotPasswordOtpSuccess,
   verifyForgotPasswordOtpFailure,
   clearVerifyForgotPasswordOtpState,
 
-  // Change Password
+  // ================= CHANGE PASSWORD =================
+
   sendChangePasswordOtpRequest,
   sendChangePasswordOtpSuccess,
   sendChangePasswordOtpFailure,
@@ -381,17 +531,23 @@ export const {
   verifyAndChangePasswordFailure,
   clearChangePasswordState,
 
-  // Create New Password
+  // ================= CREATE NEW PASSWORD =================
+
   createNewPasswordRequest,
   createNewPasswordSuccess,
   createNewPasswordFailure,
   clearCreateNewPasswordState,
 
-  // Logout
+  // ================= LOGOUT =================
+
   logoutRequest,
   logoutSuccess,
   logoutFailure,
   clearLogoutState,
 } = authSlice.actions;
+
+// =====================================================
+// REDUCER
+// =====================================================
 
 export default authSlice.reducer;

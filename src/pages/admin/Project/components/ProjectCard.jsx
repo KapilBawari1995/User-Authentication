@@ -77,8 +77,6 @@ const ProjectCard = ({
   // =====================================================
 
   const handleDeleteClick = () => {
-    if (!canDelete) return;
-
     setIsDeleteModalOpen(true);
   };
 
@@ -92,13 +90,10 @@ const ProjectCard = ({
     setIsDeleteModalOpen(false);
   };
 
-  // =====================================================
-  // CONFIRM DELETE
-  // =====================================================
+
 
   const handleConfirmDelete = () => {
-    if (!canDelete) return;
-
+  
     if (!project?._id) return;
 
     dispatch(
@@ -108,9 +103,7 @@ const ProjectCard = ({
     );
   };
 
-  // =====================================================
-  // DELETE SUCCESS
-  // =====================================================
+
 
   useEffect(() => {
     if (!deleteProjectSuccess) return;
@@ -118,39 +111,27 @@ const ProjectCard = ({
     setIsDeleteModalOpen(false);
   }, [deleteProjectSuccess]);
 
-  // =====================================================
-  // VIEW
-  // =====================================================
 
   const handleView = () => {
-    if (!canView) return;
 
     if (!project?._id) return;
 
     onView(project._id);
   };
 
-  // =====================================================
-  // EDIT
-  // =====================================================
-
+ 
   const handleEdit = () => {
-    if (!canEdit) return;
+   
 
     if (!project?._id) return;
 
     onEdit(project._id);
   };
 
-  // =====================================================
-  // UI
-  // =====================================================
-
+ 
   return (
     <>
-      {/* =====================================================
-          PROJECT CARD
-      ===================================================== */}
+    
 
       <div
         className="
@@ -175,9 +156,7 @@ const ProjectCard = ({
         "
       >
 
-        {/* =====================================================
-            TOP SECTION
-        ===================================================== */}
+        
 
         <div
           className="
@@ -191,9 +170,6 @@ const ProjectCard = ({
           "
         >
 
-          {/* =====================================================
-              PROJECT INFORMATION
-          ===================================================== */}
 
           <div className="flex gap-4 min-w-0">
 
@@ -222,7 +198,6 @@ const ProjectCard = ({
               <FolderKanban size={22} />
             </div>
 
-            {/* TEXT */}
 
             <div className="min-w-0">
 

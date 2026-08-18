@@ -22,6 +22,7 @@ import {
   getUsersRequest,
   getUserByIdRequest,
   deleteUserRequest,
+  
 } from "../../../features/user/userSlice";
 
 const Users = () => {
@@ -41,19 +42,31 @@ const Users = () => {
     getUsersLoading,
     user,
     getUserLoading,
+      deleteUserSuccess,
+
   } = useSelector((state) => state.user);
 
   // ================= GET USERS =================
 
-  useEffect(() => {
-    dispatch(
-      getUsersRequest({
-        search: debouncedSearch,
-        status,
-      })
-    );
-  }, [dispatch, debouncedSearch, status]);
+    const handleDeleteUser = (id) => {
+    dispatch(deleteUserRequest(id));
+    setOpenMenu(null);
+  };
 
+
+ useEffect(() => {
+  dispatch(
+    getUsersRequest({
+      search: debouncedSearch,
+      status,
+    })
+  );
+}, [
+  dispatch,
+  debouncedSearch,
+  status,
+  deleteUserSuccess,
+]);
   // ================= RESET =================
 
   const handleResetFilters = () => {
@@ -97,11 +110,9 @@ const Users = () => {
   const usersWithRole =
     users?.filter((item) => item.role?.name).length || 0;
 
-  const handleDeleteUser = (id) => {
-    dispatch(deleteUserRequest(id));
-    setOpenMenu(null);
-  };
 
+
+  
   return (
     <div className="text-slate-800 dark:text-slate-100">
 

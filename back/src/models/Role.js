@@ -42,35 +42,39 @@ const roleSchema = new mongoose.Schema(
     // PERMISSIONS
     // =====================================================
 
-    permissions: [
-      {
-        module: {
-          type: String,
-          required: true,
-        },
+   permissions: [
+  {
+    module: {
+      type: String,
+      required: true,
+    },
 
-        view: {
-          type: Boolean,
-          default: false,
-        },
+    view: {
+      type: Boolean,
+      default: false,
+    },
 
-        create: {
-          type: Boolean,
-          default: false,
-        },
+    create: {
+      type: Boolean,
+      default: false,
+    },
 
-        edit: {
-          type: Boolean,
-          default: false,
-        },
+    edit: {
+      type: Boolean,
+      default: false,
+    },
 
-        delete: {
-          type: Boolean,
-          default: false,
-        },
-      },
-    ],
+    delete: {
+      type: Boolean,
+      default: false,
+    },
 
+    addMember: {
+      type: Boolean,
+      default: false,
+    },
+  },
+],
     // =====================================================
     // DEFAULT ROLE
     // =====================================================

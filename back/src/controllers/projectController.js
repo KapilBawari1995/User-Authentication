@@ -457,10 +457,14 @@ export const getProjectTeamMembers = async (req, res) => {
   try {
     const { projectId } = req.params;
 
-    const project = await Project.findById(projectId).populate(
-      "teamMembers",
-      "name email avatar"
-    );
+    const project = await Project.findById(projectId).populate({
+      path: "teamMembers",
+      select: "name email avatar role",
+      populate: {
+        path: "role",
+        select: "name",
+      },
+    });
 
     if (!project) {
       return res.status(404).json({

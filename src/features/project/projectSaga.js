@@ -66,11 +66,7 @@ function* handleCreateProject(action) {
 
 
   } catch (error) {
-    console.error(
-      "CREATE PROJECT ERROR:",
-      error
-    );
-
+  
     const message =
       error.response?.data?.message
 
@@ -100,17 +96,14 @@ function* handleGetProjects(action) {
       API_ENDPOINTS.GET_PROJECTS,
       {
         params: {
-          page: page || 1,
-          pageSize: pageSize || 10,
-          search: search || "",
+          page: page,
+          pageSize: pageSize,
+          search: search,
         },
       }
     );
 
-    console.log(
-      "GET PROJECTS RESPONSE:",
-      response.data
-    );
+  
 
     yield put(
       getProjectsSuccess({
@@ -120,16 +113,10 @@ function* handleGetProjects(action) {
     );
 
   } catch (error) {
-    console.error(
-      "GET PROJECTS ERROR:",
-      error
-    );
+  
 
     const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to fetch projects";
-
+      error.response?.data?.message
     yield put(
       getProjectsFailure(message)
     );
@@ -152,10 +139,6 @@ function* handleGetProjectById(action) {
       `${API_ENDPOINTS.GET_PROJECT_BY_ID}/${projectId}`
     );
 
-    console.log(
-      "GET PROJECT BY ID RESPONSE:",
-      response.data
-    );
 
     yield put(
       getProjectByIdSuccess(
@@ -164,10 +147,7 @@ function* handleGetProjectById(action) {
     );
 
   } catch (error) {
-    console.error(
-      "GET PROJECT BY ID ERROR:",
-      error
-    );
+   
 
     const message =
       error.response?.data?.message
@@ -180,10 +160,6 @@ function* handleGetProjectById(action) {
   }
 }
 
-
-// =====================================================
-// UPDATE PROJECT
-// =====================================================
 
 function* handleUpdateProject(action) {
   try {
@@ -233,10 +209,6 @@ function* handleDeleteProject(action) {
       `${API_ENDPOINTS.DELETE_PROJECT}/${projectId}`
     );
 
-    console.log(
-      "DELETE PROJECT RESPONSE:",
-      response.data
-    );
 
     yield put(
       deleteProjectSuccess(projectId)
@@ -246,15 +218,9 @@ function* handleDeleteProject(action) {
 
 
   } catch (error) {
-    console.error(
-      "DELETE PROJECT ERROR:",
-      error
-    );
-
+   
     const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to delete project";
+      error.response?.data?.message
 
     yield put(
       deleteProjectFailure(message)
@@ -276,22 +242,7 @@ function* handleAddTeamMember(action) {
       teamMembers,
     } = action.payload;
 
-    console.log(
-      "PROJECT ID:",
-      projectId
-    );
-
-    console.log(
-      "TEAM MEMBERS:",
-      teamMembers
-    );
-
-    if (!projectId) {
-      throw new Error(
-        "Project ID is missing"
-      );
-    }
-
+ 
     const response = yield call(
       axiosInstance.put,
       `${API_ENDPOINTS.ADD_TEAM_MEMBER}/${projectId}/team-members`,
@@ -300,10 +251,7 @@ function* handleAddTeamMember(action) {
       }
     );
 
-    console.log(
-      "ADD TEAM MEMBERS RESPONSE:",
-      response.data
-    );
+  
 
     yield put(
       addTeamMembersSuccess(
@@ -312,20 +260,14 @@ function* handleAddTeamMember(action) {
     );
 
     successToast(
-      response.data.message ||
-      "Team members added successfully"
+      response.data.message
     );
 
   } catch (error) {
-    console.error(
-      "ADD TEAM MEMBERS ERROR:",
-      error
-    );
+   
 
     const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to add team members";
+      error.response?.data?.message
 
     yield put(
       addTeamMembersFailure(message)
@@ -336,51 +278,29 @@ function* handleAddTeamMember(action) {
 }
 
 
-// =====================================================
-// GET PROJECT TEAM MEMBERS
-// =====================================================
+
 
 function* handleGetProjectTeamMembers(action) {
   try {
     const projectId = action.payload;
-
-    console.log(
-      "GET PROJECT TEAM MEMBERS:",
-      projectId
-    );
-
-    if (!projectId) {
-      throw new Error(
-        "Project ID is missing"
-      );
-    }
-
     const response = yield call(
       axiosInstance.get,
       `${API_ENDPOINTS.GET_PROJECT_TEAM_MEMBERS}/${projectId}/team-members`
     );
 
-    console.log(
-      "TEAM MEMBERS RESPONSE:",
-      response.data
-    );
+   
 
     yield put(
       getProjectTeamMembersSuccess(
-        response.data.data || []
+        response.data.data
       )
     );
 
   } catch (error) {
-    console.error(
-      "GET PROJECT TEAM MEMBERS ERROR:",
-      error
-    );
+  
 
     const message =
-      error.response?.data?.message ||
-      error.message ||
-      "Failed to fetch project team members";
+      error.response?.data?.message
 
     yield put(
       getProjectTeamMembersFailure(message)
@@ -391,25 +311,20 @@ function* handleGetProjectTeamMembers(action) {
 }
 
 
-// =====================================================
-// WATCHER SAGA
-// =====================================================
-
 export default function* projectSaga() {
 
-  // CREATE
+
   yield takeLatest(
     createProjectRequest.type,
     handleCreateProject
   );
 
-  // GET LIST
+  
   yield takeLatest(
     getProjectsRequest.type,
     handleGetProjects
   );
 
-  // GET BY ID
   yield takeLatest(
     getProjectByIdRequest.type,
     handleGetProjectById

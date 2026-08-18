@@ -238,7 +238,6 @@ const projectSlice = createSlice({
       state.addTeamMembersSuccess = true;
       state.addTeamMembersError = null;
 
-      // API updated project return kar rahi hai
       if (action.payload) {
         state.project = action.payload;
 

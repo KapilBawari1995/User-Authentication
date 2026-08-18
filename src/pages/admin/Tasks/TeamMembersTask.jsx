@@ -24,6 +24,8 @@ import { getUsersRequest } from "../../../features/user/userSlice";
 const TeamMembersTask = ({
   teamMembers = [],
   projectId,
+          canAddMember
+
 }) => {
   const dispatch = useDispatch();
 
@@ -144,345 +146,114 @@ const TeamMembersTask = ({
 
   return (
     <>
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
+    
+{canAddMember && (
+  <>
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
 
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+      <div className="flex items-center gap-3">
 
-        <div className="flex items-center gap-3">
-
-          <div
-            className="
-              w-11 h-11
-              rounded-xl
-              bg-indigo-50 dark:bg-indigo-500/10
-              text-indigo-600 dark:text-indigo-400
-              flex
-              items-center
-              justify-center
-            "
-          >
-            <Users size={21} />
-          </div>
-
-          <div>
-
-            <h2 className="text-lg font-bold text-slate-800 dark:text-white">
-              Team Members
-            </h2>
-
-            <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
-              People assigned to this project
-            </p>
-
-          </div>
-
-        </div>
-
-        {/* ADD MEMBER */}
-
-        <button
-          type="button"
-          onClick={handleOpenModal}
+        <div
           className="
-            inline-flex
+            w-11 h-11
+            rounded-xl
+            bg-indigo-50 dark:bg-indigo-500/10
+            text-indigo-600 dark:text-indigo-400
+            flex
             items-center
             justify-center
-            gap-2
-            px-4
-            py-2.5
-            rounded-xl
-            bg-indigo-600
-            hover:bg-indigo-700
-            text-white
-            text-sm
-            font-semibold
-            shadow-sm
-            transition
           "
         >
-          <Plus size={17} />
-          Add Team Member
-        </button>
+          <Users size={21} />
+        </div>
+
+        <div>
+          <h2 className="text-lg font-bold text-slate-800 dark:text-white">
+            Team Members
+          </h2>
+
+          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+            People assigned to this project
+          </p>
+        </div>
 
       </div>
 
-      {/* ================================================= */}
-      {/* SUMMARY */}
-      {/* ================================================= */}
+      {/* ADD MEMBER */}
 
-      <div
+      <button
+        type="button"
+        onClick={handleOpenModal}
         className="
-          flex
+          inline-flex
           items-center
-          justify-between
+          justify-center
+          gap-2
           px-4
-          py-3
-          mb-5
+          py-2.5
           rounded-xl
-          bg-slate-50 dark:bg-slate-800
-          border
-          border-slate-100 dark:border-slate-700
+          bg-indigo-600
+          hover:bg-indigo-700
+          text-white
+          text-sm
+          font-semibold
+          shadow-sm
+          transition
         "
       >
+        <Plus size={17} />
+        Add Team Member
+      </button>
 
-        <div className="flex items-center gap-2">
+    </div>
 
-          <Users
-            size={17}
-            className="text-slate-400 dark:text-slate-500"
-          />
+    {/* TOTAL TEAM MEMBERS */}
 
-          <span className="text-sm text-slate-500 dark:text-slate-400">
-            Total Team Members
-          </span>
+    <div
+      className="
+        flex
+        items-center
+        justify-between
+        px-4
+        py-3
+        mb-5
+        rounded-xl
+        bg-slate-50 dark:bg-slate-800
+        border
+        border-slate-100 dark:border-slate-700
+      "
+    >
 
-        </div>
+      <div className="flex items-center gap-2">
 
-        <span
-          className="
-            px-3
-            py-1
-            rounded-full
-            bg-indigo-50 dark:bg-indigo-500/10
-            text-indigo-600 dark:text-indigo-400
-            text-xs
-            font-bold
-          "
-        >
-          {teamMembers.length}
+        <Users
+          size={17}
+          className="text-slate-400 dark:text-slate-500"
+        />
+
+        <span className="text-sm text-slate-500 dark:text-slate-400">
+          Total Team Members
         </span>
 
       </div>
 
-      {/* ================================================= */}
-      {/* TEAM LIST */}
-      {/* ================================================= */}
+      <span
+        className="
+          px-3
+          py-1
+          rounded-full
+          bg-indigo-50 dark:bg-indigo-500/10
+          text-indigo-600 dark:text-indigo-400
+          text-xs
+          font-bold
+        "
+      >
+        {teamMembers.length}
+      </span>
 
-      {teamMembers.length > 0 ? (
-
-        <div
-          className="
-            grid
-            grid-cols-1
-            md:grid-cols-2
-            xl:grid-cols-3
-            gap-4
-          "
-        >
-
-          {teamMembers.map((member) => (
-
-            <div
-              key={member._id}
-              className="
-                group
-                relative
-                bg-white dark:bg-slate-900
-                border
-                border-slate-200 dark:border-slate-700
-                rounded-xl
-                p-4
-                hover:border-indigo-200 dark:hover:border-indigo-500/30
-                hover:shadow-sm
-                dark:hover:bg-slate-800
-                transition
-              "
-            >
-
-              {/* TOP */}
-
-              <div className="flex items-start justify-between">
-
-                <div className="flex items-center gap-3">
-
-                  {/* AVATAR */}
-
-                  <div
-                    className="
-                      w-11 h-11
-                      rounded-xl
-                      bg-gradient-to-br
-                      from-indigo-500
-                      to-violet-500
-                      text-white
-                      flex
-                      items-center
-                      justify-center
-                      font-bold
-                      text-sm
-                      shrink-0
-                    "
-                  >
-                    {member?.name
-                      ?.charAt(0)
-                      ?.toUpperCase() || "U"}
-                  </div>
-
-                  {/* NAME */}
-
-                  <div className="min-w-0">
-
-                    <p
-                      className="
-                        text-sm
-                        font-bold
-                        text-slate-800 dark:text-white
-                        truncate
-                      "
-                    >
-                      {member?.name || "Unknown User"}
-                    </p>
-
-                    <div className="flex items-center gap-1 mt-1">
-
-                      <UserRound
-                        size={12}
-                        className="text-slate-400 dark:text-slate-500"
-                      />
-
-                      <span className="text-xs text-slate-400 dark:text-slate-500">
-                        Team Member
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </div>
-
-                {/* MORE */}
-
-                <button
-                  type="button"
-                  className="
-                    w-8 h-8
-                    rounded-lg
-                    flex
-                    items-center
-                    justify-center
-                    text-slate-400 dark:text-slate-500
-                    hover:bg-slate-100 dark:hover:bg-slate-800
-                    hover:text-slate-600 dark:hover:text-slate-300
-                    transition
-                  "
-                >
-                  <MoreVertical size={17} />
-                </button>
-
-              </div>
-
-              {/* EMAIL */}
-
-              <div
-                className="
-                  mt-4
-                  pt-3
-                  border-t
-                  border-slate-100 dark:border-slate-800
-                  flex
-                  items-center
-                  gap-2
-                "
-              >
-
-                <Mail
-                  size={14}
-                  className="text-slate-400 dark:text-slate-500 shrink-0"
-                />
-
-                <p
-                  className="
-                    text-xs
-                    text-slate-500 dark:text-slate-400
-                    truncate
-                  "
-                >
-                  {member?.email || "No email available"}
-                </p>
-
-              </div>
-
-            </div>
-
-          ))}
-
-        </div>
-
-      ) : (
-
-        /* EMPTY STATE */
-
-        <div
-          className="
-            border
-            border-dashed
-            border-slate-200 dark:border-slate-700
-            rounded-2xl
-            py-12
-            px-5
-            text-center
-            bg-slate-50/50 dark:bg-slate-900/50
-          "
-        >
-
-          <div
-            className="
-              w-14 h-14
-              rounded-2xl
-              bg-indigo-50 dark:bg-indigo-500/10
-              text-indigo-500 dark:text-indigo-400
-              flex
-              items-center
-              justify-center
-              mx-auto
-              mb-4
-            "
-          >
-            <Users size={25} />
-          </div>
-
-          <h3 className="text-sm font-bold text-slate-700 dark:text-slate-200">
-            No Team Members
-          </h3>
-
-          <p className="text-xs text-slate-400 dark:text-slate-500 mt-1 max-w-sm mx-auto">
-            No team members have been assigned to this project yet.
-          </p>
-
-          <button
-            type="button"
-            onClick={handleOpenModal}
-            className="
-              inline-flex
-              items-center
-              gap-2
-              mt-5
-              px-4
-              py-2.5
-              rounded-xl
-              border
-              border-indigo-200 dark:border-indigo-500/30
-              bg-white dark:bg-slate-900
-              text-indigo-600 dark:text-indigo-400
-              text-sm
-              font-semibold
-              hover:bg-indigo-50 dark:hover:bg-indigo-500/10
-              transition
-            "
-          >
-            <Plus size={16} />
-            Add Team Member
-          </button>
-
-        </div>
-
-      )}
-
-      {/* ================================================= */}
-      {/* ADD TEAM MEMBER MODAL */}
-      {/* ================================================= */}
+    </div>
+  </>
+)}
 
       {showModal && (
 

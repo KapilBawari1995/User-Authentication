@@ -10,6 +10,10 @@ import {
   getRolesSuccess,
   getRolesFailure,
 
+  getRoleByIdRequest,
+  getRoleByIdSuccess,
+  getRoleByIdFailure,
+
   createRoleRequest,
   createRoleSuccess,
   createRoleFailure,
@@ -23,37 +27,61 @@ import {
   deleteRoleFailure,
 } from "./roleSlice";
 
-const onSuccess = (message, navigate, path) => {
-  successToast(message);
-
-  if (navigate && path) {
-    navigate(path);
-  }
-};
-
 // ================= GET ROLES =================
 
-function* handleGetRoles() {
+function* handleGetRoles(action) {
   try {
     const response = yield call(
       axiosInstance.get,
-      API_ENDPOINTS.GET_ROLES
+      API_ENDPOINTS.GET_ROLES,
+      {
+        params: action.payload,
+      }
     );
+
+    const roles = response.data?.data || [];
+      response.data?.count ?? roles.length;
+  
 
     yield put(
-      getRolesSuccess(
-        response.data.data
-      )
+      getRolesSuccess({
+        data: roles,
+      })
     );
-    console.log(response)
-
   } catch (error) {
-
     const message =
-      error.response?.data?.message || error.message;
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch roles.";
 
     yield put(
       getRolesFailure(message)
+    );
+
+    errorToast(message);
+  }
+}
+
+// ================= GET ROLE BY ID =================
+
+function* handleGetRoleById(action) {
+  try {
+    const response = yield call(
+      axiosInstance.get,
+      `${API_ENDPOINTS.GET_ROLE_BY_ID}/${action.payload}`
+    );
+
+    yield put(
+      getRoleByIdSuccess(response.data.data)
+    );
+  } catch (error) {
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to fetch role.";
+
+    yield put(
+      getRoleByIdFailure(message)
     );
 
     errorToast(message);
@@ -64,33 +92,28 @@ function* handleGetRoles() {
 
 function* handleCreateRole(action) {
   try {
-    const { data, navigate } = action.payload;
-
     const response = yield call(
       axiosInstance.post,
       API_ENDPOINTS.CREATE_ROLE,
-      data
+      action.payload
     );
 
     yield put(
-      createRoleSuccess()
+      createRoleSuccess(response.data.data)
     );
 
-    successToast(response.data.message);
-
-    yield put(
-      getRolesRequest()
+    successToast(
+      response.data.message ||
+        "Role created successfully."
     );
 
-    if (navigate) {
-      navigate("/admin/roles/addrole");
-    }
-
-
+    // Refresh roles
+    yield put(getRolesRequest());
   } catch (error) {
-
     const message =
-      error.response?.data?.message || error.message;
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to create role.";
 
     yield put(
       createRoleFailure(message)
@@ -104,7 +127,7 @@ function* handleCreateRole(action) {
 
 function* handleUpdateRole(action) {
   try {
-    const { id, data, navigate } = action.payload;
+    const { id, data } = action.payload;
 
     const response = yield call(
       axiosInstance.put,
@@ -113,23 +136,21 @@ function* handleUpdateRole(action) {
     );
 
     yield put(
-      updateRoleSuccess()
+      updateRoleSuccess(response.data.data)
     );
 
-    successToast(response.data.message);
-
-    yield put(
-      getRolesRequest()
+    successToast(
+      response.data.message ||
+        "Role updated successfully."
     );
 
-    if (navigate) {
-      navigate("/admin/roles");
-    }
-
+    // Refresh roles
+    yield put(getRolesRequest());
   } catch (error) {
-
     const message =
-      error.response?.data?.message || error.message;
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to update role.";
 
     yield put(
       updateRoleFailure(message)
@@ -143,27 +164,27 @@ function* handleUpdateRole(action) {
 
 function* handleDeleteRole(action) {
   try {
-    const { id } = action.payload;
-
     const response = yield call(
       axiosInstance.delete,
-      `${API_ENDPOINTS.DELETE_ROLE}/${id}`
+      `${API_ENDPOINTS.DELETE_ROLE}/${action.payload}`
     );
 
     yield put(
-      deleteRoleSuccess()
+      deleteRoleSuccess(action.payload)
     );
 
-    successToast(response.data.message);
-
-    yield put(
-      getRolesRequest()
+    successToast(
+      response.data.message ||
+        "Role deleted successfully."
     );
 
+    // Refresh roles
+    yield put(getRolesRequest());
   } catch (error) {
-
     const message =
-      error.response?.data?.message || error.message;
+      error.response?.data?.message ||
+      error.message ||
+      "Failed to delete role.";
 
     yield put(
       deleteRoleFailure(message)
@@ -176,10 +197,15 @@ function* handleDeleteRole(action) {
 // ================= WATCHER =================
 
 export default function* roleSaga() {
-
   yield takeLatest(
     getRolesRequest.type,
     handleGetRoles
+  );
+  console.log("get roel res wather fun  ")
+
+  yield takeLatest(
+    getRoleByIdRequest.type,
+    handleGetRoleById
   );
 
   yield takeLatest(

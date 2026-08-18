@@ -20,6 +20,7 @@ import {
 const modules = [
   "Dashboard",
   "Tasks",
+  "Add Member",
   "Projects",
   "Calendar",
   "Users",

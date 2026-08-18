@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { ArrowLeft, FolderKanban } from "lucide-react";
-
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -12,9 +11,12 @@ import TeamMembersTask from "../../Tasks/TeamMembersTask";
 import Tasks from "../../Tasks/Tasks";
 
 import ProjectDetailsHeader from "./components/ProjectDetailsHeader";
-import ProjectInfo from "./components/ProjectInfo";
 import ProjectLoading from "./components/ProjectLoading";
 import ProjectError from "./components/ProjectError";
+
+
+import usePermissions from "../../../../hooks/usePermissions";
+
 
 const ProjectDetails = () => {
   const dispatch = useDispatch();
@@ -27,6 +29,11 @@ const ProjectDetails = () => {
     getProjectLoading,
     getProjectError,
   } = useSelector((state) => state.project);
+
+   const {
+    canAddMember
+  } = usePermissions("projects");
+
 
   useEffect(() => {
     if (projectId) {
@@ -74,7 +81,13 @@ const ProjectDetails = () => {
         Back to Projects
       </button>
 
-      {/* PROJECT HEADER */}
+       <TeamMembersTask
+        teamMembers={teamMembers}
+                canAddMember={canAddMember}
+
+        projectId={project._id}
+      />
+
       <ProjectDetailsHeader
         project={project}
         onAddTask={() =>
@@ -84,19 +97,7 @@ const ProjectDetails = () => {
         }
       />
 
-      {/* PROJECT INFORMATION */}
-      <ProjectInfo
-        project={project}
-        teamMembers={teamMembers}
-      />
-
-      {/* TEAM MEMBERS */}
-      <TeamMembersTask
-        teamMembers={teamMembers}
-        projectId={project._id}
-      />
-
-      {/* TASKS */}
+   
       <Tasks projectId={project._id} />
     </div>
   );

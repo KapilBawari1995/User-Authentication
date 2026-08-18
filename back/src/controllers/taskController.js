@@ -7,16 +7,21 @@ import createNotification from "../utils/notificationHelper.js";
 import Notification from "../models/Notification.js";
 export const createTask = async (req, res) => {
   try {
-
     const {
       title,
       description,
       assignedTo,
+      qaAssignedTo,
+      project,
       priority,
+      startDate,
       dueDate,
       estimatedHours,
-      project,
     } = req.body;
+
+    // =====================================================
+    // VALIDATION
+    // =====================================================
 
     if (!title?.trim()) {
       return res.status(400).json({
@@ -28,7 +33,14 @@ export const createTask = async (req, res) => {
     if (!assignedTo) {
       return res.status(400).json({
         success: false,
-        message: "Assigned user is required.",
+        message: "Developer is required.",
+      });
+    }
+
+    if (!qaAssignedTo) {
+      return res.status(400).json({
+        success: false,
+        message: "QA / Tester is required.",
       });
     }
 
@@ -46,7 +58,9 @@ export const createTask = async (req, res) => {
       });
     }
 
-
+    // =====================================================
+    // LOGGED-IN USER
+    // =====================================================
 
     const loggedUser = await User.findById(req.user.id);
 
@@ -57,15 +71,35 @@ export const createTask = async (req, res) => {
       });
     }
 
-  
+    // =====================================================
+    // CHECK DEVELOPER
+    // =====================================================
+
     const assignedUser = await User.findById(assignedTo);
 
     if (!assignedUser) {
       return res.status(404).json({
         success: false,
-        message: "Assigned user not found.",
+        message: "Assigned developer not found.",
       });
     }
+
+    // =====================================================
+    // CHECK QA / TESTER
+    // =====================================================
+
+    const qaUser = await User.findById(qaAssignedTo);
+
+    if (!qaUser) {
+      return res.status(404).json({
+        success: false,
+        message: "QA / Tester not found.",
+      });
+    }
+
+    // =====================================================
+    // CHECK PROJECT
+    // =====================================================
 
     const projectData = await Project.findById(project);
 
@@ -76,28 +110,41 @@ export const createTask = async (req, res) => {
       });
     }
 
+    // =====================================================
+    // CREATE TASK
+    // =====================================================
 
     const task = await Task.create({
       title: title.trim(),
 
       description: description?.trim() || "",
 
+      // Developer
       assignedTo,
 
+      // QA / Tester
+      qaAssignedTo,
+
+      // Task creator
       createdBy: req.user.id,
 
+      // Project
+      project,
+
+      // Task information
       priority: priority || "Medium",
 
       status: "Pending",
 
-      startDate: new Date(),
+      startDate: startDate
+        ? new Date(startDate)
+        : new Date(),
 
       dueDate,
 
       estimatedHours: Number(estimatedHours) || 0,
 
-      project,
-
+      // Default values
       attachments: [],
 
       comments: [],
@@ -105,21 +152,72 @@ export const createTask = async (req, res) => {
       isActive: true,
     });
 
-    const populatedTask = await Task.findById(task._id)
-      .populate("assignedTo", "name email")
-      .populate("createdBy", "name email")
-      .populate("project", "name");
+    // =====================================================
+    // POPULATE TASK
+    // =====================================================
 
-   
-await createNotification({
-  title: "New Task Assigned",
-  message: `You have been assigned a new task: ${task.title}`,
-  type: "Task",
-  receiver: task.assignedTo,
-  sender: req.user.id,
-  referenceId: task._id,
-  referenceType: "Task",
-});
+    const populatedTask = await Task.findById(task._id)
+      .populate(
+        "assignedTo",
+        "name email"
+      )
+      .populate(
+        "qaAssignedTo",
+        "name email"
+      )
+      .populate(
+        "createdBy",
+        "name email"
+      )
+      .populate(
+        "project",
+        "name"
+      );
+
+    // =====================================================
+    // NOTIFICATION - DEVELOPER
+    // =====================================================
+
+    await createNotification({
+      title: "New Task Assigned",
+
+      message: `You have been assigned a new task: ${task.title}`,
+
+      type: "Task",
+
+      receiver: assignedTo,
+
+      sender: req.user.id,
+
+      referenceId: task._id,
+
+      referenceType: "Task",
+    });
+
+    // =====================================================
+    // NOTIFICATION - QA
+    // =====================================================
+
+    await createNotification({
+      title: "New QA Task Assigned",
+
+      message: `A new task has been assigned to you for QA testing: ${task.title}`,
+
+      type: "Task",
+
+      receiver: qaAssignedTo,
+
+      sender: req.user.id,
+
+      referenceId: task._id,
+
+      referenceType: "Task",
+    });
+
+    // =====================================================
+    // RESPONSE
+    // =====================================================
+
     return res.status(201).json({
       success: true,
 
@@ -127,8 +225,10 @@ await createNotification({
 
       data: populatedTask,
     });
+
   } catch (error) {
-   
+    console.error("Create Task Error:", error);
+
     return res.status(500).json({
       success: false,
       message: error.message,
@@ -136,14 +236,10 @@ await createNotification({
   }
 };
 
-
-
 export const getTasks = async (req, res) => {
   try {
-  
     const page = Number(req.query.page) || 1;
     const pageSize = Number(req.query.pageSize) || 10;
-
 
     const {
       search = "",
@@ -152,7 +248,9 @@ export const getTasks = async (req, res) => {
       project = "",
     } = req.query;
 
-   
+    // =====================================================
+    // LOGGED IN USER
+    // =====================================================
 
     const user = await User.findById(req.user.id)
       .populate("role", "name");
@@ -164,12 +262,19 @@ export const getTasks = async (req, res) => {
       });
     }
 
-    const roleName = user.role?.name?.toLowerCase();
+    const roleName =
+      user.role?.name?.toLowerCase();
 
-   
+    // =====================================================
+    // BASE QUERY
+    // =====================================================
+
     const query = {};
 
-  
+    // =====================================================
+    // SEARCH
+    // =====================================================
+
     if (search.trim()) {
       query.title = {
         $regex: search.trim(),
@@ -177,33 +282,42 @@ export const getTasks = async (req, res) => {
       };
     }
 
-  
+    // =====================================================
+    // STATUS
+    // =====================================================
+
     if (status.trim()) {
       query.status = status;
     }
 
-    
+    // =====================================================
+    // PRIORITY
+    // =====================================================
+
     if (priority.trim()) {
       query.priority = priority;
     }
 
-   
+    // =====================================================
+    // MANAGER
+    // =====================================================
 
     if (roleName === "manager") {
-      const managedProjects = await Project.find({
-        projectManager: user._id,
-      }).select("_id");
+      const managedProjects =
+        await Project.find({
+          projectManager: user._id,
+        }).select("_id");
 
-      const projectIds = managedProjects.map(
-        (item) => item._id
-      );
+      const projectIds =
+        managedProjects.map(
+          (item) => item._id
+        );
 
       console.log(
         "MANAGER PROJECT IDS:",
         projectIds
       );
 
-     
       if (projectIds.length === 0) {
         return res.status(200).json({
           success: true,
@@ -212,12 +326,14 @@ export const getTasks = async (req, res) => {
         });
       }
 
-      
+      // Specific project requested
       if (project.trim()) {
-        const isManagedProject = projectIds.some(
-          (id) =>
-            id.toString() === project.toString()
-        );
+        const isManagedProject =
+          projectIds.some(
+            (id) =>
+              id.toString() ===
+              project.toString()
+          );
 
         if (!isManagedProject) {
           return res.status(200).json({
@@ -228,16 +344,19 @@ export const getTasks = async (req, res) => {
         }
 
         query.project = project;
+      }
 
-      } else {
-
-      
+      // All manager projects
+      else {
         query.project = {
           $in: projectIds,
         };
       }
     }
 
+    // =====================================================
+    // DEVELOPER / QA / OTHER NORMAL USER
+    // =====================================================
 
     else if (
       roleName !== "admin" &&
@@ -246,33 +365,67 @@ export const getTasks = async (req, res) => {
     ) {
       query.assignedTo = user._id;
 
-    
       if (project.trim()) {
         query.project = project;
       }
     }
 
-   
+    // =====================================================
+    // ADMIN / SUPER ADMIN
+    // =====================================================
+
     else {
       if (project.trim()) {
         query.project = project;
       }
     }
 
-    
+    // =====================================================
+    // TOTAL COUNT
+    // =====================================================
 
-    const totalCount = await Task.countDocuments(query);
+    const totalCount =
+      await Task.countDocuments(query);
 
-    
+    // =====================================================
+    // GET TASKS
+    // =====================================================
 
     const tasks = await Task.find(query)
-      .populate("assignedTo", "name email")
-      .populate("createdBy", "name email")
-      .populate("project", "name")
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * pageSize)
+      .populate(
+        "assignedTo",
+        "name email avatar"
+      )
+
+      // ⭐ QA MEMBER
+      .populate(
+        "qaAssignedTo",
+        "name email avatar"
+      )
+
+      .populate(
+        "createdBy",
+        "name email"
+      )
+
+      .populate(
+        "project",
+        "name"
+      )
+
+      .sort({
+        createdAt: -1,
+      })
+
+      .skip(
+        (page - 1) * pageSize
+      )
+
       .limit(pageSize);
 
+    // =====================================================
+    // RESPONSE
+    // =====================================================
 
     return res.status(200).json({
       success: true,
@@ -281,6 +434,10 @@ export const getTasks = async (req, res) => {
     });
 
   } catch (error) {
+    console.error(
+      "GET TASKS ERROR:",
+      error
+    );
 
     return res.status(500).json({
       success: false,
@@ -289,12 +446,11 @@ export const getTasks = async (req, res) => {
   }
 };
 
-
 export const getTaskById = async (req, res) => {
   try {
-
     const task = await Task.findById(req.params.id)
       .populate("assignedTo", "name email")
+      .populate("qaAssignedTo", "name email")
       .populate("createdBy", "name");
 
     if (!task) {
@@ -308,17 +464,13 @@ export const getTaskById = async (req, res) => {
       success: true,
       data: task,
     });
-
   } catch (error) {
-
     return res.status(500).json({
       success: false,
       message: error.message,
     });
-
   }
 };
-
 
 
 export const updateTask = async (req, res) => {

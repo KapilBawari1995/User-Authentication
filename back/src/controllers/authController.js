@@ -355,16 +355,15 @@ export const verifyAndChangePassword = async (req, res) => {
     
 
     await user.save();
+
 await Notification.create({
   title: "Password Changed",
   message: "Your account password has been changed successfully.",
-  type: "security",
   receiver: user._id,
   sender: user._id,
   referenceId: user._id,
   referenceType: "User",
 });
-
 
 
     return res.status(200).json({
@@ -447,9 +446,9 @@ export const createNewPassword = async (req, res) => {
 await Notification.create({
   title: "Password Reset Successful",
   message: "Your account password was reset successfully.",
-  type: "security",
   receiver: user._id,
   sender: user._id,
+
   referenceId: user._id,
   referenceType: "User",
 });

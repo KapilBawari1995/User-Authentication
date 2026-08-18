@@ -22,6 +22,9 @@ import AddTask from "./pages/admin/Tasks/AddTask";
 import Project from "./pages/admin/Project/Projects";
 import AddProject from "./pages/admin/Project/AddProject";
 import ProjectDetails from "./pages/admin/Project/ProjectDetails/ProjectDetails";
+import ViewTask from "./pages/admin/Tasks/ViewTaskModal";
+
+import DeveloperTaskWorkspace from "./pages/admin/Tasks/DeveloperTaskWorkspace";
 import Calendar from "./pages/admin/Calendar";
 import Reports from "./pages/admin/Reports";
 import Notifications from "./pages/admin/Notifications/Notifications";
@@ -154,7 +157,7 @@ function AppContent() {
           element={<AddTask />}
         />
         <Route
-          path="projects/:projectId"
+          path="projects/view/:projectId"
           element={<ProjectDetails />}
         />
         <Route
@@ -162,10 +165,20 @@ function AppContent() {
           element={<AddTask />}
 
         />
+
         <Route
-          path="/admin/projects/:projectId/tasks/edit/:id"
+          path="/admin/tasks/edit/:id"
           element={<AddTask />}
         />
+        <Route
+          path="/admin/projects/tasks/:id"
+          element={<ViewTask />}
+        />
+
+<Route
+  path="/admin/tasks/workspace/:id"
+  element={<DeveloperTaskWorkspace />} />
+
         <Route path="calendar" element={<Calendar />} />
         <Route path="reports" element={<Reports />} />
         <Route path="notifications" element={<Notifications />} />
