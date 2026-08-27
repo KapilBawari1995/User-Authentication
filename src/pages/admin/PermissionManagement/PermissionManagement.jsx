@@ -6,7 +6,7 @@ import {
 } from "lucide-react";
 import { useDispatch, useSelector } from "react-redux";
 
-import { getRolesRequest } from "../../../features/Role/roleSlice";
+import { getRolesRequest } from "../../../features/role/roleSlice";
 
 import {
   getPermissionsRequest,

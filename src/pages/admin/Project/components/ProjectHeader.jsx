@@ -41,8 +41,7 @@ const ProjectHeader = ({ canCreate, onAdd }) => {
 
       </div>
 
-      {/* ADD PROJECT
-          Permission same rahega */}
+   
       {canCreate && (
         <button
           type="button"

@@ -18,20 +18,12 @@ import ProjectOverviewChart from "./ProjectOverviewChart";
 
 const Dashboard = () => {
   const dispatch = useDispatch();
-
-  // =====================================================
-  // DASHBOARD STATE
-  // =====================================================
-
   const {
     dashboard,
     getDashboardLoading,
     getDashboardError,
   } = useSelector((state) => state.dashboard);
 
-  // =====================================================
-  // PROJECT STATE
-  // =====================================================
 
   const {
     projects,
@@ -39,41 +31,23 @@ const Dashboard = () => {
     getProjectsError,
   } = useSelector((state) => state.project);
 
-  // =====================================================
-  // GET DASHBOARD
-  // =====================================================
-
   useEffect(() => {
     dispatch(getDashboardRequest());
   }, [dispatch]);
 
-  // =====================================================
-  // GET PROJECTS
-  // =====================================================
-
+  
   useEffect(() => {
     dispatch(
-      getProjectsRequest({
-        page: 1,
-        pageSize: 100,
-        search: "",
-      })
+      getProjectsRequest()
     );
   }, [dispatch]);
 
-  // =====================================================
-  // FORMAT DASHBOARD LABEL
-  // =====================================================
 
   const formatLabel = (key) => {
     return key
       .replace(/([A-Z])/g, " $1")
       .replace(/^./, (str) => str.toUpperCase());
   };
-
-  // =====================================================
-  // FIXED DASHBOARD ICONS
-  // =====================================================
 
   const cardIcons = [
     Users,
@@ -84,26 +58,10 @@ const Dashboard = () => {
     Activity,
   ];
 
-  // =====================================================
-  // PROJECT ARRAY
-  // =====================================================
-
-  const projectList = Array.isArray(projects)
-    ? projects
-    : Array.isArray(projects?.data)
-    ? projects.data
-    : [];
-
-  // =====================================================
-  // RETURN
-  // =====================================================
+  
 
   return (
     <div className="space-y-8">
-
-      {/* =================================================
-          DASHBOARD CARDS
-      ================================================= */}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
@@ -165,10 +123,7 @@ const Dashboard = () => {
 
       </div>
 
-      {/* =================================================
-          PROJECTS
-      ================================================= */}
-
+    
       <div>
 
         <div className="mb-5">
@@ -181,7 +136,7 @@ const Dashboard = () => {
           </p>
         </div>
 
-        {/* LOADING */}
+   
 
         {getProjectsLoading && (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-10 text-center border border-gray-100 dark:border-gray-700">
@@ -191,7 +146,6 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* ERROR */}
 
         {!getProjectsLoading && getProjectsError && (
           <div className="bg-white dark:bg-gray-800 rounded-xl p-10 text-center border border-red-200 dark:border-red-900">
@@ -201,11 +155,11 @@ const Dashboard = () => {
           </div>
         )}
 
-        {/* NO PROJECT */}
+      
 
         {!getProjectsLoading &&
           !getProjectsError &&
-          projectList.length === 0 && (
+          projects.length === 0 && (
             <div className="bg-white dark:bg-gray-800 rounded-xl p-10 text-center border border-gray-100 dark:border-gray-700">
 
               <div className="flex justify-center mb-3">
@@ -222,14 +176,14 @@ const Dashboard = () => {
             </div>
           )}
 
-        {/* PROJECT LIST */}
+    
 
         {!getProjectsLoading &&
           !getProjectsError &&
-          projectList.length > 0 && (
+          projects.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-              {projectList.map((project) => (
+              {projects.map((project) => (
                 <div
                   key={project._id}
                   className="
@@ -242,7 +196,7 @@ const Dashboard = () => {
                   "
                 >
 
-                  {/* PROJECT NAME */}
+                
 
                   <div className="flex items-start justify-between gap-3">
 
@@ -257,14 +211,14 @@ const Dashboard = () => {
 
                   </div>
 
-                  {/* DESCRIPTION */}
+                
 
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-2 line-clamp-2">
                     {project.description ||
                       "No description available"}
                   </p>
 
-                  {/* STATUS + PRIORITY */}
+                 
 
                   <div className="flex items-center justify-between mt-5">
 
@@ -278,7 +232,6 @@ const Dashboard = () => {
 
                   </div>
 
-                  {/* PROGRESS */}
 
                   <div className="mt-5">
 
@@ -307,7 +260,6 @@ const Dashboard = () => {
 
                   </div>
 
-                  {/* PROJECT MANAGER */}
 
                   {project.projectManager && (
                     <div className="mt-5 pt-4 border-t border-gray-100 dark:border-gray-700">
@@ -331,11 +283,9 @@ const Dashboard = () => {
 
       </div>
 
-      {/* =================================================
-          PROJECT OVERVIEW DONUT CHART
-      ================================================= */}
+     
 
-      <ProjectOverviewChart projects={projectList} />
+      <ProjectOverviewChart projects={projects} />
 
     </div>
   );

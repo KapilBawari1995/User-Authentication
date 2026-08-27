@@ -34,7 +34,6 @@ const AddDepartment = () => {
     }
   }, [createSuccess, dispatch, navigate]);
 
-  // ================= CLEANUP =================
 
   useEffect(() => {
     return () => {

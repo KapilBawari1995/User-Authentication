@@ -7,20 +7,9 @@ import {
   Tooltip,
 } from "recharts";
 
-const ProjectOverviewChart = ({ projects = [] }) => {
-  // =====================================================
-  // PROJECT LIST
-  // =====================================================
+const ProjectOverviewChart = ({ projects }) => {
 
-  const projectList = Array.isArray(projects)
-    ? projects
-    : Array.isArray(projects?.data)
-    ? projects.data
-    : [];
 
-  // =====================================================
-  // STATUS CONFIG
-  // =====================================================
 
   const statusConfig = [
     {
@@ -45,26 +34,17 @@ const ProjectOverviewChart = ({ projects = [] }) => {
     },
   ];
 
-  // =====================================================
-  // STATUS DATA
-  // =====================================================
 
   const statusData = statusConfig.map((status) => ({
     ...status,
-    value: projectList.filter(
+    value: projects.filter(
       (project) => project?.status === status.name
     ).length,
   }));
 
-  // =====================================================
-  // TOTAL PROJECTS
-  // =====================================================
+ 
+  const totalProjects = projects.length;
 
-  const totalProjects = projectList.length;
-
-  // =====================================================
-  // PERCENTAGE
-  // =====================================================
 
   const getPercentage = (value) => {
     if (totalProjects === 0) {
@@ -73,10 +53,6 @@ const ProjectOverviewChart = ({ projects = [] }) => {
 
     return Math.round((value / totalProjects) * 100);
   };
-
-  // =====================================================
-  // TOOLTIP
-  // =====================================================
 
   const CustomTooltip = ({ active, payload }) => {
     if (!active || !payload || !payload.length) {

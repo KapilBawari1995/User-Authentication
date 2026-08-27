@@ -41,16 +41,7 @@ const dashboardSlice = createSlice({
       state.dashboardType = null;
     },
 
-    // ================= CLEAR =================
-
-    clearDashboardState: (state) => {
-      state.dashboard = null;
-      state.dashboardType = null;
-
-      state.getDashboardLoading = false;
-      state.getDashboardSuccess = false;
-      state.getDashboardError = null;
-    },
+   
   },
 });
 
@@ -58,7 +49,6 @@ export const {
   getDashboardRequest,
   getDashboardSuccess,
   getDashboardFailure,
-  clearDashboardState,
 } = dashboardSlice.actions;
 
 export default dashboardSlice.reducer;

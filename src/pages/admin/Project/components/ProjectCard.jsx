@@ -33,18 +33,12 @@ const ProjectCard = ({
 }) => {
   const dispatch = useDispatch();
 
-  // =====================================================
-  // DELETE MODAL
-  // =====================================================
-
+ 
   const [
     isDeleteModalOpen,
     setIsDeleteModalOpen,
   ] = useState(false);
 
-  // =====================================================
-  // PROJECT REDUX
-  // =====================================================
 
   const {
     deleteProjectLoading,
@@ -53,16 +47,12 @@ const ProjectCard = ({
     (state) => state.project
   );
 
-  // =====================================================
-  // PROJECT DATA
-  // =====================================================
-
+  
   const managerName =
-    project?.projectManager?.name ||
-    "Not Assigned";
+    project?.projectManager?.name
 
   const managerEmail =
-    project?.projectManager?.email || "";
+    project?.projectManager?.email
 
   const progress = Math.min(
     Math.max(
@@ -72,17 +62,11 @@ const ProjectCard = ({
     100
   );
 
-  // =====================================================
-  // DELETE CLICK
-  // =====================================================
 
   const handleDeleteClick = () => {
     setIsDeleteModalOpen(true);
   };
 
-  // =====================================================
-  // CLOSE DELETE MODAL
-  // =====================================================
 
   const handleCloseDeleteModal = () => {
     if (deleteProjectLoading) return;
@@ -173,7 +157,6 @@ const ProjectCard = ({
 
           <div className="flex gap-4 min-w-0">
 
-            {/* ICON */}
 
             <div
               className="
@@ -238,9 +221,7 @@ const ProjectCard = ({
 
           </div>
 
-          {/* =====================================================
-              ACTIONS
-          ===================================================== */}
+        
 
           <div
             className="
@@ -252,9 +233,7 @@ const ProjectCard = ({
             "
           >
 
-            {/* =====================================================
-                VIEW
-            ===================================================== */}
+          
 
             {canView && (
               <button
@@ -294,9 +273,7 @@ const ProjectCard = ({
               </button>
             )}
 
-            {/* =====================================================
-                EDIT
-            ===================================================== */}
+           
 
             {canEdit && (
               <button
@@ -336,9 +313,7 @@ const ProjectCard = ({
               </button>
             )}
 
-            {/* =====================================================
-                DELETE
-            ===================================================== */}
+          
 
             {canDelete && (
               <button
@@ -382,9 +357,7 @@ const ProjectCard = ({
           </div>
         </div>
 
-        {/* =====================================================
-            PROJECT DETAILS
-        ===================================================== */}
+       
 
         <div
           className="
@@ -404,9 +377,7 @@ const ProjectCard = ({
           "
         >
 
-          {/* =====================================================
-              MANAGER
-          ===================================================== */}
+         
 
           <div className="flex items-start gap-3">
 
@@ -486,10 +457,7 @@ const ProjectCard = ({
 
           </div>
 
-          {/* =====================================================
-              TIMELINE
-          ===================================================== */}
-
+        
           <div className="flex items-start gap-3">
 
             <div
@@ -557,9 +525,7 @@ const ProjectCard = ({
 
           </div>
 
-          {/* =====================================================
-              PRIORITY
-          ===================================================== */}
+         
 
           <div>
 
@@ -593,9 +559,7 @@ const ProjectCard = ({
 
         </div>
 
-        {/* =====================================================
-            BOTTOM / PROGRESS
-        ===================================================== */}
+      
 
         <div
           className="
@@ -608,9 +572,7 @@ const ProjectCard = ({
           "
         >
 
-          {/* =====================================================
-              STATUS + PROGRESS VALUE
-          ===================================================== */}
+       
 
           <div
             className="
@@ -671,7 +633,7 @@ const ProjectCard = ({
 
             </div>
 
-            {/* VALUE */}
+          
 
             <span
               className="
@@ -687,9 +649,6 @@ const ProjectCard = ({
 
           </div>
 
-          {/* =====================================================
-              PROGRESS BAR
-          ===================================================== */}
 
           <div
             className="
@@ -726,9 +685,7 @@ const ProjectCard = ({
 
       </div>
 
-      {/* =====================================================
-          DELETE CONFIRMATION MODAL
-      ===================================================== */}
+  
 
       <DeleteConfirmModal
         isOpen={isDeleteModalOpen}

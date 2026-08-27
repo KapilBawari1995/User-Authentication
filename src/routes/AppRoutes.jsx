@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "../layout/MainLayout";
 import ProductsPage from "../pages/ProductsPage";
 import AddProduct from "../pages/Products/AddProduct";
+import Portfolio from "../pages/Portfolio";
 
 export default function AppRoutes() {
   return (
@@ -14,6 +15,11 @@ export default function AppRoutes() {
           <Route
             path="/edit-product/:id"
             element={<AddProduct />}
+          />
+
+            <Route
+            path="/profile"
+            element={<Portfolio />}
           />
         </Route>
       </Routes>

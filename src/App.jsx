@@ -40,6 +40,7 @@ import User from "./pages/admin/user/User";
 import AddUser from "./pages/admin/user/UaerAdd";
 import PermissionManagement from "./pages/admin/PermissionManagement/PermissionManagement";
 
+import Portfolio from "./pages/Portfolio";
 const ProtectedRoute = ({ children }) => {
   const { token, user } = useSelector((state) => state.auth);
 
@@ -91,6 +92,15 @@ function AppContent() {
   return (
     <Routes>
       {/* Public Routes */}
+ <Route
+        path="/portfolio"
+        element={
+          <PublicRoute>
+            <Portfolio />
+          </PublicRoute>
+        }
+      />
+
       <Route
         path="/login"
         element={

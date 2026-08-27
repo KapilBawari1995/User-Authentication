@@ -34,7 +34,6 @@ const ProjectFilters = ({
     >
       <div className="flex flex-col lg:flex-row gap-4">
 
-        {/* ================= SEARCH ================= */}
 
         <div className="relative flex-1">
           <Search
@@ -95,7 +94,6 @@ const ProjectFilters = ({
           <option value="Cancelled">Cancelled</option>
         </select>
 
-        {/* ================= PRIORITY ================= */}
 
         <select
           value={priorityFilter}
@@ -121,7 +119,6 @@ const ProjectFilters = ({
           <option value="Low">Low</option>
         </select>
 
-        {/* ================= RESET ================= */}
 
         {hasFilters && (
           <button

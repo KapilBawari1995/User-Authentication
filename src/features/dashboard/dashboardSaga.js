@@ -20,17 +20,13 @@ import {
 
 function* handleGetDashboard() {
   try {
-    console.log("DASHBOARD SAGA HIT");
 
     const response = yield call(
       axiosInstance.get,
       API_ENDPOINTS.GET_DASHBOARD
     );
 
-    console.log(
-      "DASHBOARD RESPONSE:",
-      response.data
-    );
+    
 
     yield put(
       getDashboardSuccess({
@@ -43,23 +39,15 @@ function* handleGetDashboard() {
     );
 
   } catch (error) {
-    console.error(
-      "DASHBOARD ERROR:",
-      error
-    );
-
+   
     yield put(
       getDashboardFailure(
-        error?.response?.data?.message ||
-          "Failed to load dashboard"
+        error?.response?.data?.message 
       )
     );
   }
 }
 
-// =====================================================
-// WATCHER
-// =====================================================
 
 export default function* dashboardSaga() {
   yield takeLatest(

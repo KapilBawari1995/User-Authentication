@@ -30,17 +30,11 @@ const AssignManager = () => {
     assignError,
   } = useSelector((state) => state.department);
 
-  // =================================================
-  // GET DEPARTMENTS
-  // =================================================
 
   useEffect(() => {
     dispatch(getDepartmentsRequest());
   }, [dispatch]);
 
-  // =================================================
-  // GET MANAGERS WHEN DEPARTMENT CHANGES
-  // =================================================
 
   useEffect(() => {
     if (departmentId) {
@@ -52,9 +46,6 @@ const AssignManager = () => {
     }
   }, [departmentId, dispatch]);
 
-  // =================================================
-  // SUCCESS
-  // =================================================
 
   useEffect(() => {
     if (assignSuccess) {
@@ -65,13 +56,8 @@ const AssignManager = () => {
     }
   }, [assignSuccess, dispatch]);
 
-  // =================================================
-  // SUBMIT
-  // =================================================
-
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!departmentId || !managerId) {
       return;
     }
@@ -86,11 +72,6 @@ const AssignManager = () => {
 
   return (
     <div className="text-slate-800 dark:text-slate-100">
-
-      {/* ================================================= */}
-      {/* HEADER */}
-      {/* ================================================= */}
-
       <div className="flex flex-col sm:flex-row sm:items-center gap-4 mb-8">
 
         <div
@@ -126,10 +107,6 @@ const AssignManager = () => {
 
       </div>
 
-      {/* ================================================= */}
-      {/* FORM CARD */}
-      {/* ================================================= */}
-
       <div
         className="
           bg-white dark:bg-slate-900
@@ -141,7 +118,6 @@ const AssignManager = () => {
         "
       >
 
-        {/* CARD HEADER */}
 
         <div
           className="
@@ -183,10 +159,6 @@ const AssignManager = () => {
           onSubmit={handleSubmit}
           className="p-6 space-y-6"
         >
-
-          {/* ================================================= */}
-          {/* DEPARTMENT */}
-          {/* ================================================= */}
 
           <div>
 
@@ -242,9 +214,7 @@ const AssignManager = () => {
 
           </div>
 
-          {/* ================================================= */}
-          {/* MANAGER */}
-          {/* ================================================= */}
+        
 
           <div>
 

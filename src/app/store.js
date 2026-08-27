@@ -8,8 +8,8 @@ import productSaga from "../features/product/productSaga";
 import authReducer from "../features/auth/authSlice";
 import authSaga   from  "../features/auth/authSaga";
 
-import roleReducer from  '../features/Role/roleSlice';
-import roleSaga  from '../features/Role/roleSaga';
+import roleReducer from  '../features/role/roleSlice';
+import roleSaga  from '../features/role/roleSaga';
 
 
 import Userreducer from '../features/user/userSlice';
