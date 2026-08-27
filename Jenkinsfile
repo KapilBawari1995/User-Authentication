@@ -1,5 +1,9 @@
 pipeline {
     agent any
+environment {
+        JAVA_OPTS = '-Djenkins.install.runSetupWizard=false'
+    }
+
 
     stages {
         stage('Checkout Code') {
