@@ -11,7 +11,8 @@ pipeline {
         stage('Deploy to Render Cloud') {
             steps {
                 echo 'Sending signal to Render to start deploy...'
-                sh 'https://api.render.com/deploy/srv-da7sm4e7bikc738fpq20?key=RuBwMjYrNWQ'
+                // यहाँ ध्यान से देखो: शुरुआत में curl -X POST और लिंक को "" में डाल दिया है
+                sh 'curl -X POST "https://api.render.com/deploy/srv-da7sm4e7bikc738fpq20?key=RuBwMjYrNWQ"'
             }
         }
     }
