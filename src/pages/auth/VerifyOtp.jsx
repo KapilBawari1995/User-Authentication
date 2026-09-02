@@ -34,7 +34,8 @@ const VerifyOtp = () => {
       setLoading(true);
 
       const { data } = await axios.post(
-        "http://localhost:4000/api/v1/auth/verify-otp",
+        "https://user-authentication-1-6l2c.onrender.com/api/v1/auth/verify-otp",
+        
         {
           email,
           otp,
